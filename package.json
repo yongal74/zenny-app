@@ -1,0 +1,35 @@
+{
+  "name": "zenny",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "server:dev": "cd apps/api && npm install && npm run dev",
+    "server:build": "cd apps/api && npm install && npm run build",
+    "server:prod": "node apps/api/dist/server.js",
+    "expo:dev": "cd apps/mobile && npm install && npx expo start --web --port 8081",
+    "expo:static:build": "cd apps/mobile && npm install && npx expo export --platform web --output-dir ../../dist",
+    "api:seed": "cd apps/api && npm run prisma:seed",
+    "api:migrate": "cd apps/api && npm run prisma:migrate",
+    "setup": "npm install && cd apps/api && npm install && cd ../mobile && npm install"
+  },
+  "devDependencies": {
+    "typescript": "~5.3.3"
+  },
+  "dependencies": {
+    "@octokit/rest": "^22.0.1",
+    "@types/connect-pg-simple": "^7.0.3",
+    "@types/express-session": "^1.18.2",
+    "@types/memoizee": "^0.4.12",
+    "@types/passport": "^1.0.17",
+    "connect-pg-simple": "^10.0.0",
+    "drizzle-kit": "^0.31.9",
+    "eslint": "^9.39.3",
+    "eslint-config-expo": "^55.0.0",
+    "expo": "^55.0.4",
+    "express-session": "^1.19.0",
+    "http-proxy": "^1.18.1",
+    "memoizee": "^0.4.17",
+    "openid-client": "^6.8.2",
+    "passport": "^0.7.0"
+  }
+}
