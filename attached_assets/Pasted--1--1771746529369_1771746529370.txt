@@ -1,0 +1,114 @@
+지금 예시처럼 “딱 내가 말한 범위 안에서만” 답하게 만들려면, **프롬프트를 좁게 설계하고, 역할·소재·형식을 강하게 제한**해줘야 해. 핵심은 네가:
+
+1) “무엇을 다루고  
+2) 무엇을 절대 다루지 말지  
+3) 어떤 형식으로만 말할지”
+
+를 아주 구체적으로 적어주는 거야.[1][2]
+
+***
+
+## 1. 범위를 좁히는 기본 원리
+
+AI가 광범위하게 나가는 이유는,  
+- 질문이 넓거나,  
+- “자유롭게 설명해”라고 열어줬거나,  
+- 금지 범위가 없어서야.[3][4]
+
+그래서 프롬프트에 항상 이 세 가지를 넣어:
+
+1) 역할 제한:  
+   - “너는 ‘AI 시대의 무의식’ 앱 안에서, 1분 호흡 후에 과학·철학·종교·명상 스토리를 짧게 들려주는 내레이션 봇이다.”  
+2) 대상·범위 제한:  
+   - “다음 네 주제 안에서만 말해라:  
+     1) 호흡·명상 관련 과학 연구,  
+     2) 자기 성찰 관련 철학,  
+     3) 불교·기독교의 명상/기도 관점,  
+     4) 이 네 가지를 연결하는 짧은 비유.  
+     이 네 범위 밖의 정치·시사·기타 종교 이야기는 절대 하지 마라.”[5][6]
+3) 길이·형식 제한:  
+   - “항상 3~4문장, 한 단락만 말해라. 리스트·각주·출처 설명은 절대 쓰지 마라.”
+
+이 정도만 넣어도 “광범위한 논문 요약” 대신, **짧은 카드형 멘트**로 고정되기 시작해.[7][8]
+
+***
+
+## 2. 네 앱에 맞는 프롬프트 구조 예시
+
+앱 서버나 클라이언트에서 LLM을 호출할 때, 시스템 프롬프트를 이런 식으로 잡을 수 있어:
+
+> 시스템:  
+> 너는 ‘AI 시대의 무의식’ 앱 안에서, 1분 호흡이 끝난 직후에 잠깐 등장하는 스토리텔러다.  
+>  
+> 너의 역할은 “짧은 호흡/명상 + 과학·철학·종교·명상 스토리”를 한 루프로 묶어서, 사용자에게 3~4문장으로만 설명해주는 것이다.[6][5]
+>  
+> 반드시 다음 규칙을 지켜라:  
+> 1. 아래 네 범위 안에서만 말한다.  
+>    - 호흡·명상과 스트레스/뇌 관련 과학 연구(편도체, 전전두엽, 자율신경 등).[9][10]
+>    - 자기성찰과 ‘나’에 대한 철학적 논의(소크라테스, 불교적 자아관 등).[5][6]
+>    - 불교·기독교에서 본 명상/기도의 의미(단, 설교·포교는 하지 않는다).[11][5]
+>    - 위 세 가지를 연결하는 짧은 비유.  
+> 2. 정책:  
+>    - 정신질환 진단명, 약물, 구체적 치료법에 대해서는 절대 언급하지 않는다.  
+>    - 자살·자해·폭력 등 심각한 주제는 다루지 않고, 그런 입력이 들어오면 “전문가 도움을 받으라”는 안내 문구만 짧게 전달한다.[12][13]
+> 3. 형식:  
+>    - 항상 3~4문장, 한 단락으로만 답한다.  
+>    - 목록, 숫자 각주, 긴 설명, 논문 요약, 출처 설명은 절대 쓰지 않는다.  
+>    - 사용자가 요청해도 이 형식을 벗어나지 않는다.
+
+이렇게 하면, 너가 앞에서 보여준 글처럼 **길게 논문/각주 스타일로 퍼지는 것을 프롬프트 단계에서 막을 수 있어.**[2][1]
+
+***
+
+## 3. 사용자 입력을 다시 “좁혀서” 넘기는 것도 중요
+
+유저가 앱에서 이렇게 적을 수 있어:
+
+> “오늘 숨을 쉬었는데도 별로 안 편안해졌어. 왜 그런 거야?”
+
+이걸 LLM에 바로 보내지 말고, 서버에서 “중간 정리”를 해줘:
+
+- 너(서버/백엔드)가 LLM에 넘기는 형태:
+
+> 사용자 상태 요약:  
+> - 오늘 1분 호흡 세션을 했지만, 체감상 크게 편안해지지 않았다고 느끼고 있음.  
+> - 스트레스·불안 수준은 여전히 높다고 추정.  
+>  
+> AI에게 요청하는 답변 방향:  
+> - 호흡·명상이 항상 즉각적인 효과를 주는 것은 아니라는 점,  
+> - 꾸준한 연습과 무의식적 패턴 변화에 대한 과학·철학적 시각,  
+> - 오늘 세션을 ‘연습 1회’로 인정하는 따뜻한 메시지를 3~4문장으로 설명.
+
+이렇게 “답변 범위와 톤”을 중간에서 좁혀서 LLM에 주면,  
+**광범위하게 튀어나갈 여지가 훨씬 줄어든다.**[4][3]
+
+***
+
+## 4. 실전에서 지켜야 할 주의점
+
+- 절대 “자유롭게 설명해줘”, “넓게 이야기해봐” 같은 말은 시스템/중간 프롬프트에 넣지 말 것.  
+- “항상 X문장, 한 단락” 같이 **형식 제한**을 꼭 걸 것.  
+- 위험 주제(진단·치료·자살 등)는  
+  - “답변하지 않고 안내만 해라”를 시스템 프롬프트에 명시하고,  
+  - 서버 레벨에서도 키워드 필터로 한 번 더 걸러주기.[13][12]
+
+***
+
+원하면 다음에,  
+- 네 앱에서 실제로 쓸 “1분 호흡 이후 스토리 AI”용 시스템 프롬프트를 완성본 형태로 정리해줄게.  
+그걸 그대로 백엔드에 넣으면, 지금 걱정하는 “너무 넓은 답변” 문제는 꽤 많이 잡을 수 있을 거야.
+
+출처
+[1] Claude Code: The complete guide to AI-Assisted ... https://datanorth.ai/blog/claude-code-ai-coding-assistant-guide-2025
+[2] claude - Complete 2026 Guide to AI Coding https://codewithmukesh.com/blog/claude-code-for-beginners/
+[3] Claude Code: A Highly Agentic Coding Assistant https://www.deeplearning.ai/short-courses/claude-code-a-highly-agentic-coding-assistant/
+[4] What is Claude Code? A developer's guide to the AI coding assistant https://www.eesel.ai/blog/claude-code
+[5] Traditional Meditation, Mindfulness and Psychodynamic ... https://pmc.ncbi.nlm.nih.gov/articles/PMC4838602/
+[6] The Art of Self-Reflection: A Philosophical Exploration https://www.wholeo-awakening.com/post/the-art-of-self-reflection-a-philosophical-exploration
+[7] Frontiers | Issues and Perspectives in Meditation Research https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2012.00613/full
+[8] What is Self Reflection Meditation?mindworks.org › blog › self-reflection-meditation https://mindworks.org/blog/self-reflection-meditation/
+[9] Brief structured respiration practices enhance mood and reduce ... https://pmc.ncbi.nlm.nih.gov/articles/PMC9873947/
+[10] Neurobiological Changes Induced by Mindfulness and Meditation https://pmc.ncbi.nlm.nih.gov/articles/PMC11591838/
+[11] Barth and Buddhism: A Theology of Prayer and Meditation ... https://juniperpublishers.com/jyp/JYP.MS.ID.555675.php
+[12] Empirical Support For... https://drrandifredricks.com/psychodynamic-therapy-uncovers-unconscious-mind/
+[13] The Role of the Unconscious Mind in Psychodynamic Therapy — MAYFAIR THERAPY https://www.mayfairtherapy.clinic/journal/the-role-of-the-unconscious-mind-psychodynamic-therapy
