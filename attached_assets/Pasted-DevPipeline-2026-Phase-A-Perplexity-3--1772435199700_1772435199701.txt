@@ -1,0 +1,145 @@
+DevPipeline 2026 업그레이드 계획 (확정 방향)
+핵심 파이프라인 흐름
+[초기 아이디어 입력]
+    ↓
+Phase A: Perplexity 기획 (3종 산출물)
+  ① 서비스 기획서 (A1~A3 기존 유지)
+  ② 개발영역별 기획서 (NEW — 모듈 분할)
+  ③ 디자인 기획서 (NEW — Pencil 입력용)
+    ↓
+Phase A.5: Pencil 디자인 자동화 (NEW)
+  디자인 기획서 → Pencil MCP 자동 호출 → .pen 파일 생성
+    ↓
+Phase B: Antigravity + Claude Code 병렬 개발
+  에이전트 1: 프론트엔드 (UI → Pencil 디자인 연동)
+  에이전트 2: 백엔드 API + DB (Supabase)
+  에이전트 3: 인증/결제 모듈
+    ↓
+Phase C: GitHub Push 자동화 (기존 유지)
+    ↓
+Phase D: Vercel 자동 배포 (PRIMARY — Replit 최소화)
+  - Vercel CLI로 원클릭 배포
+  - Replit: 앱 최종 조정 + 앱스토어 빌드 필요할 때만 사용
+변경 사항 상세
+Phase A 업그레이드 (prompts.py + phase_a_planner.py)
+추가할 산출물 2종:
+
+A5 — 개발영역별 기획서 (모듈 분할)
+
+출력: A5_dev_modules.md
+내용: 프론트엔드 / 백엔드 / 인증 / DB / 결제
+      각 모듈별 Claude Code 지시 프롬프트 1개씩
+용도: Antigravity가 각 에이전트에게 분배
+A6 — 디자인 기획서 (Pencil 입력용)
+
+출력: A6_design_spec.md
+내용: 색상 시스템, 타이포, 컴포넌트 목록,
+      각 화면의 레이아웃 구조 (Pencil .pen 파일 생성 입력값)
+용도: Phase A.5에서 Pencil MCP가 직접 읽어서 .pen 생성
+Phase A.5 신규 — Pencil 디자인 자동화
+새 파일: DevPipeline/phase_a5_design.py
+
+python
+# 동작 방식:
+# 1. A6_design_spec.md 읽기
+# 2. Pencil MCP 서버 호출 (open_document → batch_design)
+# 3. 각 화면별 컴포넌트 자동 배치
+# 4. .pen 파일 저장
+# 5. 화면별 스크린샷 캡처 → DevArtifacts/designs/에 저장
+NOTE
+
+Pencil MCP는 현재 Antigravity 환경에서 이미 사용 가능합니다.
+A6 기획서를 구조화된 형식으로 만들면 자동 디자인 생성이 가능합니다.
+
+Phase B 업그레이드 — 모듈 분할 개발
+기존: Claude가 CLAUDE.md 등 산출물만 생성
+변경: A5 개발영역별 기획서를 읽어 모듈별 Claude Code 실행 지시서 생성
+
+B-1: 프론트엔드 구현 지시 (Pencil 디자인 → Next.js 컴포넌트)
+B-2: Supabase 스키마 + API 구현 지시
+B-3: 인증 모듈 구현 지시 (Supabase Auth)
+B-4: [선택] 결제 모듈 (Stripe)
+각 지시서는 Claude Code CLI 명령어로 바로 실행 가능한 형식으로 출력
+
+Phase C 유지 — GitHub Push (기존)
+변경 없음. GitHub 레포 자동 생성 + 기획/디자인 파일 Push
+
+Phase D 업그레이드 — Vercel 배포 (PRIMARY)
+기존 Phase C의 Replit 가이드 텍스트 출력 → Vercel CLI 자동 실행으로 교체
+
+python
+# phase_c_deploy.py 또는 신규 phase_d_vercel.py
+# 1. vercel login (최초 1회)
+# 2. vercel --prod (자동 배포)
+# 3. 환경변수 자동 등록: vercel env add SUPABASE_URL
+# 4. 배포 URL 출력
+# GitHub Actions ci.yml 업데이트:
+# - Vercel Action 추가 (vercel/action@v1)
+# - main 브랜치 push 시 자동 배포
+Replit 역할 축소:
+
+용도	변경 후
+웹 앱 배포	❌ → Vercel로 대체
+개발/테스트	❌ → 로컬 + Vercel preview
+앱스토어 빌드	✅ 필요할 때만 (Expo/React Native)
+비용 비교:
+
+Vercel	Replit
+무료 티어	충분 (Hobby: 무료)	제한적
+월 비용	$0~$20 (Pro)	$20+ (Core)
+Next.js 최적화	✅ 최고 수준	보통
+CI/CD 연동	✅ GitHub 자동	수동
+시스템 간 연결 방법 (단계별)
+연결 1: Perplexity → Pencil
+A6_design_spec.md (자동 생성)
+    → phase_a5_design.py가 파일 파싱
+    → Pencil MCP batch_design() 호출
+    → .pen 파일 자동 생성
+연결 2: Pencil → Claude Code
+.pen 파일 스크린샷 → DevArtifacts/designs/screen_*.png 저장
+    → B-1 지시서에 "이 디자인을 Next.js로 구현해" 포함
+    → Claude Code가 스크린샷 참조해서 코딩
+연결 3: Claude Code → GitHub
+# 각 모듈 개발 완료 후 자동 실행
+git add .
+git commit -m "feat: [모듈명] 구현 완료"
+git push origin main
+연결 4: GitHub → Vercel (자동)
+GitHub main 브랜치 Push
+    → GitHub Actions ci.yml 자동 실행
+    → Vercel Action으로 자동 배포
+    → 배포 URL Slack/이메일 알림 (n8n 연동)
+.env 추가 필요 항목
+env
+# 현재 없는 것 (추가 필요)
+VERCEL_TOKEN=xxx              # vercel.com/account/tokens
+VERCEL_PROJECT_ID=prj_xxx     # vercel 프로젝트별 ID
+VERCEL_ORG_ID=team_xxx        # vercel 팀/개인 ID
+SUPABASE_URL=https://xxx.supabase.co    # Phase B용
+SUPABASE_ANON_KEY=eyJhb...              # Phase B용
+SUPABASE_SERVICE_KEY=eyJhb...           # Phase B 서버사이드
+GITHUB_TOKEN=ghp_...          # 이미 있음 ✅
+PERPLEXITY_API_KEY=pplx-...   # 이미 있음 ✅
+ANTHROPIC_API_KEY=sk-ant-...  # 이미 있음 ✅
+구현 우선순위 (승인 후 실행)
+순서	작업	파일	난이도
+1	A5/A6 프롬프트 추가	
+prompts.py
+쉬움
+2	Phase A에 A5/A6 단계 추가	
+phase_a_planner.py
+쉬움
+3	Phase A.5 신규 생성	phase_a5_design.py	중간
+4	Phase B 모듈 분할 지시서 추가	
+phase_b_generator.py
+쉬움
+5	Phase D(Vercel) 신규 생성	phase_d_vercel.py	중간
+6	ci.yml Vercel 배포 업데이트	
+prompts.py
+쉬움
+7	README 전체 플로우 업데이트	
+README.md
+쉬움
+8	main.py 신규 커맨드 추가	
+main.py
+쉬움
