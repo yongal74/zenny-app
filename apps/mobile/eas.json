@@ -1,0 +1,40 @@
+// EAS Build 설정
+{
+    "cli": {
+        "version": ">= 5.0.0"
+    },
+    "build": {
+        "development": {
+            "developmentClient": true,
+            "distribution": "internal"
+        },
+        "preview": {
+            "distribution": "internal",
+            "ios": {
+                "simulator": false
+            },
+            "android": {
+                "buildType": "apk"
+            }
+        },
+        "production": {
+            "ios": {
+                "autoIncrement": true
+            },
+            "android": {
+                "autoIncrement": true
+            }
+        }
+    },
+    "submit": {
+        "production": {
+            "ios": {
+                "appleId": "YOUR_APPLE_ID",
+                "ascAppId": "YOUR_ASC_APP_ID"
+            },
+            "android": {
+                "serviceAccountKeyPath": "./google-service-account.json"
+            }
+        }
+    }
+}
