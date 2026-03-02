@@ -1,0 +1,158 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── 사용자 ────────────────────────────────────────────────────
+model User {
+  id         String   @id @default(uuid())
+  email      String   @unique
+  password   String?
+  provider   String   @default("email")   // "email" | "apple" | "google"
+  zenCoins   Int      @default(100)
+  streak     Int      @default(0)
+  lang       String   @default("en")      // "en" | "ko"
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  character   Character?
+  checkins    EmotionCheckin[]
+  quests      UserQuest[]
+  sessions    CoachSession[]
+  purchases   Purchase[]
+
+  @@index([email])
+}
+
+// ─── 캐릭터 ────────────────────────────────────────────────────
+model Character {
+  userId        String   @id
+  characterType String   @default("hana")  // hana|sora|tora|mizu|kaze
+  level         Int      @default(1)        // 1-7
+  exp           Int      @default(0)
+  hunger        Int      @default(100)      // 0-100
+  mood          Int      @default(100)      // 0-100
+  equippedSkin  String   @default("starlight")
+  equippedItems Json     @default("{}")     // { hat, face, body, bg, pet }
+  ownedItems    String[] @default([])
+  bgTheme       String   @default("starlight")
+  lastFedAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ─── 감정 체크인 ───────────────────────────────────────────────
+model EmotionCheckin {
+  id          String   @id @default(uuid())
+  userId      String
+  emotion     String                       // happy|anxious|tired|stressed|sad|angry|calm...
+  text        String?
+  intensity   Int                          // 1-5
+  expGained   Int      @default(30)
+  coinsGained Int      @default(15)
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+// ─── AI 코치 세션 ──────────────────────────────────────────────
+model CoachSession {
+  id        String   @id @default(uuid())
+  userId    String
+  messages  Json     @default("[]")        // ChatMessage[]
+  summary   String?
+  turnCount Int      @default(0)
+  lang      String   @default("en")
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+// ─── 퀘스트 (정의) ────────────────────────────────────────────
+model QuestDefinition {
+  id          String @id
+  type        String                       // "daily" | "weekly"
+  title       String
+  titleKo     String
+  description String
+  coinsReward Int
+  expReward   Int
+  target      Int    @default(1)
+  category    String @default("meditation")
+
+  userQuests UserQuest[]
+}
+
+// ─── 사용자 퀘스트 (진행/완료) ────────────────────────────────
+model UserQuest {
+  id           String    @id @default(uuid())
+  userId       String
+  questId      String
+  progress     Int       @default(0)
+  completedAt  DateTime?
+  date         DateTime  @default(now())
+
+  user  User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quest QuestDefinition @relation(fields: [questId], references: [id])
+
+  @@index([userId, date])
+}
+
+// ─── 숍 아이템 ────────────────────────────────────────────────
+model ShopItem {
+  id            String  @id
+  name          String
+  type          String                     // "accessory" | "skin" | "character"
+  slot          String                     // "hat" | "face" | "body" | "skin" | "bg" | "pet"
+  category      String  @default("general")
+  price         Int
+  rarity        String  @default("common") // "common" | "rare" | "legendary"
+  imageUrl      String  @default("")
+  bgTheme       String?
+  levelRequired Int     @default(1)
+
+  purchases Purchase[]
+
+  @@index([type, category])
+  @@index([rarity])
+}
+
+// ─── 구매 기록 ────────────────────────────────────────────────
+model Purchase {
+  id        String   @id @default(uuid())
+  userId    String
+  itemId    String
+  price     Int
+  createdAt DateTime @default(now())
+
+  user User     @relation(fields: [userId], references: [id])
+  item ShopItem @relation(fields: [itemId], references: [id])
+
+  @@index([userId, createdAt])
+}
+
+// ─── 명상 트랙 ────────────────────────────────────────────────
+model MeditationTrack {
+  id          String  @id @default(uuid())
+  title       String
+  titleKo     String  @default("")
+  type        String                       // "breathing" | "bodyscan" | "guided" | "nature"
+  emotion     String?
+  audioUrl    String  @default("")
+  musicUrl    String?
+  duration    Int     @default(120)        // 초 단위 (2분 = 120)
+  lang        String  @default("en")       // "en" | "ko"
+  weekCreated String  @default("2026-W09") // 생성 주차
+
+  @@index([emotion, lang])
+  @@index([type, lang])
+}
