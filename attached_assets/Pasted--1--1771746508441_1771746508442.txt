@@ -1,0 +1,100 @@
+지금 말한 방향이 정확해. **“일상+감정/느낌 기록 = 무의식과 행동·기억을 바꾸는 핵심 루프”**라는 걸 사용자에게 이해시키고, 그에 맞게 프롬프트·맥락을 설계하면 돼.[1][2][3]
+
+***
+
+## 1. 유저에게 어떻게 설명할지 (앱 텍스트 관점)
+
+앱 안에서 일상+감정 기록의 의미를 이렇게 짧게 설명하면 좋다:
+
+- “우리는 ‘사건’보다 그때의 **감정과 느낌**에 더 크게 영향받는 동물이야. 그 감정들이 무의식에 쌓여서, 다음 선택·습관·기억까지 바꾼다는 연구들이 많아.”[3][4]
+- “그냥 일어난 일만 적는 일기는 의식의 기록이고,  
+  ‘그때 내 감정·느낌’을 같이 적는 일기는 **무의식이 보내는 신호를 받아 적는 일**에 가까워.”[5][1]
+- “감정과 느낌을 말로 붙잡아두면, 막연한 불안·짜증이 조금씩 구조를 갖게 되고, 그게 곧 자기 이해·자기 조절 능력으로 바뀐다.”[6][7][8]
+
+이 정도 톤으로 온보딩/설명 카드에 넣어서,  
+“그냥 일기”가 아니라 **“무의식 관찰 루틴”**이라는 이름을 붙이면 좋아.
+
+***
+
+## 2. 유저에게 보여줄 프롬프트 예시 (기록 양식)
+
+앱에서 감정·느낌을 붙여 쓰게 만드는 **구조화된 질문 세트**를 이렇게 설계할 수 있어:
+
+1) 오늘 있었던 일 한 줄  
+   - “오늘 기억에 남는 장면을 한 가지만 적어줘.”
+
+2) 그때 감정·느낌  
+   - “그 순간에 느낀 감정을 단어 2~3개로 표현해줘. (예: 분노, 서운함, 안도, 기대 등)”[9]
+   - “몸에서 어떤 느낌이 났는지도 적어줘. (예: 가슴이 답답, 어깨가 무거움, 속이 시원함 등)”
+
+3) 무의식/패턴 힌트  
+   - “비슷한 감정을 최근에 또 느낀 적이 있다면, 언제였는지 적어봐. 패턴이 보일 수도 있어.”
+
+이 세 블록만 고정해도,  
+- 단순 서술이 아니라 **사건–감정–몸–패턴**까지 자연스럽게 이어지는 구조가 된다.[10][11][1]
+
+***
+
+## 3. AI 쪽 맥락/역할 설계 (네가 말한 “학습” 방향)
+
+LLM을 이렇게 세팅하면 돼:
+
+### 시스템 역할
+
+> 너는 ‘AI 시대의 무의식’ 앱 안에서, 사용자의 **일상+감정 기록을 돕는 코치**다.  
+> 너의 목적은 사용자가 “사건만 적는 일기”가 아니라 “감정과 느낌, 몸의 감각까지 적는 일기”를 쓰도록 돕는 것이다.[1][5]
+
+### 지켜야 할 규칙
+
+1) 항상 사건 → 감정 → 몸 → 패턴 순서로 질문하거나 요약한다.[10][1]
+2) 감정을 구체적인 단어로 말하게 돕는다.  
+   - “그냥 기분이 안 좋았다” 대신 “서운함, 짜증, 무력감처럼 조금 더 구체적인 단어 2~3개로 적어볼까?”[6][9]
+3) 무의식과의 연결을 과장하지 않고, 이렇게 설명한다:  
+   - “이런 감정 기록은 네 무의식에 쌓여 있던 패턴이 표면으로 올라오는 통로야. 자주 기록할수록, 네 행동과 기억에 어떤 감정이 영향을 주는지 보이기 시작할 거야.”[11][3][1]
+4) 진단·치료 언급은 하지 않는다. (이건 항상 기본 가드라인.)
+
+### AI가 유저에게 던질 안내 멘트 예시
+
+- “그냥 ‘무슨 일이 있었는지’만 쓰면 의식의 로그야.  
+  거기에 ‘그때 어떤 감정·느낌이 있었는지’를 붙이면, **무의식이 남긴 흔적**까지 같이 기록하는 게 돼.”[5][1]
+- “오늘 있었던 일 하나만 골라서,  
+  1) 장면,  
+  2) 감정 단어 2~3개,  
+  3) 몸의 느낌,  
+  이 세 가지만 적어볼래?”  
+
+이렇게 **AI의 역할을 ‘분석자가 아니라 기록 가이드’로 고정**하면, 네가 말한 “프롬프트 형태를 사용자에게 설명”하는 기능을 자연스럽게 수행하게 된다.[2][7]
+
+***
+
+## 4. 무의식–행동–기억까지 연결하는 한 줄 설명
+
+이건 앱·책·프롬프트 어디에나 쓸 수 있는 코어 문장으로 가져가면 좋다:
+
+- “감정과 느낌은 그냥 지나가도, **무의식에는 자국을 남겨서**  
+  다음 행동, 선택, 심지어 어떤 기억을 더 자주 떠올리는지까지 바꿔.”[12][3]
+- “기록은 그 자국을 눈에 보이게 만드는 일이고,  
+  그 순간부터 무의식이 ‘나를 끌고 가는 힘’에서,  
+  ‘내가 함께 작업할 수 있는 파트너’로 바뀌기 시작해.”[11][1]
+
+***
+
+원하면 다음 턴에,  
+- “앱에 바로 넣을 수 있는 일기 입력 UI 문구 + AI가 첫 세션에서 해줄 설명 전체 스크립트”를 한 번에 써줄게.
+
+출처
+[1] How Journaling Brings Unconscious Processes to Conscious ... https://www.drkimberlybenson.com/blog/1317018-how-journaling-brings-unconscious-processes-to-conscious-awareness
+[2] 5 Benefits of Journaling for Mental Health https://positivepsychology.com/benefits-of-journaling/
+[3] The Influences of Emotion on Learning and Memory - PMC https://pmc.ncbi.nlm.nih.gov/articles/PMC5573739/
+[4] Affective Working Memory: An Integrative Psychological Constructpmc.ncbi.nlm.nih.gov › articles › PMC6606331 https://pmc.ncbi.nlm.nih.gov/articles/PMC6606331/
+[5] Making the Unconscious Conscious with Journaling - AromaGnosis https://aromagnosis.com/making-the-unconscious-conscious-with-journaling/
+[6] Expressive Writing for Mental Health Benefits: How It helps https://nashvillemh.com/blog/expressive-writing-for-mental-health/
+[7] Processing Tough Emotions Using Expressive Writing https://extension.usu.edu/relationships/faq/processing-tough-emotions-using-expressive-writing
+[8] Effects of Expressive Writing on Psychological and Physical ... https://pmc.ncbi.nlm.nih.gov/articles/PMC3830620/
+[9] Deep Dive Journaling: 10 Psychology-Based Prompts to Decode ... https://alchemlearning.com/journaling-psychology-prompts/
+[10] How Journaling Builds Emotional Strength and Resilience ... https://www.shyrohealth.com/resources/article/how-journaling-builds-emotional-strength-and-resilience-over-time
+[11] Deep Diving into the Unconscious Mind: The Next Step in ... https://www.fit2goclinic.co.uk/post/deep-diving-into-the-unconscious-mind-the-next-step-in-psychotherapy
+[12] Positive affect modulates memory by regulating the influence of ... https://www.nature.com/articles/s44271-024-00106-4
+[13] Journaling and Diary Writing Are a Direct Way to your ... https://www.gothicalice.com/post/journaling-and-diary-writing-are-a-direct-way-to-your-unconscious-mind
+[14] Journaling as an unconscious pattern in your family? https://www.reddit.com/r/CPTSD/comments/1grv9eb/journaling_as_an_unconscious_pattern_in_your/
+[15] How Expressive Writing Can Improve Emotional Health in Older Adultswww.thesupportivecare.com › blog › how-expressive-writing-can-improve... https://www.thesupportivecare.com/blog/how-expressive-writing-can-improve-emotional-health-in-older-adults
