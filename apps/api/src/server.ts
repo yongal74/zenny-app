@@ -12,6 +12,7 @@ import { shopRouter } from './routes/shop.routes';
 import { meditationRouter } from './routes/meditation.routes';
 import { questRouter } from './routes/quest.routes';
 import { polarRouter } from './routes/polar.routes';
+import { emotionRouter } from './routes/emotion.routes';
 import { authMiddleware } from './middleware/auth.middleware';
 import { errorHandler } from './middleware/error.middleware';
 
@@ -38,6 +39,7 @@ async function start() {
   app.use('/api/meditation', authMiddleware, meditationRouter);
   app.use('/api/quests', authMiddleware, questRouter);
   app.use('/api/polar', polarRouter);
+  app.use('/api/emotion', authMiddleware, emotionRouter);
 
   app.get('/health', (_, res) => res.json({ status: 'ok', ts: new Date().toISOString() }));
 

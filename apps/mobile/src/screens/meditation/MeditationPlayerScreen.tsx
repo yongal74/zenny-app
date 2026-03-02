@@ -8,6 +8,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Audio } from 'expo-av';
 import * as Haptics from 'expo-haptics';
 import { COLORS } from '../../constants/colors';
+import { useCharacterStore } from '../../stores/characterStore';
+import { apiClient } from '../../utils/api';
 import type { MeditationTrack } from '../../types';
 
 const { width: W } = Dimensions.get('window');
@@ -27,11 +29,14 @@ interface MeditationPlayerProps {
 }
 
 export function MeditationPlayerScreen({ track, onClose, lang = 'en' }: MeditationPlayerProps) {
+    const { updateExp, setZenCoins } = useCharacterStore();
     const [playing, setPlaying] = useState(false);
     const [elapsed, setElapsed] = useState(0);
     const [breathPhase, setBreathPhase] = useState(0);
     const [breathPatternKey, setBreathPatternKey] = useState<keyof typeof BREATH_PATTERNS>('box');
     const [showBreath, setShowBreath] = useState(track.type === 'breathing');
+    const [rewardResult, setRewardResult] = useState<{ coinsGained: number; expGained: number } | null>(null);
+    const [rewardClaimed, setRewardClaimed] = useState(false);
 
     const soundRef = useRef<Audio.Sound | null>(null);
     const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -58,6 +63,24 @@ export function MeditationPlayerScreen({ track, onClose, lang = 'en' }: Meditati
             ])
         ).start();
     }, []);
+
+    const claimReward = async () => {
+        if (rewardClaimed) return;
+        setRewardClaimed(true);
+        try {
+            const { data } = await apiClient.post('/meditation/complete', {
+                trackId: track.id,
+                trackType: track.type,
+            });
+            updateExp(data.expGained ?? 0);
+            if (data.totalCoins !== undefined) {
+                setZenCoins(data.totalCoins);
+            }
+            setRewardResult({ coinsGained: data.coinsGained, expGained: data.expGained });
+        } catch (e: any) {
+            // 이미 오늘 완료한 경우 (409) 등 무시
+        }
+    };
 
     const pattern = BREATH_PATTERNS[breathPatternKey];
 
@@ -111,6 +134,7 @@ export function MeditationPlayerScreen({ track, onClose, lang = 'en' }: Meditati
                     if (e >= track.duration) {
                         clearInterval(intervalRef.current!);
                         setPlaying(false);
+                        claimReward();
                         return track.duration;
                     }
                     return e + 1;
@@ -191,12 +215,20 @@ export function MeditationPlayerScreen({ track, onClose, lang = 'en' }: Meditati
                     </TouchableOpacity>
                 </View>
 
-                {/* 하단 안내 */}
-                <Text style={s.hint}>
-                    {lang === 'ko'
-                        ? '명상 후 10~50 Zen Coins 지급됩니다'
-                        : 'Complete session to earn 10–50 Zen Coins ✦'}
-                </Text>
+                {/* 완료 리워드 알림 */}
+                {rewardResult ? (
+                    <View style={s.rewardBanner}>
+                        <Text style={s.rewardBannerText}>
+                            ✨ +{rewardResult.coinsGained} Coins · +{rewardResult.expGained} EXP
+                        </Text>
+                    </View>
+                ) : (
+                    <Text style={s.hint}>
+                        {lang === 'ko'
+                            ? `완료 시 ${track.type === 'breathing' ? 30 : 50} Zen Coins 지급`
+                            : `Earn ${track.type === 'breathing' ? 30 : 50} Zen Coins on completion ✦`}
+                    </Text>
+                )}
             </LinearGradient>
         </SafeAreaView>
     );
@@ -236,4 +268,6 @@ const s = StyleSheet.create({
     playIcon: { fontSize: 28, color: COLORS.text },
 
     hint: { fontSize: 12, color: COLORS.text3, fontFamily: 'DMSans_400Regular', marginBottom: 16, textAlign: 'center' },
+    rewardBanner: { backgroundColor: 'rgba(200,168,96,0.2)', borderRadius: 12, paddingHorizontal: 20, paddingVertical: 10, marginBottom: 16, borderWidth: 1, borderColor: 'rgba(200,168,96,0.4)' },
+    rewardBannerText: { fontSize: 15, fontFamily: 'DMSans_700Bold', color: COLORS.gold, textAlign: 'center' },
 });

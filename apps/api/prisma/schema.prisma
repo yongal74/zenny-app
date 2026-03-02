@@ -19,11 +19,12 @@ model User {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
-  character   Character?
-  checkins    EmotionCheckin[]
-  quests      UserQuest[]
-  sessions    CoachSession[]
-  purchases   Purchase[]
+  character       Character?
+  checkins        EmotionCheckin[]
+  quests          UserQuest[]
+  sessions        CoachSession[]
+  purchases       Purchase[]
+  meditationLogs  MeditationLog[]
 
   @@index([email])
 }
@@ -136,6 +137,21 @@ model Purchase {
 
   user User     @relation(fields: [userId], references: [id])
   item ShopItem @relation(fields: [itemId], references: [id])
+
+  @@index([userId, createdAt])
+}
+
+// ─── 명상 완료 로그 ───────────────────────────────────────────
+model MeditationLog {
+  id          String   @id @default(uuid())
+  userId      String
+  trackId     String
+  trackType   String                       // "breathing" | "bodyscan" | "guided" | "nature"
+  coinsGained Int
+  expGained   Int
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, createdAt])
 }

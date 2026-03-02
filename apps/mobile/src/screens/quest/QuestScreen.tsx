@@ -22,7 +22,7 @@ interface UserQuest {
 }
 
 export function QuestScreen() {
-  const { lang, updateExp } = useCharacterStore();
+  const { lang, updateExp, setZenCoins } = useCharacterStore();
   const queryClient = useQueryClient();
 
   const { data: quests = [], isLoading } = useQuery<UserQuest[]>({
@@ -38,8 +38,9 @@ export function QuestScreen() {
       const { data } = await apiClient.post(`/quests/${questId}/complete`);
       return data;
     },
-    onSuccess: (data, questId) => {
+    onSuccess: (data) => {
       updateExp(data.expGained ?? 0);
+      if (data.totalCoins !== undefined) setZenCoins(data.totalCoins);
       queryClient.invalidateQueries({ queryKey: ['quests'] });
     },
   });

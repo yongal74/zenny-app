@@ -7,6 +7,7 @@ import { useAuthStore } from '../stores/authStore';
 import { useCharacterStore } from '../stores/characterStore';
 import { apiClient, API_BASE } from '../utils/api';
 
+import { HomeScreen } from '../screens/home/HomeScreen';
 import { AICoachScreen } from '../screens/ai-coach/AICoachScreen';
 import { ShopScreen } from '../screens/shop/ShopScreen';
 import { QuestScreen } from '../screens/quest/QuestScreen';
@@ -25,8 +26,13 @@ export type MainTabParamList = {
   Meditation: undefined;
   Shop: undefined;
 };
+export type AppStackParamList = {
+  MainTabs: undefined;
+  AICoach: undefined;
+};
 
 const AuthStack = createNativeStackNavigator<AuthStackParamList>();
+const AppStack = createNativeStackNavigator<AppStackParamList>();
 const MainTab = createBottomTabNavigator<MainTabParamList>();
 
 const TabIcon = ({ label, focused }: { label: string; focused: boolean }) => (
@@ -55,7 +61,7 @@ function MainTabs() {
     >
       <MainTab.Screen
         name="Home"
-        component={AICoachScreen}
+        component={HomeScreen}
         options={{ tabBarLabel: '홈', tabBarIcon: ({ focused }) => <TabIcon label="🏠" focused={focused} /> }}
       />
       <MainTab.Screen
@@ -83,6 +89,19 @@ function AuthNavigator() {
       <AuthStack.Screen name="Login" component={LoginScreen} />
       <AuthStack.Screen name="Onboarding" component={OnboardingScreen} />
     </AuthStack.Navigator>
+  );
+}
+
+function AppNavigator() {
+  return (
+    <AppStack.Navigator screenOptions={{ headerShown: false }}>
+      <AppStack.Screen name="MainTabs" component={MainTabs} />
+      <AppStack.Screen
+        name="AICoach"
+        component={AICoachScreen}
+        options={{ presentation: 'modal' }}
+      />
+    </AppStack.Navigator>
   );
 }
 
@@ -162,7 +181,7 @@ export function RootNavigator() {
   }
 
   if (isAuthenticated) {
-    return <MainTabs />;
+    return <AppNavigator />;
   }
 
   return <AuthNavigator />;

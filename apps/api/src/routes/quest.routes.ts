@@ -60,12 +60,11 @@ router.post('/:questId/complete', async (req: Request, res: Response) => {
         prisma.character.update({ where: { userId }, data: { exp: { increment: expReward } } }),
     ]);
 
-    // 레벨업 체크
+    // 레벨업 체크 (character.exp, user.zenCoins는 Prisma가 이미 증가된 값 반환)
     const EXP_THRESHOLDS: Record<number, number> = { 1: 0, 2: 100, 3: 250, 4: 500, 5: 800, 6: 1200, 7: 2000 };
-    const newExp = character.exp + expReward;
     let newLevel = character.level;
     for (let lv = 7; lv >= 1; lv--) {
-        if (newExp >= EXP_THRESHOLDS[lv]) { newLevel = lv; break; }
+        if (character.exp >= EXP_THRESHOLDS[lv]) { newLevel = lv; break; }
     }
     let isLevelUp = false;
     if (newLevel > character.level) {
@@ -73,7 +72,7 @@ router.post('/:questId/complete', async (req: Request, res: Response) => {
         isLevelUp = true;
     }
 
-    return res.json({ coinsGained: coinsReward, expGained: expReward, totalCoins: user.zenCoins + coinsReward, isLevelUp, newLevel });
+    return res.json({ coinsGained: coinsReward, expGained: expReward, totalCoins: user.zenCoins, isLevelUp, newLevel });
 });
 
 export { router as questRouter };

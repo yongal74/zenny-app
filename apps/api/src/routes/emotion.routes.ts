@@ -23,8 +23,18 @@ router.post('/checkin', async (req: Request, res: Response) => {
 
     if (!emotion) return res.status(400).json({ error: 'Emotion required' });
 
-    const coinsGained = 15;
-    const expGained = 30;
+    // 하루 3회 제한
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate() + 1);
+    const todayCount = await prisma.emotionCheckin.count({
+        where: { userId, createdAt: { gte: today, lt: tomorrow } },
+    });
+    if (todayCount >= 3) {
+        return res.status(409).json({ error: 'Daily checkin limit reached (3/day)', alreadyClaimed: true });
+    }
+
+    const coinsGained = 100;
+    const expGained = 50;
 
     // 체크인 저장 + 코인/EXP 지급
     const [checkin, user, character] = await Promise.all([
@@ -33,8 +43,8 @@ router.post('/checkin', async (req: Request, res: Response) => {
         prisma.character.update({ where: { userId }, data: { exp: { increment: expGained } } }),
     ]);
 
-    // 레벨업 체크
-    const newLevel = calcLevel(character.exp + expGained);
+    // 레벨업 체크 (character.exp는 Prisma가 이미 증가된 값 반환)
+    const newLevel = calcLevel(character.exp);
     let isLevelUp = false;
     if (newLevel > character.level) {
         await prisma.character.update({ where: { userId }, data: { level: newLevel } });
@@ -44,7 +54,7 @@ router.post('/checkin', async (req: Request, res: Response) => {
     return res.status(201).json({
         checkinId: checkin.id, emotion,
         coinsGained, expGained,
-        totalCoins: user.zenCoins + coinsGained,
+        totalCoins: user.zenCoins, // user.zenCoins은 이미 증가된 값
         isLevelUp, newLevel,
     });
 });
