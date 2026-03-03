@@ -1,0 +1,7 @@
+[build]
+builder = "nixpacks"
+buildCommand = "cd apps/api && npm install && npx prisma generate"
+
+[deploy]
+startCommand = "cd apps/api && npm start"
+restartPolicyType = "on_failure"
