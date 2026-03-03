@@ -58,7 +58,8 @@ router.post('/chat', async (req: Request, res: Response) => {
 
     return res.json({ response, quickReplies, model });
   } catch (err: any) {
-    console.error('Coach chat error:', err);
+    console.error('[Coach] chat error:', err?.message ?? err);
+    console.error('[Coach] status:', err?.status, 'code:', err?.code);
     return res.status(500).json({
       error: 'AI response failed.',
       response: 'Sorry, something went wrong. Please try again 🌟',

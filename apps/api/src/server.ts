@@ -22,6 +22,12 @@ dotenv.config();
 if (process.env.DATABASE_URL) {
   process.env.DATABASE_URL = process.env.DATABASE_URL.replace(/\s+/g, '');
 }
+if (process.env.OPENAI_API_KEY) {
+  process.env.OPENAI_API_KEY = process.env.OPENAI_API_KEY.replace(/\s+/g, '');
+  console.log('[OpenAI] Key loaded, prefix:', process.env.OPENAI_API_KEY.slice(0, 7) + '...');
+} else {
+  console.warn('[OpenAI] WARNING: OPENAI_API_KEY is not set!');
+}
 
 const PORT = 5000;
 const DIST_DIR = path.resolve(__dirname, '../../mobile/dist');
