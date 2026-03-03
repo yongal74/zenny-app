@@ -108,17 +108,23 @@ function AppNavigator() {
 async function fetchAndSetCharacter() {
   try {
     const [charRes, userRes] = await Promise.all([
-      apiClient.get('/character'),
-      apiClient.get('/auth/me'),
+      apiClient.get('/character', { timeout: 5000 }),
+      apiClient.get('/auth/me', { timeout: 5000 }),
     ]);
     const data = charRes.data;
     if (data) {
       useCharacterStore.getState().setCharacter({
+        userId: data.userId || '',
         characterType: data.characterType || 'hana',
         level: data.level || 1,
         exp: data.exp || 0,
-        bgTheme: data.bgTheme || 'starlight',
+        hunger: data.hunger ?? 100,
+        mood: data.mood ?? 100,
+        equippedSkin: data.equippedSkin || '',
         equippedItems: data.equippedItems || {},
+        ownedItems: data.ownedItems || [],
+        bgTheme: data.bgTheme || 'starlight',
+        lastFedAt: data.lastFedAt || new Date().toISOString(),
       });
     }
     if (userRes.data) {
@@ -126,11 +132,17 @@ async function fetchAndSetCharacter() {
     }
   } catch (e) {
     useCharacterStore.getState().setCharacter({
+      userId: '',
       characterType: 'hana',
       level: 1,
       exp: 0,
-      bgTheme: 'starlight',
+      hunger: 100,
+      mood: 100,
+      equippedSkin: '',
       equippedItems: {},
+      ownedItems: [],
+      bgTheme: 'starlight',
+      lastFedAt: new Date().toISOString(),
     });
   }
 }
@@ -140,9 +152,8 @@ export function RootNavigator() {
   const { isAuthenticated, setAuth } = useAuthStore();
 
   useEffect(() => {
-    useCharacterStore.getState().setLang('ko');
-
-    const autoLogin = async () => {
+    const init = async () => {
+      // Web: OAuth redirect 처리
       if (Platform.OS === 'web' && typeof window !== 'undefined') {
         const params = new URLSearchParams(window.location.search);
         const authToken = params.get('auth_token');
@@ -156,24 +167,29 @@ export function RootNavigator() {
         }
       }
 
+      // 자동 게스트 로그인 — 4초 타임아웃
       try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 4000);
         const res = await fetch(`${API_BASE}/auth/guest`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ lang: 'ko' }),
+          body: JSON.stringify({ lang: 'en' }),
+          signal: controller.signal,
         });
+        clearTimeout(timeout);
         if (res.ok) {
           const data = await res.json();
           setAuth(data.token, data.userId);
           await fetchAndSetCharacter();
         }
-      } catch (e) {
-        console.error('[Zenny] Auto login failed:', e);
+      } catch {
+        // 타임아웃 or 연결 실패 → 로그인 화면으로
       }
       setShowSplash(false);
     };
 
-    autoLogin();
+    init();
   }, []);
 
   if (showSplash) {

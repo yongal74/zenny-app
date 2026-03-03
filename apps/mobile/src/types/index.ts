@@ -9,6 +9,24 @@ export type ItemType = 'skin' | 'accessory';
 export type Rarity = 'common' | 'rare' | 'legendary';
 
 export type Lang = 'en' | 'ko';
+export type Language = Lang;
+
+export type Emotion = 'happy' | 'stressed' | 'anxious' | 'sad' | 'tired' | 'confused';
+
+export const EMOTION_LABELS: Record<Emotion, Record<Language, string>> = {
+    happy:    { en: 'Happy',    ko: '행복해요' },
+    stressed: { en: 'Stressed', ko: '스트레스' },
+    anxious:  { en: 'Anxious',  ko: '불안해요' },
+    sad:      { en: 'Sad',      ko: '슬퍼요' },
+    tired:    { en: 'Tired',    ko: '피곤해요' },
+    confused: { en: 'Confused', ko: '혼란스러워요' },
+};
+
+export interface ChatSession {
+    sessionId: string;
+    messages: ChatMessage[];
+    startedAt?: string | number;
+}
 
 export interface Character {
     userId: string;
@@ -27,6 +45,7 @@ export interface Character {
 export interface QuickReply {
     id: string;
     label: string;
+    emotion?: string;
 }
 
 export interface ChatMessage {

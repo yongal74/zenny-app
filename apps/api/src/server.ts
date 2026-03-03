@@ -30,7 +30,10 @@ app.use(express.json({ limit: '10mb' }));
 app.use(rateLimit({ windowMs: 60_000, max: 200, standardHeaders: true }));
 
 async function start() {
-  await setupAuth(app);
+  // Replit Auth은 Replit 환경에서만 활성화
+  if (process.env.REPL_ID) {
+    await setupAuth(app);
+  }
 
   app.use('/api/auth', authRouter);
   app.use('/api/coach', authMiddleware, coachRouter);

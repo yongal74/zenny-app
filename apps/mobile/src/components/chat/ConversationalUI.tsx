@@ -54,7 +54,7 @@ const MessageBubble: React.FC<{ message: ChatMessage; onQuickReply: (r: QuickRep
         >
             {/* AI 헤더 */}
             {!isUser && (
-                <Text style={styles.aiHeader}>Zen AI · {formatTime(message.timestamp)}</Text>
+                <Text style={styles.aiHeader}>Zen AI · {formatTime(String(message.timestamp))}</Text>
             )}
 
             {/* 박스형 메시지 */}

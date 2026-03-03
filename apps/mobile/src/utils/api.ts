@@ -11,7 +11,7 @@ function getApiBase(): string {
     return window.location.origin + '/api';
   }
 
-  return 'http://localhost:3000/api';
+  return 'http://172.30.1.29:5000/api';
 }
 
 export const API_BASE = getApiBase();

@@ -8,10 +8,10 @@ const CHARACTER_EXP_THRESHOLDS = [
   0,    // Level 1
   100,  // Level 2
   250,  // Level 3
-  450,  // Level 4
-  700,  // Level 5
-  1000, // Level 6
-  1400, // Level 7
+  500,  // Level 4
+  800,  // Level 5
+  1200, // Level 6
+  2000, // Level 7
 ];
 
 function calculateLevel(exp: number): number {

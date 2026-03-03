@@ -25,6 +25,7 @@
     "web": {
       "bundler": "metro"
     },
+    "scheme": "zenny",
     "plugins": [
       "expo-font"
     ]

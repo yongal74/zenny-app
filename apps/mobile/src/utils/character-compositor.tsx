@@ -14,7 +14,7 @@
 
 import React from 'react';
 import { View, Image, StyleSheet, ImageStyle, ViewStyle } from 'react-native';
-import type { CharacterType, ItemSlot } from '../../types';
+import type { CharacterType, ItemSlot } from '../types';
 
 // CDN 베이스 URL (실제 배포 시 교체)
 const CDN = process.env.EXPO_PUBLIC_CDN_URL ?? 'https://cdn.zenny.app/characters';
