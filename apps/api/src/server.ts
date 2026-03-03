@@ -5,7 +5,6 @@ import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
-import { setupAuth } from './replit-auth/replitAuth';
 import { authRouter } from './routes/auth.routes';
 import { coachRouter } from './routes/coach.routes';
 import { characterRouter } from './routes/character.routes';
@@ -33,6 +32,7 @@ app.use(rateLimit({ windowMs: 60_000, max: 200, standardHeaders: true }));
 async function start() {
   // Replit Auth은 Replit 환경에서만 활성화
   if (process.env.REPL_ID) {
+    const { setupAuth } = await import('./replit-auth/replitAuth');
     await setupAuth(app);
   }
 
