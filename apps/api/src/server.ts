@@ -18,9 +18,10 @@ import { errorHandler } from './middleware/error.middleware';
 
 dotenv.config();
 
-// DB URL 디버그 (첫 20자만 출력)
-const dbUrl = process.env.DATABASE_URL || '';
-console.log('[DEBUG] DATABASE_URL starts with:', dbUrl.substring(0, 40));
+// 줄바꿈/공백 제거 (Railway Variables 붙여넣기 오류 방지)
+if (process.env.DATABASE_URL) {
+  process.env.DATABASE_URL = process.env.DATABASE_URL.replace(/\s+/g, '');
+}
 
 const PORT = 5000;
 const DIST_DIR = path.resolve(__dirname, '../../mobile/dist');
