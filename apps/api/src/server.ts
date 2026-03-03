@@ -18,6 +18,10 @@ import { errorHandler } from './middleware/error.middleware';
 
 dotenv.config();
 
+// DB URL 디버그 (첫 20자만 출력)
+const dbUrl = process.env.DATABASE_URL || '';
+console.log('[DEBUG] DATABASE_URL starts with:', dbUrl.substring(0, 40));
+
 const PORT = 5000;
 const DIST_DIR = path.resolve(__dirname, '../../mobile/dist');
 
