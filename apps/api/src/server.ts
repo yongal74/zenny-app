@@ -1,5 +1,6 @@
 import express from 'express';
 import path from 'path';
+import fs from 'fs';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
@@ -48,11 +49,13 @@ async function start() {
 
   app.use(errorHandler);
 
-  app.use(express.static(DIST_DIR));
-
-  app.get('*', (_req, res) => {
-    res.sendFile(path.join(DIST_DIR, 'index.html'));
-  });
+  // 웹 빌드가 있을 때만 정적 파일 서빙 (Expo Go 테스트 시에는 불필요)
+  if (fs.existsSync(DIST_DIR)) {
+    app.use(express.static(DIST_DIR));
+    app.get('*', (_req, res) => {
+      res.sendFile(path.join(DIST_DIR, 'index.html'));
+    });
+  }
 
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`Zenny running on http://0.0.0.0:${PORT}`);
