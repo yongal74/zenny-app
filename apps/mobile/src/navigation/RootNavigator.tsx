@@ -62,22 +62,22 @@ function MainTabs() {
       <MainTab.Screen
         name="Home"
         component={HomeScreen}
-        options={{ tabBarLabel: '홈', tabBarIcon: ({ focused }) => <TabIcon label="🏠" focused={focused} /> }}
+        options={{ tabBarLabel: 'Home', tabBarIcon: ({ focused }) => <TabIcon label="🏠" focused={focused} /> }}
       />
       <MainTab.Screen
         name="Quest"
         component={QuestScreen}
-        options={{ tabBarLabel: '퀘스트', tabBarIcon: ({ focused }) => <TabIcon label="✦" focused={focused} /> }}
+        options={{ tabBarLabel: 'Quests', tabBarIcon: ({ focused }) => <TabIcon label="✦" focused={focused} /> }}
       />
       <MainTab.Screen
         name="Meditation"
         component={MeditationScreen}
-        options={{ tabBarLabel: '명상', tabBarIcon: ({ focused }) => <TabIcon label="🧘" focused={focused} /> }}
+        options={{ tabBarLabel: 'Meditation', tabBarIcon: ({ focused }) => <TabIcon label="🧘" focused={focused} /> }}
       />
       <MainTab.Screen
         name="Shop"
         component={ShopScreen}
-        options={{ tabBarLabel: '상점', tabBarIcon: ({ focused }) => <TabIcon label="💎" focused={focused} /> }}
+        options={{ tabBarLabel: 'Shop', tabBarIcon: ({ focused }) => <TabIcon label="💎" focused={focused} /> }}
       />
     </MainTab.Navigator>
   );

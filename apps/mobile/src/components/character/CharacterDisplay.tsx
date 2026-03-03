@@ -113,7 +113,7 @@ export function CharacterDisplay({ characterType, level, bgTheme, equippedItems,
             {characterType.charAt(0).toUpperCase() + characterType.slice(1)}
           </Text>
           <View style={styles.levelBadge}>
-            <Text style={styles.levelText}>Lv.{level} {levelName.ko}</Text>
+            <Text style={styles.levelText}>Lv.{level} {levelName.en}</Text>
           </View>
         </>
       )}
@@ -122,7 +122,7 @@ export function CharacterDisplay({ characterType, level, bgTheme, equippedItems,
 }
 
 const styles = StyleSheet.create({
-  wrapper: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 6 },
+  wrapper: { width: '100%', minHeight: 220, justifyContent: 'center', alignItems: 'center', gap: 6 },
   outerRing: { position: 'absolute' },
   midRing: { position: 'absolute', borderWidth: 1.5, backgroundColor: 'transparent' },
   characterBody: {

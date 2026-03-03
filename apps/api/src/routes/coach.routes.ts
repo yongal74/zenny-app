@@ -11,7 +11,7 @@ router.post('/session/start', async (req: Request, res: Response) => {
   const { lang: reqLang, characterType: reqChar } = req.body as { lang?: string; characterType?: string };
 
   const user = await prisma.user.findUnique({ where: { id: userId } });
-  const lang = (reqLang || user?.lang || 'ko') as Language;
+  const lang = (reqLang || user?.lang || 'en') as Language;
   const characterType = reqChar || 'hana';
 
   const { response, quickReplies } = await generateCoachResponse({
@@ -40,7 +40,7 @@ router.post('/chat', async (req: Request, res: Response) => {
   const { message, lang: reqLang, characterType, history: clientHistory, turnCount: clientTurnCount } = req.body;
 
   const user = await prisma.user.findUnique({ where: { id: userId } });
-  const lang = (reqLang || user?.lang || 'ko') as Language;
+  const lang = (reqLang || user?.lang || 'en') as Language;
   const charType = characterType || 'hana';
 
   const history = (clientHistory || []) as ChatMessage[];
@@ -60,10 +60,8 @@ router.post('/chat', async (req: Request, res: Response) => {
   } catch (err: any) {
     console.error('Coach chat error:', err);
     return res.status(500).json({
-      error: 'AI 응답 생성에 실패했습니다.',
-      response: lang === 'ko'
-        ? '죄송해요, 잠시 문제가 생겼어요. 다시 시도해주세요 🌟'
-        : 'Sorry, something went wrong. Please try again 🌟',
+      error: 'AI response failed.',
+      response: 'Sorry, something went wrong. Please try again 🌟',
     });
   }
 });

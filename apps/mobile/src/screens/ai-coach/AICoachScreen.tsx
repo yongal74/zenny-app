@@ -15,18 +15,19 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS } from '../../constants/colors';
 import { CharacterDisplay } from '../../components/character/CharacterDisplay';
-import { LanguageToggle } from '../../components/common/LanguageToggle';
 import { QuickReplyGrid } from '../../components/chat/QuickReplyGrid';
 import { useCharacterStore } from '../../stores/characterStore';
 import { useChatStore } from '../../stores/chatStore';
 import { generateAIResponse } from '../../services/coach.service';
+import { useNavigation } from '@react-navigation/native';
 import type { ChatMessage, QuickReply, Language } from '../../types';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 const CHARACTER_ZONE = SCREEN_HEIGHT * 0.38;
 
 export function AICoachScreen() {
-  const { character, lang, setLang } = useCharacterStore();
+  const { character, lang } = useCharacterStore();
+  const navigation = useNavigation();
   const { currentSession, addMessage, turnCount, startSession } = useChatStore();
   const [inputText, setInputText] = useState('');
   const [loading, setLoading] = useState(false);
@@ -110,7 +111,9 @@ export function AICoachScreen() {
               <Text style={styles.coinsIcon}>✦</Text>
               <Text style={styles.coinsAmount}>{useCharacterStore.getState().zenCoins}</Text>
             </View>
-            <LanguageToggle lang={lang} onToggle={setLang} />
+            <TouchableOpacity onPress={() => navigation.goBack()} style={styles.closeBtn} activeOpacity={0.8}>
+              <Text style={styles.closeBtnText}>✕ Close</Text>
+            </TouchableOpacity>
           </View>
 
           <CharacterDisplay
@@ -227,6 +230,8 @@ const styles = StyleSheet.create({
   },
   coinsIcon: { fontSize: 13, color: COLORS.gold },
   coinsAmount: { fontSize: 14, fontFamily: 'DMSans_700Bold', color: COLORS.gold },
+  closeBtn: { paddingHorizontal: 14, paddingVertical: 6, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.12)' },
+  closeBtnText: { fontSize: 13, color: COLORS.text, fontFamily: 'DMSans_600SemiBold' },
 
   chatZone: { flex: 1, backgroundColor: COLORS.bg },
   chatScroll: { flex: 1 },
