@@ -1,10 +1,7 @@
-run = "node gateway.js & cd apps/api && npm run dev & cd ../mobile && npx expo start --host tunnel"
+run = "cd apps/api && npm run dev"
 
 [nix]
 channel = "stable-24_05"
-
-[deployment]
-run = ["sh", "-c", "node gateway.js & cd apps/api && npm start & cd ../mobile && npx expo start --host tunnel"]
 
 [[ports]]
 localPort = 5000
