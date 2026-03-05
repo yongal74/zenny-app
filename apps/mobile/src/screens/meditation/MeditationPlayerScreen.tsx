@@ -1,24 +1,47 @@
+/**
+ * MeditationPlayerScreen — 세션 C: Dark Aurora + 타입별 색상 + 완료 리워드 모달
+ *
+ * 변경:
+ * - 배경: aurora1 그라데이션
+ * - TYPE_COLOR: breathing=teal / guided=purple / nature=green / bodyscan=blue
+ * - outerGlow, breathCircle, progressBarFill, playBtn → 타입별 색상
+ * - rewardBanner → full-screen gold 강조 Modal
+ */
 import React, { useState, useRef, useEffect } from 'react';
 import {
     View, Text, TouchableOpacity, StyleSheet,
-    Animated, Dimensions, Platform,
+    Animated, Dimensions, Modal,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Audio } from 'expo-av';
 import * as Haptics from 'expo-haptics';
-import { COLORS } from '../../constants/colors';
+import { theme } from '../../constants/theme';
 import { useCharacterStore } from '../../stores/characterStore';
 import { apiClient } from '../../utils/api';
 import type { MeditationTrack } from '../../types';
 
 const { width: W } = Dimensions.get('window');
 
+// 타입별 시그니처 색상 (A6 스펙)
+const TYPE_COLOR: Record<string, string> = {
+    breathing: '#2DD4BF',
+    guided:    '#7C3AED',
+    nature:    '#50B464',
+    bodyscan:  '#40A4DF',
+};
+const TYPE_GLOW: Record<string, string> = {
+    breathing: 'rgba(45,212,191,0.14)',
+    guided:    'rgba(124,58,237,0.14)',
+    nature:    'rgba(80,180,100,0.14)',
+    bodyscan:  'rgba(64,164,223,0.14)',
+};
+
 // 호흡 유형별 타이밍 (초)
 const BREATH_PATTERNS = {
-    box: { label: 'Box Breathing', phases: ['Inhale', 'Hold', 'Exhale', 'Hold'], durations: [4, 4, 4, 4] },
-    '4-7-8': { label: '4-7-8 Breathing', phases: ['Inhale', 'Hold', 'Exhale'], durations: [4, 7, 8] },
-    coherent: { label: 'Coherent', phases: ['Inhale', 'Exhale'], durations: [5, 5] },
+    box:       { label: 'Box Breathing', phases: ['Inhale', 'Hold', 'Exhale', 'Hold'], durations: [4, 4, 4, 4] },
+    '4-7-8':   { label: '4-7-8 Breathing', phases: ['Inhale', 'Hold', 'Exhale'], durations: [4, 7, 8] },
+    coherent:  { label: 'Coherent', phases: ['Inhale', 'Exhale'], durations: [5, 5] },
     pranayama: { label: 'Pranayama', phases: ['Inhale', 'Hold', 'Exhale', 'Hold'], durations: [4, 16, 8, 0] },
 };
 
@@ -34,35 +57,54 @@ export function MeditationPlayerScreen({ track, onClose, lang = 'en' }: Meditati
     const [elapsed, setElapsed] = useState(0);
     const [breathPhase, setBreathPhase] = useState(0);
     const [breathPatternKey, setBreathPatternKey] = useState<keyof typeof BREATH_PATTERNS>('box');
-    const [showBreath, setShowBreath] = useState(track.type === 'breathing');
+    const [showBreath] = useState(track.type === 'breathing');
     const [rewardResult, setRewardResult] = useState<{ coinsGained: number; expGained: number } | null>(null);
     const [rewardClaimed, setRewardClaimed] = useState(false);
+    const [showRewardModal, setShowRewardModal] = useState(false);
 
     const soundRef = useRef<Audio.Sound | null>(null);
     const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-    const breathIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+    const breathIntervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    // 글로우 애니메이션
+    // 타입별 색상
+    const typeColor = TYPE_COLOR[track.type] ?? theme.colors.purple;
+    const typeGlow = TYPE_GLOW[track.type] ?? 'rgba(124,58,237,0.14)';
+
+    // 애니메이션
     const glowAnim = useRef(new Animated.Value(0.8)).current;
     const breathAnim = useRef(new Animated.Value(1)).current;
+    const rewardScaleAnim = useRef(new Animated.Value(0.7)).current;
+    const rewardOpacityAnim = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
         return () => {
             soundRef.current?.unloadAsync();
             if (intervalRef.current) clearInterval(intervalRef.current);
-            if (breathIntervalRef.current) clearInterval(breathIntervalRef.current);
+            if (breathIntervalRef.current) clearTimeout(breathIntervalRef.current);
         };
     }, []);
 
     useEffect(() => {
-        // 글로우 루프
         Animated.loop(
             Animated.sequence([
-                Animated.timing(glowAnim, { toValue: 1.1, duration: 2000, useNativeDriver: true }),
-                Animated.timing(glowAnim, { toValue: 0.8, duration: 2000, useNativeDriver: true }),
+                Animated.timing(glowAnim, { toValue: 1.15, duration: 2200, useNativeDriver: true }),
+                Animated.timing(glowAnim, { toValue: 0.8, duration: 2200, useNativeDriver: true }),
             ])
         ).start();
     }, []);
+
+    // 리워드 모달 열릴 때 spring 애니메이션
+    useEffect(() => {
+        if (showRewardModal) {
+            Animated.parallel([
+                Animated.spring(rewardScaleAnim, { toValue: 1, useNativeDriver: true, tension: 65, friction: 8 }),
+                Animated.timing(rewardOpacityAnim, { toValue: 1, duration: 250, useNativeDriver: true }),
+            ]).start();
+        } else {
+            rewardScaleAnim.setValue(0.7);
+            rewardOpacityAnim.setValue(0);
+        }
+    }, [showRewardModal]);
 
     const claimReward = async () => {
         if (rewardClaimed) return;
@@ -73,12 +115,11 @@ export function MeditationPlayerScreen({ track, onClose, lang = 'en' }: Meditati
                 trackType: track.type,
             });
             updateExp(data.expGained ?? 0);
-            if (data.totalCoins !== undefined) {
-                setZenCoins(data.totalCoins);
-            }
+            if (data.totalCoins !== undefined) setZenCoins(data.totalCoins);
             setRewardResult({ coinsGained: data.coinsGained, expGained: data.expGained });
-        } catch (e: any) {
-            // 이미 오늘 완료한 경우 (409) 등 무시
+            setShowRewardModal(true);
+        } catch {
+            // 409 (already claimed today) 등 무시
         }
     };
 
@@ -88,11 +129,7 @@ export function MeditationPlayerScreen({ track, onClose, lang = 'en' }: Meditati
         const isInhale = phase === 0;
         const isExhale = pattern.phases[phase] === 'Exhale';
         const scale = isInhale ? 1.3 : isExhale ? 0.85 : 1.0;
-        Animated.timing(breathAnim, {
-            toValue: scale,
-            duration: duration * 900,
-            useNativeDriver: true,
-        }).start();
+        Animated.timing(breathAnim, { toValue: scale, duration: duration * 900, useNativeDriver: true }).start();
     };
 
     const startBreathCycle = () => {
@@ -112,13 +149,11 @@ export function MeditationPlayerScreen({ track, onClose, lang = 'en' }: Meditati
 
     const togglePlay = async () => {
         if (playing) {
-            // 일시정지
             await soundRef.current?.pauseAsync();
             if (intervalRef.current) clearInterval(intervalRef.current);
             if (breathIntervalRef.current) clearTimeout(breathIntervalRef.current);
             setPlaying(false);
         } else {
-            // 재생
             if (!soundRef.current && track.audioUrl) {
                 const { sound } = await Audio.Sound.createAsync(
                     { uri: track.audioUrl },
@@ -128,7 +163,6 @@ export function MeditationPlayerScreen({ track, onClose, lang = 'en' }: Meditati
             } else {
                 await soundRef.current?.playAsync();
             }
-            // 타이머
             intervalRef.current = setInterval(() => {
                 setElapsed((e) => {
                     if (e >= track.duration) {
@@ -148,32 +182,29 @@ export function MeditationPlayerScreen({ track, onClose, lang = 'en' }: Meditati
     const progress = elapsed / (track.duration || 120);
     const remainSec = Math.max(0, (track.duration || 120) - elapsed);
     const remainStr = `${String(Math.floor(remainSec / 60)).padStart(2, '0')}:${String(remainSec % 60).padStart(2, '0')}`;
-
     const currentPhase = pattern.phases[breathPhase] ?? '';
     const phaseKo: Record<string, string> = { Inhale: '들이쉬기', Hold: '멈추기', Exhale: '내쉬기' };
 
     return (
         <SafeAreaView style={s.safe} edges={['top', 'bottom']}>
-            <LinearGradient colors={[...COLORS.gradient.header]} style={s.container}>
+            <LinearGradient colors={theme.gradients.aurora1} start={{ x: 0.3, y: 0 }} end={{ x: 0.7, y: 1 }} style={s.container}>
                 {/* 헤더 */}
                 <View style={s.header}>
                     <TouchableOpacity onPress={onClose} style={s.closeBtn}>
                         <Text style={s.closeText}>✕</Text>
                     </TouchableOpacity>
-                    <Text style={s.trackType}>{track.type.toUpperCase()}</Text>
-                    <View style={{ width: 36 }} />
+                    <Text style={[s.trackType, { color: typeColor }]}>{track.type.toUpperCase()}</Text>
+                    <View style={{ width: 44 }} />
                 </View>
 
                 {/* 글로우 원 + 호흡 애니메이션 */}
                 <View style={s.centerArea}>
-                    <Animated.View style={[s.outerGlow, { transform: [{ scale: glowAnim }] }]} />
-                    <Animated.View style={[s.breathCircle, { transform: [{ scale: breathAnim }] }]}>
+                    <Animated.View style={[s.outerGlow, { backgroundColor: typeGlow, transform: [{ scale: glowAnim }] }]} />
+                    <Animated.View style={[s.breathCircle, { borderColor: typeColor + '40', transform: [{ scale: breathAnim }] }]}>
                         <Text style={s.breathEmoji}>✿</Text>
                     </Animated.View>
-
-                    {/* 호흡 단계 텍스트 */}
                     {showBreath && playing && (
-                        <Text style={s.phaseText}>
+                        <Text style={[s.phaseText, { color: typeColor }]}>
                             {lang === 'ko' ? (phaseKo[currentPhase] ?? currentPhase) : currentPhase}
                         </Text>
                     )}
@@ -187,19 +218,19 @@ export function MeditationPlayerScreen({ track, onClose, lang = 'en' }: Meditati
 
                 {/* 진행 바 */}
                 <View style={s.progressBarBg}>
-                    <Animated.View style={[s.progressBarFill, { width: `${Math.round(progress * 100)}%` }]} />
+                    <View style={[s.progressBarFill, { width: `${Math.round(progress * 100)}%`, backgroundColor: typeColor }]} />
                 </View>
 
-                {/* 호흡법 선택 (breathing 타입일 때) */}
+                {/* 호흡법 선택 */}
                 {track.type === 'breathing' && (
                     <View style={s.patternRow}>
                         {(Object.keys(BREATH_PATTERNS) as Array<keyof typeof BREATH_PATTERNS>).map((key) => (
                             <TouchableOpacity
                                 key={key}
-                                style={[s.patternBtn, breathPatternKey === key && s.patternBtnActive]}
+                                style={[s.patternBtn, breathPatternKey === key && { backgroundColor: typeColor + '25', borderColor: typeColor + '80' }]}
                                 onPress={() => setBreathPatternKey(key)}
                             >
-                                <Text style={[s.patternText, breathPatternKey === key && s.patternTextActive]}>
+                                <Text style={[s.patternText, breathPatternKey === key && { color: typeColor }]}>
                                     {BREATH_PATTERNS[key].label}
                                 </Text>
                             </TouchableOpacity>
@@ -209,20 +240,13 @@ export function MeditationPlayerScreen({ track, onClose, lang = 'en' }: Meditati
 
                 {/* 컨트롤 */}
                 <View style={s.controls}>
-                    {/* 재생/정지 */}
-                    <TouchableOpacity style={s.playBtn} onPress={togglePlay} activeOpacity={0.85}>
+                    <TouchableOpacity style={[s.playBtn, { backgroundColor: typeColor }]} onPress={togglePlay} activeOpacity={0.85}>
                         <Text style={s.playIcon}>{playing ? '⏸' : '▶'}</Text>
                     </TouchableOpacity>
                 </View>
 
-                {/* 완료 리워드 알림 */}
-                {rewardResult ? (
-                    <View style={s.rewardBanner}>
-                        <Text style={s.rewardBannerText}>
-                            ✨ +{rewardResult.coinsGained} Coins · +{rewardResult.expGained} EXP
-                        </Text>
-                    </View>
-                ) : (
+                {/* 힌트 */}
+                {!rewardResult && (
                     <Text style={s.hint}>
                         {lang === 'ko'
                             ? `완료 시 ${track.type === 'breathing' ? 30 : 50} Zen Coins 지급`
@@ -230,44 +254,160 @@ export function MeditationPlayerScreen({ track, onClose, lang = 'en' }: Meditati
                     </Text>
                 )}
             </LinearGradient>
+
+            {/* ─── 완료 리워드 모달 (gold 강조) ─────────────────────── */}
+            <Modal visible={showRewardModal} transparent animationType="none">
+                <View style={s.modalOverlay}>
+                    <Animated.View style={[s.rewardModal, { transform: [{ scale: rewardScaleAnim }], opacity: rewardOpacityAnim }]}>
+                        {/* 별 글로우 */}
+                        <Text style={s.rewardStar}>✦</Text>
+                        <Text style={s.rewardTitle}>
+                            {lang === 'ko' ? '명상 완료!' : 'Session Complete!'}
+                        </Text>
+                        <Text style={s.rewardSub}>
+                            {lang === 'ko' ? '잘 하셨어요. 마음이 한결 가벼워졌을 거예요.' : 'Well done. Your mind is clearer now.'}
+                        </Text>
+
+                        {/* 보상 수치 */}
+                        <View style={s.rewardNumbers}>
+                            <View style={s.rewardItem}>
+                                <Text style={s.rewardValue}>+{rewardResult?.coinsGained ?? 0}</Text>
+                                <Text style={s.rewardLabel}>Zen Coins</Text>
+                            </View>
+                            <View style={s.rewardDivider} />
+                            <View style={s.rewardItem}>
+                                <Text style={s.rewardValue}>+{rewardResult?.expGained ?? 0}</Text>
+                                <Text style={s.rewardLabel}>EXP</Text>
+                            </View>
+                        </View>
+
+                        <TouchableOpacity
+                            style={s.rewardCloseBtn}
+                            onPress={() => { setShowRewardModal(false); onClose(); }}
+                            activeOpacity={0.85}
+                        >
+                            <Text style={s.rewardCloseBtnText}>
+                                {lang === 'ko' ? '확인' : 'Done'}
+                            </Text>
+                        </TouchableOpacity>
+                    </Animated.View>
+                </View>
+            </Modal>
         </SafeAreaView>
     );
 }
 
 const CIRCLE = W * 0.52;
+
 const s = StyleSheet.create({
-    safe: { flex: 1, backgroundColor: COLORS.bg },
+    safe: { flex: 1, backgroundColor: theme.colors.bg },
     container: { flex: 1, alignItems: 'center', paddingHorizontal: 24 },
 
-    header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '100%', paddingTop: 16, paddingBottom: 8 },
-    closeBtn: { width: 36, height: 36, backgroundColor: COLORS.surface, borderRadius: 18, justifyContent: 'center', alignItems: 'center' },
-    closeText: { fontSize: 13, color: COLORS.text2, fontWeight: '600' },
-    trackType: { fontSize: 11, letterSpacing: 2, color: COLORS.text3, fontFamily: 'DMSans_600SemiBold' },
+    header: {
+        flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+        width: '100%', paddingTop: 16, paddingBottom: 8,
+    },
+    closeBtn: {
+        width: 44, height: 44, backgroundColor: 'rgba(255,255,255,0.08)',
+        borderRadius: 22, justifyContent: 'center', alignItems: 'center',
+    },
+    closeText: { fontSize: 13, color: theme.colors.text.secondary, fontWeight: '600' },
+    trackType: { fontSize: 12, letterSpacing: 2, fontFamily: 'DMSans_600SemiBold' },
 
     centerArea: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-    outerGlow: { position: 'absolute', width: CIRCLE + 60, height: CIRCLE + 60, borderRadius: (CIRCLE + 60) / 2, backgroundColor: 'rgba(200,200,240,0.05)' },
-    breathCircle: { width: CIRCLE, height: CIRCLE, borderRadius: CIRCLE / 2, backgroundColor: COLORS.surface, justifyContent: 'center', alignItems: 'center', borderWidth: 2, borderColor: 'rgba(200,200,240,0.15)' },
+    outerGlow: {
+        position: 'absolute',
+        width: CIRCLE + 80, height: CIRCLE + 80,
+        borderRadius: (CIRCLE + 80) / 2,
+    },
+    breathCircle: {
+        width: CIRCLE, height: CIRCLE, borderRadius: CIRCLE / 2,
+        backgroundColor: 'rgba(25,25,31,0.8)',
+        justifyContent: 'center', alignItems: 'center',
+        borderWidth: 2,
+    },
     breathEmoji: { fontSize: 64 },
-    phaseText: { position: 'absolute', bottom: -40, fontSize: 18, fontFamily: 'Fraunces_500Medium', color: COLORS.text },
+    phaseText: {
+        position: 'absolute', bottom: -44,
+        fontSize: 18, fontFamily: 'Fraunces_500Medium',
+    },
 
     trackInfo: { alignItems: 'center', gap: 6, marginBottom: 16 },
-    trackTitle: { fontSize: 20, fontFamily: 'Fraunces_500Medium', color: COLORS.text, textAlign: 'center' },
-    trackDuration: { fontSize: 32, fontFamily: 'DMSans_700Bold', color: COLORS.text, letterSpacing: 2 },
+    trackTitle: { fontSize: 20, fontFamily: 'Fraunces_500Medium', color: theme.colors.text.primary, textAlign: 'center' },
+    trackDuration: { fontSize: 32, fontFamily: 'DMSans_700Bold', color: theme.colors.text.primary, letterSpacing: 2 },
 
-    progressBarBg: { width: '100%', height: 4, backgroundColor: COLORS.border, borderRadius: 2, marginBottom: 16 },
-    progressBarFill: { height: '100%', backgroundColor: COLORS.primary, borderRadius: 2 },
+    progressBarBg: { width: '100%', height: 4, backgroundColor: theme.colors.border, borderRadius: 2, marginBottom: 16 },
+    progressBarFill: { height: '100%', borderRadius: 2 },
 
     patternRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, justifyContent: 'center', marginBottom: 20 },
-    patternBtn: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 12, backgroundColor: COLORS.surface, borderWidth: 1, borderColor: COLORS.border },
-    patternBtnActive: { backgroundColor: COLORS.primary, borderColor: COLORS.primary },
-    patternText: { fontSize: 11, color: COLORS.text3, fontFamily: 'DMSans_600SemiBold' },
-    patternTextActive: { color: COLORS.text },
+    patternBtn: {
+        paddingHorizontal: 12, paddingVertical: 10, borderRadius: 12,
+        backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.border,
+        minHeight: theme.minTouchTarget, justifyContent: 'center',
+    },
+    patternText: { fontSize: 12, color: theme.colors.text.tertiary, fontFamily: 'DMSans_600SemiBold' },
 
     controls: { marginBottom: 24 },
-    playBtn: { width: 72, height: 72, borderRadius: 36, backgroundColor: COLORS.primary, justifyContent: 'center', alignItems: 'center' },
-    playIcon: { fontSize: 28, color: COLORS.text },
+    playBtn: { width: 72, height: 72, borderRadius: 36, justifyContent: 'center', alignItems: 'center' },
+    playIcon: { fontSize: 28, color: '#FFFFFF' },
 
-    hint: { fontSize: 12, color: COLORS.text3, fontFamily: 'DMSans_400Regular', marginBottom: 16, textAlign: 'center' },
-    rewardBanner: { backgroundColor: 'rgba(200,168,96,0.2)', borderRadius: 12, paddingHorizontal: 20, paddingVertical: 10, marginBottom: 16, borderWidth: 1, borderColor: 'rgba(200,168,96,0.4)' },
-    rewardBannerText: { fontSize: 15, fontFamily: 'DMSans_700Bold', color: COLORS.gold, textAlign: 'center' },
+    hint: {
+        fontSize: 12, color: theme.colors.text.tertiary,
+        fontFamily: 'DMSans_400Regular', marginBottom: 16, textAlign: 'center',
+    },
+
+    // ── 완료 리워드 모달 ──────────────────────────────────────
+    modalOverlay: {
+        flex: 1, backgroundColor: 'rgba(0,0,0,0.75)',
+        justifyContent: 'center', alignItems: 'center',
+        paddingHorizontal: 32,
+    },
+    rewardModal: {
+        width: '100%',
+        backgroundColor: theme.colors.surface,
+        borderRadius: theme.radius.xxl,
+        padding: 32,
+        alignItems: 'center',
+        gap: 12,
+        borderWidth: 1.5,
+        borderColor: 'rgba(200,168,96,0.30)',
+    },
+    rewardStar: { fontSize: 40, color: theme.colors.gold },
+    rewardTitle: {
+        ...theme.typography.h2,
+        color: theme.colors.text.primary,
+        textAlign: 'center',
+    },
+    rewardSub: {
+        ...theme.typography.body2,
+        color: theme.colors.text.secondary,
+        textAlign: 'center',
+        lineHeight: 22,
+    },
+    rewardNumbers: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: 'rgba(200,168,96,0.10)',
+        borderRadius: theme.radius.lg,
+        borderWidth: 1,
+        borderColor: 'rgba(200,168,96,0.25)',
+        paddingVertical: 16,
+        paddingHorizontal: 24,
+        marginTop: 8,
+        gap: 24,
+    },
+    rewardItem: { alignItems: 'center', gap: 4 },
+    rewardValue: { fontSize: 28, fontFamily: 'DMSans_700Bold', color: theme.colors.gold },
+    rewardLabel: { ...theme.typography.labelSm, color: theme.colors.text.tertiary },
+    rewardDivider: { width: 1, height: 40, backgroundColor: 'rgba(200,168,96,0.25)' },
+    rewardCloseBtn: {
+        width: '100%',
+        backgroundColor: theme.colors.gold,
+        borderRadius: theme.radius.md,
+        paddingVertical: 14,
+        alignItems: 'center',
+        marginTop: 8,
+        minHeight: theme.minTouchTarget,
+    },
+    rewardCloseBtnText: { ...theme.typography.bold1, color: theme.colors.bg },
 });

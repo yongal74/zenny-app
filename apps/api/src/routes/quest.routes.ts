@@ -45,18 +45,29 @@ router.get('/', async (req: Request, res: Response) => {
 router.post('/:questId/complete', async (req: Request, res: Response) => {
     const { userId } = req as any;
     const { questId } = req.params;
+    console.warn(`[Zenny:Quest] complete attempt — userId=${userId} questId=${questId}`);
 
     const userQuest = await prisma.userQuest.findFirst({
         where: { id: questId, userId, completedAt: null },
         include: { quest: true },
     });
-    if (!userQuest) return res.status(404).json({ error: 'Quest not found or already completed' });
+    if (!userQuest) {
+        console.warn(`[Zenny:Quest] 404 — quest not found or already completed questId=${questId}`);
+        return res.status(404).json({ error: 'Quest not found or already completed' });
+    }
 
     const { coinsReward, expReward } = userQuest.quest;
 
+    // Mood bonus: hunger >= 70이면 +20% coins ("Happy Bonus")
+    const char = await prisma.character.findUnique({ where: { userId } });
+    const hoursSinceFed = char ? (Date.now() - char.lastFedAt.getTime()) / (1000 * 60 * 60) : 24;
+    const currentHunger = char ? Math.max(0, char.hunger - Math.floor(hoursSinceFed / 12) * 30) : 0;
+    const moodBonus = currentHunger >= 70;
+    const finalCoins = moodBonus ? Math.round(coinsReward * 1.2) : coinsReward;
+
     const [, user, character] = await Promise.all([
         prisma.userQuest.update({ where: { id: questId }, data: { completedAt: new Date(), progress: userQuest.quest.target } }),
-        prisma.user.update({ where: { id: userId }, data: { zenCoins: { increment: coinsReward } } }),
+        prisma.user.update({ where: { id: userId }, data: { zenCoins: { increment: finalCoins } } }),
         prisma.character.update({ where: { userId }, data: { exp: { increment: expReward } } }),
     ]);
 
@@ -72,7 +83,8 @@ router.post('/:questId/complete', async (req: Request, res: Response) => {
         isLevelUp = true;
     }
 
-    return res.json({ coinsGained: coinsReward, expGained: expReward, totalCoins: user.zenCoins, isLevelUp, newLevel });
+    console.warn(`[Zenny:Quest] complete OK — userId=${userId} questId=${questId} exp+${expReward} coins+${finalCoins} moodBonus=${moodBonus} isLevelUp=${isLevelUp} newLevel=${newLevel}`);
+    return res.json({ coinsGained: finalCoins, expGained: expReward, totalCoins: user.zenCoins, moodBonus, isLevelUp, newLevel });
 });
 
 export { router as questRouter };

@@ -20,6 +20,7 @@ function calcLevel(exp: number): number {
 router.post('/checkin', async (req: Request, res: Response) => {
     const { userId } = req as any;
     const { emotion, text, intensity = 3 } = req.body as { emotion: string; text?: string; intensity?: number };
+    console.warn(`[Zenny:Emotion] checkin attempt — userId=${userId} emotion=${emotion} intensity=${intensity}`);
 
     if (!emotion) return res.status(400).json({ error: 'Emotion required' });
 
@@ -30,6 +31,7 @@ router.post('/checkin', async (req: Request, res: Response) => {
         where: { userId, createdAt: { gte: today, lt: tomorrow } },
     });
     if (todayCount >= 3) {
+        console.warn(`[Zenny:Emotion] 409 — daily limit reached userId=${userId} todayCount=${todayCount}`);
         return res.status(409).json({ error: 'Daily checkin limit reached (3/day)', alreadyClaimed: true });
     }
 
@@ -51,6 +53,7 @@ router.post('/checkin', async (req: Request, res: Response) => {
         isLevelUp = true;
     }
 
+    console.warn(`[Zenny:Emotion] checkin OK — userId=${userId} emotion=${emotion} exp+${expGained} coins+${coinsGained} isLevelUp=${isLevelUp} newLevel=${newLevel}`);
     return res.status(201).json({
         checkinId: checkin.id, emotion,
         coinsGained, expGained,

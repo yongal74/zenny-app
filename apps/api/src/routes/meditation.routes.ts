@@ -38,6 +38,7 @@ router.get('/recommend', async (req: Request, res: Response) => {
 router.post('/complete', async (req: Request, res: Response) => {
   const { userId } = req as any;
   const { trackId, trackType } = req.body as { trackId: string; trackType: string };
+  console.warn(`[Zenny:Meditation] complete attempt — userId=${userId} trackId=${trackId} type=${trackType}`);
 
   if (!trackId || !trackType) {
     return res.status(400).json({ error: 'trackId and trackType are required' });
@@ -50,6 +51,7 @@ router.post('/complete', async (req: Request, res: Response) => {
     where: { userId, trackId, createdAt: { gte: today, lt: tomorrow } },
   });
   if (existing) {
+    console.warn(`[Zenny:Meditation] 409 — already completed today userId=${userId} trackId=${trackId}`);
     return res.status(409).json({ error: 'Already completed today', alreadyClaimed: true });
   }
 
@@ -76,6 +78,7 @@ router.post('/complete', async (req: Request, res: Response) => {
     isLevelUp = true;
   }
 
+  console.warn(`[Zenny:Meditation] complete OK — userId=${userId} exp+${expGained} coins+${coinsGained} isLevelUp=${isLevelUp} newLevel=${newLevel}`);
   return res.status(201).json({
     coinsGained,
     expGained,

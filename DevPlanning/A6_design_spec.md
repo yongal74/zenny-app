@@ -1,151 +1,240 @@
-# Zenny — 디자인 기획서 (A6)
+# A6 — Zenny 디자인 스펙 (2026-03-05 재작성)
 
-생성일: 2026-03-01
-
-> Pencil MCP가 이 파일을 읽어서 UI .pen 파일을 자동 생성
-
----
-
-죄송하지만, 제공된 검색 결과에는 **'Zenny' 앱에 대한 정보가 없습니다**. 검색 결과는 주로 Pencil.dev 디자인 툴의 사용 방법과 기능에 관한 내용만 포함하고 있습니다.
-
-당신이 요청하신 작업을 완료하기 위해서는 다음 정보가 필요합니다:
-
-1. **Zenny 앱의 정의**: 앱의 목적, 타겟 사용자, 핵심 기능
-2. **브랜드 가이드라인**: 색상, 톤앤매너, 레퍼런스 스타일
-3. **기능 명세**: 각 화면의 상세 요구사항
-
-다행히 당신이 제공하신 **[A1 스펙]과 [A2 화면구조]** 문서를 바탕으로, 시니어 PM/풀스택 개발자 관점에서 **Pencil.dev와 호환되는 디자인 기획서**를 작성할 수 있습니다.
-
-아래 형식으로 기획서를 작성해드리겠습니다:
+> 이전 파일 손상으로 완전 재작성.
+> 기준: 실제 구현 코드(`theme.ts`, `CharacterDisplay.tsx`, `AICoachScreen.tsx`) + 사용자 원칙.
 
 ---
 
-# Zenny 디자인 기획서 (Pencil.dev 호환)
+## 1. 디자인 철학
 
-## 1. 디자인 시스템
-
-### 색상 팔레트 (HEX 코드)
-- **Primary**: #6366F1 (Indigo - Zen 철학의 깊이감, 신뢰)
-- **Secondary**: #8B5CF6 (Purple - 명상의 신비로움)
-- **Background**: #FAFAF9 (Warm White - 편안함)
-- **Surface**: #FFFFFF (Pure White - 깔끔함)
-- **Text Primary**: #1F2937 (Dark Gray - 가독성)
-- **Text Secondary**: #6B7280 (Medium Gray - 보조 정보)
-- **Accent/CTA**: #EC4899 (Pink - 감정 표현, 따뜻함)
-- **Error**: #EF4444 (Red - 경고)
-- **Success**: #10B981 (Green - 퀘스트 완료)
-
-### 타이포그래피
-- **폰트 패밀리**: Inter (Google Fonts - 현대적이면서 친근)
-- **H1**: 32px Bold (화면 제목)
-- **H2**: 24px SemiBold (섹션 제목)
-- **H3**: 20px SemiBold (카드 제목)
-- **Body**: 16px Regular (본문)
-- **Body Small**: 14px Regular (설명 텍스트)
-- **Caption**: 12px Regular (라벨, 보조 정보)
-
-### 컴포넌트 목록 (shadcn/ui 기준)
-- **Button** (Primary, Secondary, Ghost, Icon)
-- **Card** (기본, 호버 상태)
-- **Input** (텍스트, 이모지 피커)
-- **Textarea** (감정 일기)
-- **Badge** (퀘스트 상태, 레벨)
-- **Avatar** (Zen 캐릭터)
-- **Progress** (경험치 바, 온보딩 진행도)
-- **Dialog** (모달: 퀘스트 완료, 레벨업)
-- **Tabs** (Zen Shop 카테고리)
-- **Navigation** (하단 탭 네비게이션)
-- **Toast** (알림: 경험치 획득, 아이템 구매)
-- **Skeleton** (로딩 상태)
+**Dark Aurora** — 단순 다크 테마가 아닌, 우주적 깊이감을 가진 그라데이션 + 선명한 글로우 조합.
+- 배경은 어둡지만 캐릭터와 핵심 요소는 생동감 있는 색
+- 보라색 글로우가 앱 전체의 시그니처 색조
+- 웰니스(Calm 스타일) + RPG 성장(다마고치)의 감성 결합
 
 ---
 
-## 2. 화면별 레이아웃 설명
+## 2. 컬러 시스템
 
-### 로그인 화면
-- **레이아웃**: Vertical (중앙 정렬)
-- **헤더**: "Zenny" 로고 + "매일 평온함을 찾아보세요" 서브타이틀
-- **메인 콘텐츠**:
-  - Zen 캐릭터 일러스트 (상단, 200x200px)
-  - "1분만!" 프로그레스 바 (심리적 진입장벽 낮춤)
-  - 소셜 로그인 버튼 3개 (Apple, Google, Email) - 각 56px 높이
-  - "약관 동의" 체크박스 + 링크
-- **하단 네비게이션**: 없음
-- **특이사항**: 배경 그래디언트 (Indigo → Purple), 애니메이션 캐릭터 호버 상태
+### 배경 계층 (현재 theme.ts 기준 — 유지)
+```
+bg:       #09090F  (최하단 — 거의 순수 블랙)
+bg2:      #111118  (섹션 구분)
+surface:  #19191F  (카드 기본)
+surface2: #222230  (카드 강조, 모달)
+```
 
-### 온보딩 퀴즈 화면
-- **레이아웃**: Vertical (카드 스택)
-- **헤더**: "당신을 알아보겠습니다" + 프로그레스 바 (3/3)
-- **메인 콘텐츠**:
-  - 질문 카드 (H2 텍스트)
-  - 선택지 버튼 4개 (Secondary 스타일, 각 48px 높이)
-  - 예: Q1 "스트레스 수준은?" → Very High / High / Medium / Low
-  - Q2 "명상 경험?" → Never / Beginner / Regular / Advanced
-  - Q3 "선호 시간?" → Morning / Lunch / Evening / Anytime
-- **하단 네비게이션**: 없음
-- **특이사항**: 각 선택 시 부드러운 슬라이드 애니메이션, 마지막 선택 후 "홈 대시보드로 이동" 자동 트리거
+### Dark Aurora 그라데이션 (신규 추가)
+AI Coach 화면, 온보딩, 레벨업 연출에 사용:
+```
+aurora-1: linear(135deg, #1a0533 0%, #09090F 50%, #001233 100%)
+aurora-2: linear(135deg, #0d1b2a 0%, #09090F 50%, #1a0533 100%)
+hero-glow: radial(circle at 50% 40%, rgba(139,92,246,0.18) 0%, transparent 70%)
+```
 
-### 홈 대시보드
-- **레이아웃**: Vertical (스크롤 가능)
-- **헤더**:
-  - 좌측: "안녕하세요, Alex" (사용자명)
-  - 우측: 설정 아이콘 (⚙️)
-  - 배경: Indigo 그래디언트
-- **메인 콘텐츠**:
-  - **Zen 캐릭터 섹션** (Card):
-    - 캐릭터 일러스트 (중앙, 150x150px, 더블탭 인터랙션 - 하트 애니메이션)
-    - 캐릭터명 + 레벨 배지 (Lv. 3)
-    - 경험치 프로그레스 바 (현재 45/100 EXP)
-    - 상태 텍스트 ("오늘도 함께해줘서 고마워!")
-  - **오늘의 퀘스트** (Card):
-    - "5분 명상하기" (완료 버튼)
-    - "마음챙김 로그 작성" (완료 버튼)
-    - Zen Coins 보상 표시 (+50)
-  - **감정 체크인 버튼** (Primary, 큰 터치 영역):
-    - "오늘의 기분은?" 텍스트
-    - 이모지 아이콘 (😊)
-  - **AI 코치 버튼** (Secondary):
-    - "Zen 코치와 대화하기"
-  - **Zen Shop 버튼** (Ghost):
-    - "아이템 둘러보기"
-- **하단 네비게이션**: 
-  - 홈 (활성), 퀘스트, 샵, 설정 (4개 탭)
-- **특이사항**: 캐릭터 상태 변화 애니메이션 (배고픔/기분 저하 시 시각적 변화), 푸시 알림 배너 (상단 슬라이드인)
+### 텍스트 계층 (유지)
+```
+primary:   #E0E0E8
+secondary: #8888A0
+tertiary:  #505068
+accent:    #9B8EC4  (라벤더 퍼플)
+```
 
-### 감정 체크인 화면
-- **레이아웃**: Vertical (모달 또는 전체 화면)
-- **헤더**: "오늘의 기분을 기록해주세요" + 닫기 버튼
-- **메인 콘텐츠**:
-  - **이모지 선택 UI** (가로 스크롤):
-    - 😢 (매우 슬픔) / 😔 (슬픔) / 😐 (보통) / 🙂 (좋음) / 😊 (매우 좋음)
-    - 각 이모지 56x56px, 선택 시 확대 + 배경 색상 변화
-  - **텍스트 입력** (Textarea):
-    - 플레이스홀더: "오늘 하루는 어땠나요? (선택사항)"
-    - 최대 500자
-  - **저장 버튼** (Primary):
-    - "기록하기" → 완료 시 Toast 알림 (+10 EXP)
-- **하단 네비게이션**: 없음 (모달)
-- **특이사항**: 이모지 선택 시 배경 색상 동적 변화 (슬픔 → 파란색, 좋음 → 핑크색)
+### 시그니처 포인트 컬러
+```
+purple-glow:  #7C3AED  (핵심 액션, 레벨업, AI Coach 말풍선 border)
+teal:         #2DD4BF  (성공, 완료, 명상)
+gold:         #F59E0B  (zen coins, legendary 아이템)
+danger:       #EF4444  (에러, 취소)
+```
 
-### AI 코치 채팅 화면
-- **레이아웃**: Vertical (메시지 리스트)
-- **헤더**: "Zen 코치" + 닫기 버튼
-- **메인 콘텐츠**:
-  - **환영 메시지** (Zen 코치):
-    - "안녕하세요! 저는 Zen 코치입니다. 오늘 기분이 어떠신가요?"
-  - **메시지 리스트** (스크롤):
-    - 사용자 메시지 (우측, Primary 배경)
-    - 코치 메시지 (좌측, Surface 배경)
-    - 타이핑 애니메이션 (코치 응답 중)
-  - **입력 필드** (하단 고정):
-    - Input + 전송 버튼 (아이콘)
-- **하단 네비게이션**: 없음
-- **특이사항**: OpenAI 통합 (Zen 철학 프롬프트), 감정 기반 맞춤 명상 가이드 제공
+---
 
-### Zen 퀘스트 화면
-- **레이아웃**: Vertical (탭 + 카드 리스트)
-- **헤더**: "Zen 퀘스트" + 탭 (일일 / 주간)
-- **메인 콘텐츠**:
-  - **일일 퀘스트 탭**:
-    - 퀘스트 카드 (각 48px 높이):
-      - 좌측: 퀘스트 아이콘
+## 3. 타이포그래피
+
+```
+h1:      32px / bold   — 환영 메시지, 감정 체크인 질문
+h2:      24px / bold   — 화면 제목
+h3:      18px / semibold
+body1:   16px / regular — 대화 메시지
+body2:   14px / regular — 설명, 부제목
+body3:   13px / regular — 카드 내용
+caption: 12px / regular — 레이블, 뱃지 (최솟값)
+```
+
+> **금지**: 11px 이하. 모든 터치 요소 minHeight 44px.
+
+---
+
+## 4. Conversational UI 설계 (핵심)
+
+AI Coach 화면(`AICoachScreen`)의 3-Zone 레이아웃:
+
+```
+┌─────────────────────────────┐
+│  Zone 1: Character Zone     │  ← 캐릭터 + 이름 + 레벨
+│  (Welcome: 65vh / Chat: 80px header)  │
+├─────────────────────────────┤
+│  Zone 2: Active Question    │  ← 현재 질문 + 답변 입력
+│  (Pure Focus — 전체 집중)    │
+├─────────────────────────────┤
+│  Zone 3: History Zone       │  ← 기본 접힘, 스와이프로 펼침
+│  (Card Pair Stack)          │
+└─────────────────────────────┘
+```
+
+### Zone 1 — Character Zone
+
+**Welcome 상태** (처음 진입 / 대화 시작 전):
+- CharacterDisplay 크기: SIZE=140, OUTER=200 (compact=false)
+- 캐릭터 아래 레벨 뱃지 + 이름 표시
+- 배경: `hero-glow` 라디얼 그라데이션
+
+**In-chat 상태** (대화 진행 중):
+- 헤더 80px 고정으로 축소
+- 캐릭터: compact=true (SIZE=80)
+- 캐릭터 이름 + 레벨 텍스트 제거 (공간 절약)
+- 탭 1개로 AI Coach 탭 + CharacterDisplay 인라인 배치
+
+### Zone 2 — Active Question Zone (Pure Focus)
+
+**원칙**: 다마코치의 질문이 전체 영역을 차지. 사용자가 답하기 전까지 다른 요소 최소화.
+
+**질문 표시**:
+```
+font-size: 24px (h2)
+font-weight: bold
+color: #E0E0E8
+text-align: center
+padding: 24px 20px
+background: transparent
+```
+
+**빠른 답변 카드** (QuickReply):
+- 가로 스크롤 카드 리스트 (각 카드 minHeight 48px)
+- 배경: `rgba(139,92,246,0.10)` / border: `rgba(139,92,246,0.25)`
+- 선택 시: border-color → `#7C3AED`, background → `rgba(139,92,246,0.20)`
+- 선택 후 → Zone 3으로 카드 쌍 추가
+
+**자유 텍스트 입력**:
+- 입력창 하단 고정
+- 배경: `surface2` (#222230)
+- placeholder: "Share how you feel..."
+- 전송 버튼: 보라색 글로우 버튼
+
+### Zone 3 — History Zone (Card Pair)
+
+**기본 상태**: 접힘 (히스토리 미표시)
+**스와이프 업**: 히스토리 카드 스택 펼침 (최대 높이 40vh)
+
+**카드 쌍 구조**:
+```
+┌─────────────────────────────┐  ← 다마코치 카드
+│ 🤖  "How are you feeling?"  │     배경: rgba(139,92,246,0.08)
+│     border-left: 2px purple │     border-left: #7C3AED
+└─────────────────────────────┘
+    ┌─────────────────────────┐  ← 사용자 카드 (1단계 들여쓰기)
+    │  "I feel stressed today"│     배경: rgba(255,255,255,0.05)
+    │  border-left: 2px teal  │     border-left: #2DD4BF
+    └─────────────────────────┘
+```
+
+---
+
+## 5. 화면별 디자인 지침
+
+### 5-1. HomeScreen
+
+- 상단: CharacterDisplay (compact=true) + EXP 바 + zenCoins
+- 중단: 오늘의 퀘스트 카드 리스트 (Card variant=elevated)
+- 하단: 감정 체크인 CTA 버튼 (variant=teal, fullWidth)
+- 배경: `aurora-2` 그라데이션 (전체 화면)
+- EXP 바: `teal` (#2DD4BF) 기반 → 레벨업 시 gold 플래시
+
+### 5-2. AICoachScreen
+
+- 3-Zone 레이아웃 (Section 4 참고)
+- 배경: `aurora-1` 그라데이션
+- 상태 전환: Welcome → In-chat 시 캐릭터 축소 애니메이션 (duration 400ms)
+
+### 5-3. QuestScreen
+
+- 퀘스트 카드: Card variant=elevated, 완료 시 teal 체크마크 + scale 애니메이션
+- 완료 카드: opacity 0.6, 취소선 X (완료감 주되 가시성 유지)
+- 에러 상태: retry 버튼 포함 (Button variant=ghost)
+
+### 5-4. MeditationScreen / PlayerScreen
+
+- 명상 트랙 카드: 타입별 색상 (breathing=teal, guided=purple, nature=green, bodyscan=blue)
+- 재생 화면: 전체화면 배경 블러 + 캐릭터 floating 애니메이션
+- 완료 시: 코인+EXP 획득 모달 (gold 컬러 강조)
+
+### 5-5. ShopScreen / CustomizeModal
+
+- 탭: Skins / Hat / Face / Body / Aura / Pet
+- 아이템 그리드: 3열 or 2열 (compact 모드)
+- 레어리티 색상: common=secondary / rare=accent(purple) / legendary=gold
+- 스킨 선택 시: 캐릭터 배경 글로우 즉시 변경 (skinGlow 미리보기)
+- 장착 중: "ON" 뱃지 teal 색상
+
+---
+
+## 6. 캐릭터 시스템 현황 및 방향
+
+### 현재 구현 상태
+
+| 항목 | 상태 | 비고 |
+|------|------|------|
+| 캐릭터 5종 (hana/sora/tora/mizu/kaze) | 완비 | 이모지 기반 |
+| 레벨 7단계 + 이름 | 완비 | Seed→Sage |
+| 스킨 20종 (DB) | 완비 | bgTheme 컬럼 |
+| 스킨 글로우 시각 반영 | 완료 (세션B 2026-03-05) | CharacterDisplay skinGlow 맵 추가 |
+| 악세사리 66종 (DB, 14개 placeholder 제외) | 완비 | |
+| 악세사리 → 렌더링 연결 | 완료 (세션B 2026-03-05) | ACCESSORY_DISPLAY 전체 재매핑 |
+| Face 슬롯 렌더링 | 완료 (세션B 2026-03-05) | faceItem 추가 |
+| Hunger / Mood 로직 | 미구현 | DB 컬럼만 존재 |
+| 캐릭터 아트 (픽셀아트/2D) | 미구현 | 현재 이모지 방식 유지 |
+
+### 향후 방향 (우선순위 순)
+
+1. **Hunger/Mood 로직** (세션 B) — 하루 2회 feeding 미션, mood가 quest/coin에 영향
+2. **캐릭터 아트 업그레이드** — 현재 이모지 → 커스텀 SVG 또는 Lottie 애니메이션
+   - 단기: 캐릭터당 이모지 조합을 정교화 (배경 레이어 추가)
+   - 장기: PNG 스프라이트 + Lottie (EAS 빌드 후)
+
+---
+
+## 7. 수정 필요 항목 (우선순위 + 난이도)
+
+### 즉시 가능 (세션 C 대상)
+
+| 항목 | 난이도 | 예상 시간 | 파일 |
+|------|--------|-----------|------|
+| HomeScreen Dark Aurora 배경 그라데이션 적용 | 낮음 | 30분 | HomeScreen.tsx |
+| EXP 바 teal 색상 + 레벨업 gold 플래시 | 낮음 | 30분 | HomeScreen.tsx |
+| QuickReply 카드 보라 글로우 스타일 | 낮음 | 30분 | AICoachScreen.tsx |
+| AI Coach 3-Zone 레이아웃 구조 개편 | 높음 | 3~4시간 | AICoachScreen.tsx |
+| Character Zone 동적 축소 애니메이션 | 중간 | 1시간 | AICoachScreen.tsx |
+| Card Pair History (스와이프) | 중간 | 2시간 | AICoachScreen.tsx |
+| 명상 트랙 카드 타입별 색상 | 낮음 | 30분 | MeditationScreen.tsx |
+| 퀘스트 완료 체크 애니메이션 강화 | 낮음 | 30분 | QuestScreen.tsx |
+
+### 세션 B 대상 (로직)
+
+| 항목 | 난이도 | 예상 시간 | 파일 |
+|------|--------|-----------|------|
+| Hunger/Mood 게임 로직 구현 | 높음 | 4~5시간 | character.routes.ts + HomeScreen |
+| 14개 placeholder 악세사리 교체 | 낮음 | 1시간 | seed.ts (DB re-seed) |
+
+---
+
+## 8. 레퍼런스 앱 분석
+
+| 앱 | 차용할 요소 | 차용하지 않을 요소 |
+|----|------------|----------------|
+| **Typeform** | Pure Focus 질문 (1번에 1개) | B2B UI 느낌 |
+| **Woebot** | 구조화된 카드 선택지 | 단조로운 색상 |
+| **Replika** | 캐릭터 프레즌스 + 대화 일체감 | 과도한 3D 렌더링 |
+| **Calm** | 고급스러운 다크 배경, 타이포 | 캐릭터 없는 미니멀 |
+| **Headspace** | 밝고 친근한 캐릭터 표현 | 라이트 테마 |
+| **Finch** | 다마고치 성장 메카닉 | 과도한 귀여움 |

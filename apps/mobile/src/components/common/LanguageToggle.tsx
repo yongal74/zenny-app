@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { COLORS } from '../../constants/colors';
+import { theme } from '../../constants/theme';
 import type { Language } from '../../types';
 
 interface LanguageToggleProps {
@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: COLORS.surface2,
+        backgroundColor: theme.colors.surface2,
         paddingHorizontal: 10,
         paddingVertical: 5,
         borderRadius: 16,
@@ -36,8 +36,8 @@ const styles = StyleSheet.create({
         fontSize: 13,
         fontFamily: 'DMSans_600SemiBold',
         fontWeight: '600',
-        color: COLORS.text3,
+        color: theme.colors.text.tertiary,
     },
-    labelActive: { color: COLORS.text },
-    separator: { fontSize: 12, color: COLORS.border },
+    labelActive: { color: theme.colors.text.primary },
+    separator: { fontSize: 12, color: theme.colors.border },
 });

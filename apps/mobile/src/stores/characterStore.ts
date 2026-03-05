@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import type { Character, Lang, ItemSlot } from '../types';
+import { calcLevel } from '../utils/exp';
 type Language = Lang;
 
 interface CharacterStore {
@@ -37,14 +38,7 @@ export const useCharacterStore = create<CharacterStore>((set) => ({
     set((state) => {
       if (!state.character) return state;
       const newExp = state.character.exp + amount;
-      // 레벨업 체크
-      const EXP_THRESHOLDS: Record<number, number> = {
-        1: 0, 2: 100, 3: 250, 4: 500, 5: 800, 6: 1200, 7: 2000,
-      };
-      let newLevel = state.character.level;
-      for (let lv = 7; lv >= 1; lv--) {
-        if (newExp >= EXP_THRESHOLDS[lv]) { newLevel = lv; break; }
-      }
+      const newLevel = calcLevel(newExp);
       return { character: { ...state.character, exp: newExp, level: newLevel } };
     }),
 }));

@@ -6,7 +6,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as WebBrowser from 'expo-web-browser';
-import { COLORS } from '../../constants/colors';
+import { theme } from '../../constants/theme';
 import { useAuthStore } from '../../stores/authStore';
 import { API_BASE } from '../../utils/api';
 
@@ -111,19 +111,19 @@ export function LoginScreen() {
           {!!error && <Text style={s.errorText}>{error}</Text>}
 
           <SocialBtn label="Continue with Google"   icon="G"  iconColor="#4285F4"    onPress={() => openSocialAuth('google')}   loading={loading === 'google'}   disabled={busy} />
-          <SocialBtn label="Continue with Apple"    icon=""  iconColor={COLORS.text} onPress={() => openSocialAuth('apple')}    loading={loading === 'apple'}    disabled={busy} />
-          <SocialBtn label="Continue with Facebook" icon="f"  iconColor="#1877F2"    onPress={() => openSocialAuth('facebook')} loading={loading === 'facebook'} disabled={busy} />
-          <SocialBtn label="Continue with X"        icon="𝕏"  iconColor={COLORS.text} onPress={() => openSocialAuth('twitter')}  loading={loading === 'twitter'} disabled={busy} />
+          <SocialBtn label="Continue with Apple"    icon=""  iconColor={theme.colors.text.primary} onPress={() => openSocialAuth('apple')}    loading={loading === 'apple'}    disabled={busy} />
+          <SocialBtn label="Continue with Facebook" icon="f"  iconColor="#1877F2"                   onPress={() => openSocialAuth('facebook')} loading={loading === 'facebook'} disabled={busy} />
+          <SocialBtn label="Continue with X"        icon="𝕏"  iconColor={theme.colors.text.primary} onPress={() => openSocialAuth('twitter')}  loading={loading === 'twitter'} disabled={busy} />
 
           <View style={s.dividerRow}>
-            <LinearGradient colors={['transparent', COLORS.border]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={s.dividerLine} />
+            <LinearGradient colors={['transparent', theme.colors.border]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={s.dividerLine} />
             <Text style={s.dividerText}>or</Text>
-            <LinearGradient colors={[COLORS.border, 'transparent']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={s.dividerLine} />
+            <LinearGradient colors={[theme.colors.border, 'transparent']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={s.dividerLine} />
           </View>
 
           <TouchableOpacity style={s.guestBtn} onPress={handleGuestLogin} disabled={busy} activeOpacity={0.85}>
             {loading === 'guest'
-              ? <ActivityIndicator color={COLORS.text2} />
+              ? <ActivityIndicator color={theme.colors.text.secondary} />
               : <Text style={s.guestText}>Continue as Guest</Text>
             }
           </TouchableOpacity>
@@ -145,7 +145,7 @@ function SocialBtn({ label, icon, iconColor, onPress, loading, disabled }: {
     <LinearGradient colors={['#22223A', '#2A2A48']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={s.socialGradient}>
       <TouchableOpacity style={s.socialBtn} onPress={onPress} disabled={disabled} activeOpacity={0.85}>
         {loading
-          ? <ActivityIndicator color={COLORS.text} />
+          ? <ActivityIndicator color={theme.colors.text.primary} />
           : <>
               <Text style={[s.socialIcon, { color: iconColor }]}>{icon}</Text>
               <Text style={s.socialText}>{label}</Text>
@@ -157,7 +157,7 @@ function SocialBtn({ label, icon, iconColor, onPress, loading, disabled }: {
 }
 
 const s = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: COLORS.bg },
+  safe: { flex: 1, backgroundColor: theme.colors.bg },
   container: { flex: 1, justifyContent: 'space-between', paddingHorizontal: 32 },
 
   header: { alignItems: 'center', paddingTop: 60, gap: 8 },
@@ -167,8 +167,8 @@ const s = StyleSheet.create({
   ringInner:  { position: 'absolute', width: 90,  height: 90,  borderRadius: 45,  backgroundColor: 'rgba(200,200,240,0.08)', borderWidth: 1, borderColor: 'rgba(200,200,240,0.12)' },
   logoCircle: { width: 64, height: 64, borderRadius: 32, backgroundColor: 'rgba(200,200,240,0.12)', justifyContent: 'center', alignItems: 'center' },
   logo:     { fontSize: 32, color: '#FFFFFF' },
-  title:    { fontSize: 36, fontWeight: '700', color: COLORS.text, letterSpacing: 2 },
-  subtitle: { fontSize: 14, color: COLORS.text2, letterSpacing: 0.5 },
+  title:    { fontSize: 36, fontWeight: '700', color: theme.colors.text.primary, letterSpacing: 2 },
+  subtitle: { fontSize: 14, color: theme.colors.text.secondary, letterSpacing: 0.5 },
 
   buttons:   { gap: 10 },
   errorText: { fontSize: 13, color: '#E55555', textAlign: 'center', marginBottom: 4 },
@@ -176,15 +176,15 @@ const s = StyleSheet.create({
   socialGradient: { borderRadius: 14, borderWidth: 1, borderColor: 'rgba(200,200,240,0.12)' },
   socialBtn:  { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', height: 50, paddingHorizontal: 20, gap: 10 },
   socialIcon: { fontSize: 17, fontWeight: '700', width: 22, textAlign: 'center' },
-  socialText: { fontSize: 15, fontWeight: '600', color: COLORS.text },
+  socialText: { fontSize: 15, fontWeight: '600', color: theme.colors.text.primary },
 
   dividerRow:  { flexDirection: 'row', alignItems: 'center', gap: 12, marginVertical: 2 },
   dividerLine: { flex: 1, height: 1 },
-  dividerText: { fontSize: 12, color: COLORS.text3 },
+  dividerText: { fontSize: 12, color: theme.colors.text.tertiary },
 
   guestBtn:  { backgroundColor: 'transparent', borderRadius: 14, height: 48, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: 'rgba(200,200,240,0.10)' },
-  guestText: { fontSize: 14, color: COLORS.text2 },
-  guestNote: { fontSize: 11, color: COLORS.text3, textAlign: 'center' },
+  guestText: { fontSize: 14, color: theme.colors.text.secondary },
+  guestNote: { fontSize: 12, color: theme.colors.text.tertiary, textAlign: 'center' },
 
-  footer: { fontSize: 11, color: COLORS.text3, textAlign: 'center', paddingBottom: 20 },
+  footer: { fontSize: 12, color: theme.colors.text.tertiary, textAlign: 'center', paddingBottom: 20 },
 });

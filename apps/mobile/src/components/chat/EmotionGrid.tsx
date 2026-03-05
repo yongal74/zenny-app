@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { COLORS } from '../../constants/colors';
+import { theme } from '../../constants/theme';
 import { Emotion, EMOTION_LABELS } from '../../types';
 import { useCharacterStore } from '../../stores/characterStore';
 
@@ -36,18 +36,20 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
   },
   emotionButton: {
-    backgroundColor: COLORS.surface,
+    backgroundColor: theme.colors.surface,
     paddingVertical: 10,
     paddingHorizontal: 16,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: theme.colors.border,
     minWidth: '30%',
     alignItems: 'center',
+    minHeight: theme.minTouchTarget,
+    justifyContent: 'center',
   },
   emotionText: {
     fontSize: 14,
-    color: COLORS.text,
+    color: theme.colors.text.primary,
     fontWeight: '500',
   },
 });

@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { COLORS } from '../../constants/colors';
+import { theme } from '../../constants/theme';
 import type { QuickReply } from '../../types';
 
 interface QuickReplyGridProps {
@@ -49,19 +49,20 @@ const styles = StyleSheet.create({
     grid: { flexDirection: 'row', gap: 8, marginTop: 6 },
     col: { flex: 1, gap: 8 },
     btn: {
-        backgroundColor: COLORS.surface2,
+        backgroundColor: 'rgba(139,92,246,0.10)',
         borderRadius: 10,
-        height: 40,
+        minHeight: theme.minTouchTarget,
         justifyContent: 'center',
         alignItems: 'center',
         paddingHorizontal: 10,
+        paddingVertical: 10,
         borderWidth: 1,
-        borderColor: COLORS.border,
+        borderColor: 'rgba(139,92,246,0.25)',
     },
     btnText: {
         fontSize: 13,
         fontWeight: '600',
-        color: COLORS.text,
+        color: theme.colors.text.primary,
         fontFamily: 'DMSans_600SemiBold',
     },
 });

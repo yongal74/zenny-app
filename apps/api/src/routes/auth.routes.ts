@@ -38,13 +38,14 @@ router.post('/register', async (req: Request, res: Response) => {
   });
 
   const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, { expiresIn: JWT_EXPIRES });
-
+  console.warn(`[Zenny:Auth] register OK — userId=${user.id}`);
   return res.status(201).json({ token, userId: user.id, lang: user.lang });
 });
 
 // ─── POST /api/auth/login ─────────────────────────────────────
 router.post('/login', async (req: Request, res: Response) => {
   const { email, password } = req.body as { email: string; password: string };
+  console.warn(`[Zenny:Auth] login attempt — email=${email}`);
 
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) return res.status(401).json({ error: 'Invalid credentials' });
@@ -59,6 +60,7 @@ router.post('/login', async (req: Request, res: Response) => {
   if (!valid) return res.status(401).json({ error: 'Invalid credentials' });
 
   const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, { expiresIn: JWT_EXPIRES });
+  console.warn(`[Zenny:Auth] login OK — userId=${user.id}`);
   return res.json({ token, userId: user.id, lang: user.lang });
 });
 
@@ -67,6 +69,7 @@ router.post('/guest', async (req: Request, res: Response) => {
   try {
     const rawLang = (req.body as { lang?: string })?.lang;
     const lang = rawLang === 'ko' ? 'ko' : 'en';
+    console.warn(`[Zenny:Auth] guest login attempt — lang=${lang}`);
 
     const { randomUUID } = await import('crypto');
     const guestEmail = `guest_${randomUUID()}@guest.zenny.app`;
@@ -88,10 +91,10 @@ router.post('/guest', async (req: Request, res: Response) => {
     }
 
     const token = jwt.sign({ userId: user.id, email: guestEmail }, JWT_SECRET, { expiresIn: JWT_EXPIRES });
-
+    console.warn(`[Zenny:Auth] guest OK — userId=${user.id} lang=${lang}`);
     return res.status(201).json({ token, userId: user.id, lang: user.lang });
   } catch (err: any) {
-    console.error('Guest login error:', err);
+    console.error('[Zenny:Auth] guest error:', err);
     return res.status(500).json({ error: '게스트 계정 생성에 실패했습니다. 다시 시도해주세요.' });
   }
 });

@@ -259,6 +259,75 @@ export async function processCheckin(
 
 ---
 
+## 디자인 시스템 규칙 (세션 C: UI/UX 리팩터링 기준)
+
+### 단일 진실 공급원 (Single Source of Truth)
+- **모든 색상/간격/타이포그래피**: `apps/mobile/src/constants/theme.ts` 에서만 import
+- `constants/colors.ts`는 레거시 호환용 re-export만 유지 (신규 파일에서 직접 import 금지)
+
+```typescript
+// ✅ Good
+import { theme, COLORS } from '../../constants/theme';
+style={{ color: theme.colors.text.primary, padding: theme.spacing.md }}
+
+// ❌ Bad
+import { COLORS } from '../../constants/colors';
+style={{ color: '#E0E0E8', padding: 12 }}  // 하드코딩 금지
+```
+
+### 터치 영역 최소 기준
+- 모든 터치 가능 요소: `minHeight: theme.minTouchTarget` (44px) 필수
+- 작은 버튼/아이콘: `hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}` 추가
+
+```typescript
+// ✅ Good
+<TouchableOpacity style={{ minHeight: 44 }} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+
+// ❌ Bad
+<TouchableOpacity style={{ paddingVertical: 5 }}>  // 5px → 터치 불가 수준
+```
+
+### 타이포그래피 최소 기준
+- 본문 텍스트: 최소 `fontSize: 13` (theme.typography.body3)
+- 캡션/보조 텍스트: 최소 `fontSize: 12` (theme.typography.caption / labelSm)
+- 11px 이하 금지
+
+### 공통 컴포넌트 우선 사용
+| 용도 | 컴포넌트 | 위치 |
+|------|----------|------|
+| 버튼 | `<Button>` | `components/ui/Button.tsx` |
+| 카드 컨테이너 | `<Card>` | `components/ui/Card.tsx` |
+| 애니메이션 | `useAnimation` 훅 | `hooks/useAnimation.ts` |
+
+### 빈 상태 (Empty State) 필수 처리
+모든 리스트/데이터 화면에서 3가지 상태 모두 처리:
+1. **로딩 중**: 로딩 메시지 또는 스켈레톤
+2. **빈 상태**: 안내 문구 + 이모지 (퀘스트가 없어요, 내일 확인해보세요 등)
+3. **에러 상태**: 재시도 버튼 포함
+
+```typescript
+// ✅ Good
+{isLoading ? (
+  <EmptyCard><Text>불러오는 중...</Text></EmptyCard>
+) : data.length === 0 ? (
+  <EmptyCard><Text>✿{'\n'}아직 데이터가 없어요</Text></EmptyCard>
+) : (
+  data.map(item => <ItemCard key={item.id} {...item} />)
+)}
+```
+
+### 애니메이션 규칙
+- **react-native-reanimated 사용 금지** (Expo Go 호환 이슈)
+- React Native 기본 `Animated` API만 사용
+- `useAnimation.ts` 훅의 `usePressScale`, `useBounceSelect`, `useFadeIn`, `useSlideUp`, `useProgressBar`, `useCheckComplete` 활용
+
+### 다크 테마 (고정)
+- Zenny는 다크 테마 전용 앱 (라이트 테마 지원 계획 없음)
+- 배경 계층: bg(#09090F) → bg2(#111118) → surface(#19191F) → surface2(#222230)
+- 텍스트 계층: primary(#E0E0E8) → secondary(#8888A0) → tertiary(#505068)
+
+---
+
 ## 주요 명령어
 
 ### 모노레포 루트

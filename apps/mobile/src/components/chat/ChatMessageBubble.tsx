@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { COLORS } from '../../constants/colors';
+import { theme } from '../../constants/theme';
 import { ChatMessage } from '../../types';
 
 interface ChatMessageBubbleProps {
@@ -38,11 +38,11 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   userBubble: {
-    backgroundColor: COLORS.accent,
+    backgroundColor: theme.colors.teal,
     borderBottomRightRadius: 4,
   },
   assistantBubble: {
-    backgroundColor: COLORS.surface,
+    backgroundColor: theme.colors.surface,
     borderBottomLeftRadius: 4,
   },
   text: {
@@ -50,9 +50,9 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   userText: {
-    color: COLORS.text,
+    color: theme.colors.text.primary,
   },
   assistantText: {
-    color: COLORS.text,
+    color: theme.colors.text.primary,
   },
 });

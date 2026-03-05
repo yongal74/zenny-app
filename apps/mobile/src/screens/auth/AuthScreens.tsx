@@ -1,7 +1,7 @@
 // Auth 화면들 — 기본 스텁 (추후 상세 구현)
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { COLORS } from '../../constants/colors';
+import { theme } from '../../constants/theme';
 
 export function SplashScreen() {
     return (
@@ -31,9 +31,9 @@ export function OnboardingScreen() {
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: COLORS.bg, justifyContent: 'center', alignItems: 'center' },
+    container: { flex: 1, backgroundColor: theme.colors.bg, justifyContent: 'center', alignItems: 'center' },
     logo: { fontSize: 64, marginBottom: 12 },
-    appName: { fontSize: 36, fontFamily: 'Fraunces_500Medium', color: COLORS.text, marginBottom: 4 },
-    tagline: { fontSize: 14, color: COLORS.text2, fontFamily: 'DMSans_400Regular' },
-    title: { fontSize: 24, fontFamily: 'Fraunces_500Medium', color: COLORS.text },
+    appName: { fontSize: 36, fontFamily: 'Fraunces_500Medium', color: theme.colors.text.primary, marginBottom: 4 },
+    tagline: { fontSize: 14, color: theme.colors.text.secondary, fontFamily: 'DMSans_400Regular' },
+    title: { fontSize: 24, fontFamily: 'Fraunces_500Medium', color: theme.colors.text.primary },
 });

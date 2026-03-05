@@ -186,18 +186,32 @@ async function createAccessories() {
             ...makeItems(staffs, 'body', 'hand'),
             ...makeItems(pets, 'pet', 'pet'),
             ...makeItems(seasonal, 'bg', 'seasonal'),
-            // 나머지 14개 (모자 추가)
-            ...Array.from({ length: 14 }, (_, i) => ({
-                id: `accessory_extra_${i + 1}`,
-                name: `Zen Accessory ${i + 1}`,
-                type: 'accessory' as const,
-                slot: 'hat',
-                category: 'general',
-                price: 1000 + i * 200,
-                rarity: i < 7 ? 'common' : 'rare' as const,
-                imageUrl: '',
-                levelRequired: 1,
-            })),
+            // ── 추가 모자 4종 ──
+            ...makeItems([
+                { id: 'hat_mushroom_crown',  name: '🍄 Mushroom Crown',   price: 2000, rarity: 'common' },
+                { id: 'hat_butterfly_clip',  name: '🦋 Butterfly Clip',   price: 2000, rarity: 'common' },
+                { id: 'hat_galaxy_tiara',    name: '🌌 Galaxy Tiara',     price: 8000, rarity: 'legendary' },
+                { id: 'hat_lotus_wreath',    name: '🪷 Lotus Wreath',     price: 4000, rarity: 'rare' },
+            ], 'hat', 'hat'),
+            // ── 추가 얼굴 4종 ──
+            ...makeItems([
+                { id: 'face_cosmic_tears',   name: '💫 Cosmic Tears',     price: 4000, rarity: 'rare' },
+                { id: 'face_golden_mark',    name: '✨ Golden Mark',       price: 6000, rarity: 'rare' },
+                { id: 'face_frost_veil',     name: '🧊 Frost Veil',       price: 6000, rarity: 'rare' },
+                { id: 'face_heart_blush',    name: '💗 Heart Blush',      price: 2000, rarity: 'common' },
+            ], 'face', 'face'),
+            // ── 추가 바디 2종 ──
+            ...makeItems([
+                { id: 'body_lightning_cloak', name: '⚡ Lightning Cloak', price: 6000, rarity: 'rare' },
+                { id: 'body_crystal_robe',    name: '💎 Crystal Robe',    price: 10000, rarity: 'legendary' },
+            ], 'body', 'body'),
+            // ── 추가 펫 4종 ──
+            ...makeItems([
+                { id: 'pet_spirit_koi',      name: '🐠 Spirit Koi',      price: 6000,  rarity: 'rare' },
+                { id: 'pet_mini_phoenix',    name: '🦜 Mini Phoenix',     price: 10000, rarity: 'legendary' },
+                { id: 'pet_cloud_jelly',     name: '🪼 Cloud Jellyfish',  price: 6000,  rarity: 'rare' },
+                { id: 'pet_zen_owl',         name: '🦉 Zen Owl',         price: 4000,  rarity: 'common' },
+            ], 'pet', 'pet'),
         ],
     });
 }

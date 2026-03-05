@@ -12,7 +12,7 @@ import {
     Platform,
 } from 'react-native';
 import { ChatMessage, QuickReply, Language } from '../../types';
-import { COLORS } from '../../constants/colors';
+import { theme } from '../../constants/theme';
 
 // ─── Props ───────────────────────────────────────────────────
 interface ConversationalUIProps {
@@ -166,7 +166,7 @@ export const ConversationalUI: React.FC<ConversationalUIProps> = ({
                     value={inputText}
                     onChangeText={setInputText}
                     placeholder={placeholder}
-                    placeholderTextColor={COLORS.text3}
+                    placeholderTextColor={theme.colors.text.tertiary}
                     multiline
                     maxLength={500}
                     returnKeyType="send"
@@ -202,7 +202,7 @@ const formatTime = (iso: string): string => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: COLORS.bg,
+        backgroundColor: theme.colors.bg,
     },
     chatArea: {
         flex: 1,
@@ -224,8 +224,8 @@ const styles = StyleSheet.create({
         paddingLeft: 48, // 1~2칸 들여쓰기
     },
     aiHeader: {
-        fontSize: 11,
-        color: COLORS.text3,
+        fontSize: 12,
+        color: theme.colors.text.tertiary,
         fontFamily: 'DMSans_400Regular',
         marginBottom: 2,
     },
@@ -235,14 +235,14 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
     },
     bubbleAI: {
-        backgroundColor: COLORS.surface, // #16203A
+        backgroundColor: theme.colors.surface,
     },
     bubbleUser: {
-        backgroundColor: COLORS.primary, // #6366F1
+        backgroundColor: theme.colors.teal,
     },
     messageText: {
         fontSize: 15,
-        color: COLORS.text,
+        color: theme.colors.text.primary,
         fontFamily: 'DMSans_400Regular',
         lineHeight: 22,
     },
@@ -258,17 +258,18 @@ const styles = StyleSheet.create({
         gap: 8,
     },
     quickReplyBtn: {
-        backgroundColor: COLORS.surface2, // #1E2D4A
+        backgroundColor: theme.colors.surface2,
         borderRadius: 10,
-        height: 40,
+        minHeight: theme.minTouchTarget,
         justifyContent: 'center',
         alignItems: 'center',
         paddingHorizontal: 14,
+        paddingVertical: 10,
     },
     quickReplyText: {
         fontSize: 13,
         fontWeight: '600',
-        color: COLORS.text,
+        color: theme.colors.text.primary,
         fontFamily: 'DMSans_700Bold',
     },
 
@@ -278,34 +279,34 @@ const styles = StyleSheet.create({
         gap: 10,
         padding: 12,
         paddingHorizontal: 16,
-        backgroundColor: COLORS.surface, // #141D38
+        backgroundColor: theme.colors.surface,
         alignItems: 'flex-end',
     },
     input: {
         flex: 1,
-        backgroundColor: COLORS.bg2,
+        backgroundColor: theme.colors.bg2,
         borderRadius: 24,
         paddingHorizontal: 20,
         paddingVertical: 12,
         fontSize: 15,
-        color: COLORS.text,
+        color: theme.colors.text.primary,
         fontFamily: 'DMSans_400Regular',
         maxHeight: 120,
     },
     sendBtn: {
-        width: 48,
-        height: 48,
-        borderRadius: 24,
-        backgroundColor: COLORS.primary,
+        width: theme.minTouchTarget,
+        height: theme.minTouchTarget,
+        borderRadius: 22,
+        backgroundColor: theme.colors.primary,
         justifyContent: 'center',
         alignItems: 'center',
     },
     sendBtnDisabled: {
-        backgroundColor: COLORS.border,
+        backgroundColor: theme.colors.border,
     },
     sendIcon: {
         fontSize: 18,
         fontWeight: '700',
-        color: COLORS.text,
+        color: theme.colors.text.primary,
     },
 });

@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { COLORS } from '../../constants/colors';
+import { theme } from '../../constants/theme';
 import { Language } from '../../types';
 
 interface LanguageToggleProps {
@@ -33,13 +33,13 @@ const styles = StyleSheet.create({
   langText: {
     fontSize: 14,
     fontWeight: '600',
-    color: COLORS.text3,
+    color: theme.colors.text.tertiary,
   },
   activeLang: {
-    color: COLORS.text,
+    color: theme.colors.text.primary,
   },
   separator: {
     fontSize: 14,
-    color: COLORS.text3,
+    color: theme.colors.text.tertiary,
   },
 });

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Text, Platform } from 'react-native';
-import { COLORS } from '../constants/colors';
+import { theme } from '../constants/theme';
 import { useAuthStore } from '../stores/authStore';
 import { useCharacterStore } from '../stores/characterStore';
 import { apiClient, API_BASE } from '../utils/api';
@@ -45,16 +45,16 @@ function MainTabs() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: COLORS.bottomBar,
+          backgroundColor: theme.colors.bottomBar,
           borderTopColor: 'rgba(200,200,240,0.06)',
           borderTopWidth: 1,
           height: 64,
           paddingBottom: 8,
         },
-        tabBarActiveTintColor: '#FFFFFF',
-        tabBarInactiveTintColor: COLORS.text3,
+        tabBarActiveTintColor: theme.colors.text.primary,
+        tabBarInactiveTintColor: theme.colors.text.tertiary,
         tabBarLabelStyle: {
-          fontSize: 11,
+          fontSize: 12,
           marginTop: -2,
         },
       }}
@@ -108,8 +108,8 @@ function AppNavigator() {
 async function fetchAndSetCharacter() {
   try {
     const [charRes, userRes] = await Promise.all([
-      apiClient.get('/character', { timeout: 5000 }),
-      apiClient.get('/auth/me', { timeout: 5000 }),
+      apiClient.get('/character', { timeout: 12000 }),
+      apiClient.get('/auth/me', { timeout: 12000 }),
     ]);
     const data = charRes.data;
     if (data) {
@@ -170,7 +170,7 @@ export function RootNavigator() {
       // 자동 게스트 로그인 — 4초 타임아웃
       try {
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 4000);
+        const timeout = setTimeout(() => controller.abort(), 12000); // Railway 콜드 스타트 여유 (기존 4s → 12s)
         const res = await fetch(`${API_BASE}/auth/guest`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

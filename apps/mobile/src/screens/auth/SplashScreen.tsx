@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { COLORS } from '../../constants/colors';
+import { theme } from '../../constants/theme';
 
 export const SplashScreen = () => {
   return (
@@ -79,13 +79,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 42,
     fontWeight: '700',
-    color: COLORS.text,
+    color: theme.colors.text.primary,
     marginTop: 8,
     letterSpacing: 2,
   },
   tagline: {
     fontSize: 14,
-    color: COLORS.text2,
+    color: theme.colors.text.secondary,
     marginTop: 6,
     letterSpacing: 1,
   },

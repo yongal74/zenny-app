@@ -1,37 +1,73 @@
+/**
+ * MeditationScreen - 세션 C: UI/UX 리팩터링
+ *
+ * 수정:
+ * - theme.ts 기반 스타일 통일
+ * - trackCardDur, trackListType: 11→12px
+ * - 빈 상태 처리: isLoading / empty 분기
+ * - trackListItem minHeight 44px
+ * - 추천 트랙 카드 너비 고정 → 가독성 개선
+ */
 import React, { useState } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
-import { COLORS } from '../../constants/colors';
+import { theme } from '../../constants/theme';
 import { useCharacterStore } from '../../stores/characterStore';
 import { MeditationPlayerScreen } from './MeditationPlayerScreen';
 import type { MeditationTrack } from '../../types';
 import { apiClient } from '../../utils/api';
 
-const TYPE_EMOJI: Record<string, string> = { breathing: '🌬️', bodyscan: '🧘', guided: '✿', nature: '🌿' };
-const TYPE_LABEL_KO: Record<string, string> = { breathing: '호흡', bodyscan: '바디스캔', guided: '가이드', nature: '자연' };
+const TYPE_EMOJI: Record<string, string> = {
+  breathing: '🌬️',
+  bodyscan: '🧘',
+  guided: '✿',
+  nature: '🌿',
+};
+const TYPE_LABEL_KO: Record<string, string> = {
+  breathing: '호흡',
+  bodyscan: '바디스캔',
+  guided: '가이드',
+  nature: '자연',
+};
+// A6 스펙: breathing=teal, guided=purple, nature=green, bodyscan=blue
+const TYPE_ICON_BG: Record<string, string> = {
+  breathing: 'rgba(45,212,191,0.18)',
+  guided:    'rgba(124,58,237,0.18)',
+  nature:    'rgba(80,180,100,0.18)',
+  bodyscan:  'rgba(64,164,223,0.18)',
+};
 
-export function MeditationScreen() {
+function formatDuration(seconds: number): string {
+  const m = Math.floor(seconds / 60);
+  const s = String(seconds % 60).padStart(2, '0');
+  return `${m}:${s}`;
+}
+
+export function MeditationScreen(): React.JSX.Element {
   const [selectedTrack, setSelectedTrack] = useState<MeditationTrack | null>(null);
   const { lang } = useCharacterStore();
 
-  const { data: recommended = [] } = useQuery({
-    queryKey: ['recommended-tracks'],
+  const { data: recommended = [], isLoading: recLoading, isError: recError } = useQuery({
+    queryKey: ['recommended-tracks', lang],
     queryFn: async () => {
       const { data } = await apiClient.get('/meditation/recommend', { params: { lang } });
       return data.tracks ?? [];
     },
   });
 
-  const { data: allTracks = [] } = useQuery({
+  const { data: allTracks = [], isLoading: allLoading, isError: allError } = useQuery({
     queryKey: ['all-tracks', lang],
     queryFn: async () => {
       const { data } = await apiClient.get('/meditation/tracks', { params: { lang } });
       return data ?? [];
     },
   });
+
+  const isLoading = recLoading || allLoading;
+  const isError = recError || allError;
 
   if (selectedTrack) {
     return (
@@ -48,67 +84,170 @@ export function MeditationScreen() {
       <ScrollView style={s.scroll} showsVerticalScrollIndicator={false}>
         <View style={s.header}>
           <Text style={s.title}>{lang === 'ko' ? '🧘 명상' : '🧘 Meditation'}</Text>
-          <Text style={s.subtitle}>{lang === 'ko' ? '마음의 평온을 찾아보세요' : 'Find your inner peace'}</Text>
+          <Text style={s.subtitle}>
+            {lang === 'ko' ? '마음의 평온을 찾아보세요' : 'Find your inner peace'}
+          </Text>
         </View>
 
-        {recommended.length > 0 && (
-          <View style={s.section}>
-            <Text style={s.sectionTitle}>{lang === 'ko' ? '✦ 추천' : '✦ Recommended'}</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.trackRow}>
-              {recommended.slice(0, 5).map((track: MeditationTrack) => (
-                <TouchableOpacity key={track.id} style={s.trackCard} onPress={() => setSelectedTrack(track)} activeOpacity={0.85}>
-                  <View style={s.trackCardIcon}>
-                    <Text style={s.trackEmoji}>{TYPE_EMOJI[track.type] ?? '✿'}</Text>
-                  </View>
-                  <Text style={s.trackCardTitle} numberOfLines={2}>
-                    {lang === 'ko' ? (track.titleKo || track.title) : track.title}
-                  </Text>
-                  <Text style={s.trackCardDur}>{Math.floor(track.duration / 60)}:{String(track.duration % 60).padStart(2, '0')}</Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
+        {/* 빈 상태 처리 */}
+        {isLoading ? (
+          <View style={s.emptyState}>
+            <Text style={s.emptyText}>
+              {lang === 'ko' ? '트랙 불러오는 중...' : 'Loading tracks...'}
+            </Text>
           </View>
-        )}
-
-        <View style={s.section}>
-          <Text style={s.sectionTitle}>{lang === 'ko' ? '전체 트랙' : 'All Tracks'}</Text>
-          {allTracks.map((track: MeditationTrack) => (
-            <TouchableOpacity key={track.id} style={s.trackListItem} onPress={() => setSelectedTrack(track)} activeOpacity={0.8}>
-              <View style={s.trackListIcon}>
-                <Text style={{ fontSize: 22 }}>{TYPE_EMOJI[track.type] ?? '✿'}</Text>
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text style={s.trackListTitle} numberOfLines={1}>
-                  {lang === 'ko' ? (track.titleKo || track.title) : track.title}
+        ) : isError ? (
+          <View style={s.emptyState}>
+            <Text style={s.emptyEmoji}>⚠️</Text>
+            <Text style={s.emptyText}>
+              {lang === 'ko'
+                ? '트랙을 불러오지 못했어요.\n잠시 후 다시 시도해 주세요.'
+                : 'Could not load tracks.\nPlease try again.'}
+            </Text>
+          </View>
+        ) : (
+          <>
+            {/* 추천 트랙 (가로 스크롤) */}
+            {recommended.length > 0 && (
+              <View style={s.section}>
+                <Text style={s.sectionTitle}>
+                  {lang === 'ko' ? '✦ 추천' : '✦ Recommended'}
                 </Text>
-                <Text style={s.trackListType}>{lang === 'ko' ? TYPE_LABEL_KO[track.type] ?? track.type : track.type}</Text>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={s.trackRow}
+                >
+                  {recommended.slice(0, 5).map((track: MeditationTrack) => (
+                    <TouchableOpacity
+                      key={track.id}
+                      style={s.trackCard}
+                      onPress={() => setSelectedTrack(track)}
+                      activeOpacity={0.85}
+                    >
+                      <View style={[s.trackCardIcon, { backgroundColor: TYPE_ICON_BG[track.type] ?? 'rgba(136,136,160,0.15)' }]}>
+                        <Text style={s.trackEmoji}>{TYPE_EMOJI[track.type] ?? '✿'}</Text>
+                      </View>
+                      <Text style={s.trackCardTitle} numberOfLines={2}>
+                        {lang === 'ko' ? (track.titleKo || track.title) : track.title}
+                      </Text>
+                      {/* 11→12px */}
+                      <Text style={s.trackCardDur}>{formatDuration(track.duration)}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
               </View>
-              <Text style={s.trackListDur}>{Math.floor(track.duration / 60)} min</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
+            )}
+
+            {/* 전체 트랙 목록 */}
+            <View style={s.section}>
+              <Text style={s.sectionTitle}>
+                {lang === 'ko' ? '전체 트랙' : 'All Tracks'}
+              </Text>
+
+              {allTracks.length === 0 ? (
+                <View style={s.emptyState}>
+                  <Text style={s.emptyEmoji}>🎵</Text>
+                  <Text style={s.emptyText}>
+                    {lang === 'ko'
+                      ? '아직 트랙이 없어요.\n곧 업데이트될 예정이에요!'
+                      : 'No tracks available yet.\nCheck back soon!'}
+                  </Text>
+                </View>
+              ) : (
+                allTracks.map((track: MeditationTrack) => (
+                  <TouchableOpacity
+                    key={track.id}
+                    style={s.trackListItem}
+                    onPress={() => setSelectedTrack(track)}
+                    activeOpacity={0.8}
+                  >
+                    <View style={[s.trackListIcon, { backgroundColor: TYPE_ICON_BG[track.type] ?? 'rgba(136,136,160,0.15)' }]}>
+                      <Text style={s.trackListEmoji}>{TYPE_EMOJI[track.type] ?? '✿'}</Text>
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Text style={s.trackListTitle} numberOfLines={1}>
+                        {lang === 'ko' ? (track.titleKo || track.title) : track.title}
+                      </Text>
+                      {/* 11→12px */}
+                      <Text style={s.trackListType}>
+                        {lang === 'ko' ? (TYPE_LABEL_KO[track.type] ?? track.type) : track.type}
+                      </Text>
+                    </View>
+                    <Text style={s.trackListDur}>
+                      {Math.floor(track.duration / 60)} min
+                    </Text>
+                  </TouchableOpacity>
+                ))
+              )}
+            </View>
+          </>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
 }
 
 const s = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: COLORS.bg },
+  safe: { flex: 1, backgroundColor: theme.colors.bg },
   scroll: { flex: 1 },
-  header: { padding: 24, paddingBottom: 16 },
-  title: { fontSize: 24, fontFamily: 'Fraunces_500Medium', color: COLORS.text },
-  subtitle: { fontSize: 13, color: COLORS.text2, fontFamily: 'DMSans_400Regular', marginTop: 4 },
-  section: { paddingHorizontal: 20, marginBottom: 20 },
-  sectionTitle: { fontSize: 16, fontFamily: 'DMSans_700Bold', color: COLORS.text, marginBottom: 12 },
-  trackRow: { gap: 12, paddingRight: 8 },
-  trackCard: { width: 140, backgroundColor: COLORS.surface, borderRadius: 16, padding: 14, gap: 8 },
-  trackCardIcon: { width: 44, height: 44, borderRadius: 22, backgroundColor: COLORS.bg, justifyContent: 'center', alignItems: 'center' },
+
+  header: { padding: theme.spacing.xxl, paddingBottom: theme.spacing.lg },
+  title: { ...theme.typography.h2, color: theme.colors.text.primary },
+  subtitle: { ...theme.typography.body3, color: theme.colors.text.secondary, marginTop: 4 },
+
+  section: { paddingHorizontal: theme.spacing.xl, marginBottom: theme.spacing.xl },
+  sectionTitle: { ...theme.typography.bold1, color: theme.colors.text.primary, marginBottom: theme.spacing.md },
+
+  // 추천 카드 (가로 스크롤)
+  trackRow: { gap: theme.spacing.md, paddingRight: theme.spacing.sm },
+  trackCard: {
+    width: 140,
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.radius.lg,
+    padding: theme.spacing.md,
+    gap: theme.spacing.sm,
+  },
+  trackCardIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: theme.colors.bg,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   trackEmoji: { fontSize: 22 },
-  trackCardTitle: { fontSize: 13, fontFamily: 'DMSans_600SemiBold', color: COLORS.text, lineHeight: 18 },
-  trackCardDur: { fontSize: 11, color: COLORS.text3, fontFamily: 'DMSans_400Regular' },
-  trackListItem: { flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: COLORS.surface, borderRadius: 12, padding: 14, marginBottom: 8 },
-  trackListIcon: { width: 44, height: 44, borderRadius: 22, backgroundColor: COLORS.bg, justifyContent: 'center', alignItems: 'center' },
-  trackListTitle: { fontSize: 14, fontFamily: 'DMSans_600SemiBold', color: COLORS.text },
-  trackListType: { fontSize: 11, color: COLORS.text3, fontFamily: 'DMSans_400Regular', marginTop: 2 },
-  trackListDur: { fontSize: 12, color: COLORS.text2, fontFamily: 'DMSans_400Regular' },
+  trackCardTitle: { ...theme.typography.label, color: theme.colors.text.primary, lineHeight: 18 },
+  // 11→12px
+  trackCardDur: { ...theme.typography.caption, color: theme.colors.text.tertiary },
+
+  // 전체 트랙 리스트
+  trackListItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.radius.md,
+    padding: theme.spacing.md,
+    marginBottom: theme.spacing.sm,
+    minHeight: theme.minTouchTarget,
+  },
+  trackListIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: theme.colors.bg,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  trackListEmoji: { fontSize: 22 },
+  trackListTitle: { ...theme.typography.label, color: theme.colors.text.primary },
+  // 11→12px
+  trackListType: { ...theme.typography.caption, color: theme.colors.text.tertiary, marginTop: 2 },
+  trackListDur: { ...theme.typography.body3, color: theme.colors.text.secondary },
+
+  // 빈 상태
+  emptyState: { alignItems: 'center', padding: 40, gap: 12 },
+  emptyEmoji: { fontSize: 40 },
+  emptyText: { ...theme.typography.body2, color: theme.colors.text.secondary, textAlign: 'center' },
 });

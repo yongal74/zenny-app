@@ -11,7 +11,7 @@ import {
     Alert,
 } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
-import { COLORS } from '../../constants/colors';
+import { theme } from '../../constants/theme';
 import { useCharacterStore } from '../../stores/characterStore';
 import { apiClient } from '../../utils/api';
 
@@ -19,10 +19,11 @@ const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const TABS = ['Skins', 'Hat', 'Face', 'Body', 'Aura', 'Pet'] as const;
 const SLOT_MAP: Record<string, string> = { Skins: 'skin', Hat: 'hat', Face: 'face', Body: 'body', Aura: 'bg', Pet: 'pet' };
+// A6 스펙: common=secondary / rare=purple / legendary=gold
 const RARITY_COLOR: Record<string, string> = {
-    common: COLORS.text3,
-    rare: COLORS.accent,
-    legendary: COLORS.gold,
+    common: theme.colors.text.secondary,
+    rare: theme.colors.purple,
+    legendary: theme.colors.gold,
 };
 
 interface CustomizeModalProps {
@@ -32,7 +33,7 @@ interface CustomizeModalProps {
 
 export function CustomizeModal({ visible, onClose }: CustomizeModalProps) {
     const [activeTab, setActiveTab] = useState<typeof TABS[number]>('Skins');
-    const { character, equipItem } = useCharacterStore();
+    const { character, equipItem, zenCoins } = useCharacterStore();
 
     const slot = SLOT_MAP[activeTab];
     const itemType = activeTab === 'Skins' ? 'skin' : 'accessory';
@@ -58,7 +59,7 @@ export function CustomizeModal({ visible, onClose }: CustomizeModalProps) {
     }, [slot, equipItem]);
 
     const handleBuy = useCallback(async (itemId: string, price: number) => {
-        const coins = useCharacterStore.getState().zenCoins;
+        const coins = zenCoins;
         if (coins < price) {
             Alert.alert('Zen Coins 부족', `${price - coins} 코인이 더 필요해요. 상점에서 구매하세요!`);
             return;
@@ -90,7 +91,7 @@ export function CustomizeModal({ visible, onClose }: CustomizeModalProps) {
                 {/* Zen Coins 표시 */}
                 <View style={styles.coinsRow}>
                     <Text style={styles.coinsLabel}>✦ Zen Coins</Text>
-                    <Text style={styles.coinsValue}>{useCharacterStore.getState().zenCoins.toLocaleString()}</Text>
+                    <Text style={styles.coinsValue}>{zenCoins.toLocaleString()}</Text>
                 </View>
 
                 {/* 탭 */}
@@ -140,14 +141,14 @@ export function CustomizeModal({ visible, onClose }: CustomizeModalProps) {
                                     <Text style={styles.ownedText}>Owned</Text>
                                 ) : (
                                     <View style={styles.priceRow}>
-                                        <Text style={[styles.priceText, { color: RARITY_COLOR[item.rarity] ?? COLORS.text }]}>
+                                        <Text style={[styles.priceText, { color: RARITY_COLOR[item.rarity] ?? theme.colors.text.primary }]}>
                                             ✦ {item.price.toLocaleString()}
                                         </Text>
                                     </View>
                                 )}
 
                                 {/* 레어도 */}
-                                <View style={[styles.rarityDot, { backgroundColor: RARITY_COLOR[item.rarity] ?? COLORS.border }]} />
+                                <View style={[styles.rarityDot, { backgroundColor: RARITY_COLOR[item.rarity] ?? theme.colors.border }]} />
                             </TouchableOpacity>
                         );
                     }}
@@ -158,30 +159,30 @@ export function CustomizeModal({ visible, onClose }: CustomizeModalProps) {
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: COLORS.bg },
+    container: { flex: 1, backgroundColor: theme.colors.bg },
 
     header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 20, paddingTop: 24 },
-    title: { fontSize: 20, fontFamily: 'Fraunces_500Medium', color: COLORS.text },
-    closeBtn: { width: 36, height: 36, backgroundColor: COLORS.surface, borderRadius: 18, justifyContent: 'center', alignItems: 'center' },
-    closeText: { fontSize: 14, fontWeight: '600', color: COLORS.text2 },
+    title: { fontSize: 20, fontFamily: 'Fraunces_500Medium', color: theme.colors.text.primary },
+    closeBtn: { width: 44, height: 44, backgroundColor: theme.colors.surface, borderRadius: 22, justifyContent: 'center', alignItems: 'center' },
+    closeText: { fontSize: 14, fontWeight: '600', color: theme.colors.text.secondary },
 
-    coinsRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginHorizontal: 20, marginBottom: 16, backgroundColor: COLORS.surface, padding: 12, borderRadius: 12 },
-    coinsLabel: { fontSize: 14, color: COLORS.gold, fontFamily: 'DMSans_600SemiBold' },
-    coinsValue: { fontSize: 18, color: COLORS.gold, fontFamily: 'DMSans_700Bold' },
+    coinsRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginHorizontal: 20, marginBottom: 16, backgroundColor: theme.colors.surface, padding: 12, borderRadius: 12 },
+    coinsLabel: { fontSize: 14, color: theme.colors.gold, fontFamily: 'DMSans_600SemiBold' },
+    coinsValue: { fontSize: 18, color: theme.colors.gold, fontFamily: 'DMSans_700Bold' },
 
     tabBar: { flexGrow: 0, marginBottom: 16 },
     tabBarContent: { paddingHorizontal: 16, gap: 8 },
-    tab: { paddingHorizontal: 16, height: 36, borderRadius: 18, backgroundColor: COLORS.surface, justifyContent: 'center' },
-    tabActive: { backgroundColor: COLORS.primary },
-    tabText: { fontSize: 13, fontFamily: 'DMSans_600SemiBold', color: COLORS.text3 },
-    tabTextActive: { color: COLORS.text },
+    tab: { paddingHorizontal: 16, minHeight: theme.minTouchTarget, borderRadius: 18, backgroundColor: theme.colors.surface, justifyContent: 'center' },
+    tabActive: { backgroundColor: 'rgba(124,58,237,0.25)', borderWidth: 1, borderColor: 'rgba(124,58,237,0.5)' },
+    tabText: { fontSize: 13, fontFamily: 'DMSans_600SemiBold', color: theme.colors.text.tertiary },
+    tabTextActive: { color: theme.colors.text.primary },
 
     grid: { paddingHorizontal: 12, paddingBottom: 40, gap: 10 },
 
     itemCard: {
         flex: 1,
         margin: 4,
-        backgroundColor: COLORS.surface,
+        backgroundColor: theme.colors.surface,
         borderRadius: 14,
         padding: 12,
         alignItems: 'center',
@@ -190,16 +191,16 @@ const styles = StyleSheet.create({
         borderColor: 'transparent',
         position: 'relative',
     },
-    itemCardEquipped: { borderColor: COLORS.accent },
+    itemCardEquipped: { borderColor: theme.colors.tealVivid },
     itemCardLocked: { opacity: 0.5 },
     itemEmoji: { fontSize: 28, marginBottom: 2 },
-    itemName: { fontSize: 10, textAlign: 'center', color: COLORS.text2, fontFamily: 'DMSans_400Regular' },
+    itemName: { fontSize: 12, textAlign: 'center', color: theme.colors.text.secondary, fontFamily: 'DMSans_400Regular' },
 
-    equippedBadge: { backgroundColor: 'rgba(200,200,240,0.12)', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 8 },
-    equippedText: { fontSize: 10, color: COLORS.accent, fontFamily: 'DMSans_700Bold' },
-    ownedText: { fontSize: 10, color: COLORS.text3, fontFamily: 'DMSans_400Regular' },
+    equippedBadge: { backgroundColor: 'rgba(45,212,191,0.15)', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 8, borderWidth: 1, borderColor: 'rgba(45,212,191,0.3)' },
+    equippedText: { fontSize: 12, color: theme.colors.tealVivid, fontFamily: 'DMSans_700Bold' },
+    ownedText: { fontSize: 12, color: theme.colors.text.tertiary, fontFamily: 'DMSans_400Regular' },
     priceRow: { flexDirection: 'row', alignItems: 'center' },
-    priceText: { fontSize: 11, fontFamily: 'DMSans_600SemiBold' },
+    priceText: { fontSize: 12, fontFamily: 'DMSans_600SemiBold' },
 
     rarityDot: { position: 'absolute', top: 8, right: 8, width: 6, height: 6, borderRadius: 3 },
 });

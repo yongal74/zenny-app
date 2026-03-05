@@ -17,7 +17,7 @@ const createSession = (): ChatSession => ({
     {
       id: 'welcome',
       role: 'assistant',
-      content: "Hi there 🌟 How are you feeling right now?\n안녕하세요 🌟 지금 기분이 어때요?",
+      content: "Hi there 🌟 How are you feeling right now?",
       timestamp: new Date().toISOString(),
       quickReplies: [
         { id: 'qr-happy', label: '😊 Happy', emotion: 'happy' },

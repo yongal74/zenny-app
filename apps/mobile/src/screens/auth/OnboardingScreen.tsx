@@ -6,7 +6,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
-import { COLORS } from '../../constants/colors';
+import { theme } from '../../constants/theme';
 import { useCharacterStore } from '../../stores/characterStore';
 import type { CharacterType } from '../../types';
 
@@ -108,7 +108,7 @@ export function OnboardingScreen({ lang = 'en' }: OnboardingScreenProps) {
     if (step === 'confirm' && selectedChar) {
         return (
             <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
-                <LinearGradient colors={[COLORS.bg2, COLORS.bg]} style={styles.confirmContainer}>
+                <LinearGradient colors={[theme.colors.bg2, theme.colors.bg]} style={styles.confirmContainer}>
                     {/* 캐릭터 대형 표시 */}
                     <View style={[styles.bigCharCircle, { borderColor: selectedChar.color + '55' }]}>
                         <Text style={styles.bigEmoji}>{selectedChar.emoji}</Text>
@@ -226,54 +226,55 @@ export function OnboardingScreen({ lang = 'en' }: OnboardingScreenProps) {
 }
 
 const styles = StyleSheet.create({
-    safe: { flex: 1, backgroundColor: COLORS.bg },
+    safe: { flex: 1, backgroundColor: theme.colors.bg },
     container: { flex: 1, paddingHorizontal: 20 },
 
     header: { alignItems: 'center', paddingTop: 24, paddingBottom: 12 },
-    logo: { fontSize: 28, fontFamily: 'Fraunces_500Medium', color: COLORS.text, marginBottom: 4 },
-    subtitle: { fontSize: 15, color: COLORS.text2, fontFamily: 'DMSans_400Regular' },
-    mvpNote: { fontSize: 12, color: COLORS.text3, textAlign: 'center', marginBottom: 16, fontFamily: 'DMSans_400Regular' },
+    logo: { fontSize: 28, fontFamily: 'Fraunces_500Medium', color: theme.colors.text.primary, marginBottom: 4 },
+    subtitle: { fontSize: 15, color: theme.colors.text.secondary, fontFamily: 'DMSans_400Regular' },
+    mvpNote: { fontSize: 12, color: theme.colors.text.tertiary, textAlign: 'center', marginBottom: 16, fontFamily: 'DMSans_400Regular' },
 
     // 캐릭터 목록
     charList: { paddingBottom: 16, gap: 12 },
     charCard: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: COLORS.surface,
+        backgroundColor: theme.colors.surface,
         borderRadius: 16,
         padding: 16,
         borderWidth: 2,
         borderColor: 'transparent',
         gap: 14,
+        minHeight: theme.minTouchTarget,
     },
     charCardLocked: { opacity: 0.45 },
     charEmojiWrap: { width: 52, height: 52, borderRadius: 26, justifyContent: 'center', alignItems: 'center' },
     charEmoji: { fontSize: 26 },
     charInfo: { flex: 1 },
-    charName: { fontSize: 17, fontFamily: 'Fraunces_500Medium', color: COLORS.text, marginBottom: 2 },
-    charTagline: { fontSize: 12, color: COLORS.text2, fontFamily: 'DMSans_400Regular' },
-    checkCircle: { width: 26, height: 26, borderRadius: 13, borderWidth: 2, borderColor: COLORS.border, justifyContent: 'center', alignItems: 'center' },
-    checkMark: { fontSize: 13, fontWeight: '700', color: '#fff' },
-    lockBadge: { backgroundColor: COLORS.surface2, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 10 },
-    lockText: { fontSize: 11, color: COLORS.text3, fontFamily: 'DMSans_600SemiBold' },
+    charName: { fontSize: 17, fontFamily: 'Fraunces_500Medium', color: theme.colors.text.primary, marginBottom: 2 },
+    charTagline: { fontSize: 12, color: theme.colors.text.secondary, fontFamily: 'DMSans_400Regular' },
+    checkCircle: { width: 26, height: 26, borderRadius: 13, borderWidth: 2, borderColor: theme.colors.border, justifyContent: 'center', alignItems: 'center' },
+    checkMark: { fontSize: 13, fontWeight: '700', color: theme.colors.text.primary },
+    lockBadge: { backgroundColor: theme.colors.surface2, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 10 },
+    lockText: { fontSize: 12, color: theme.colors.text.tertiary, fontFamily: 'DMSans_600SemiBold' },
 
     // 선택 버튼
-    nextBtn: { backgroundColor: COLORS.primary, borderRadius: 16, height: 54, justifyContent: 'center', alignItems: 'center', marginBottom: 24 },
-    nextBtnDisabled: { backgroundColor: COLORS.surface, borderWidth: 1, borderColor: COLORS.border },
-    nextBtnText: { fontSize: 16, fontFamily: 'DMSans_700Bold', color: COLORS.text },
+    nextBtn: { backgroundColor: theme.colors.primary, borderRadius: 16, height: 54, justifyContent: 'center', alignItems: 'center', marginBottom: 24 },
+    nextBtnDisabled: { backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.border },
+    nextBtnText: { fontSize: 16, fontFamily: 'DMSans_700Bold', color: theme.colors.text.primary },
 
     // 확인 화면
     confirmContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 32, gap: 16 },
-    bigCharCircle: { width: 130, height: 130, borderRadius: 65, backgroundColor: COLORS.surface, justifyContent: 'center', alignItems: 'center', borderWidth: 2, marginBottom: 8 },
+    bigCharCircle: { width: 130, height: 130, borderRadius: 65, backgroundColor: theme.colors.surface, justifyContent: 'center', alignItems: 'center', borderWidth: 2, marginBottom: 8 },
     bigEmoji: { fontSize: 60 },
-    confirmName: { fontSize: 32, fontFamily: 'Fraunces_500Medium', color: COLORS.text },
-    confirmTagline: { fontSize: 14, color: COLORS.text2, fontFamily: 'DMSans_400Regular' },
-    confirmPersonality: { fontSize: 14, color: COLORS.text2, fontFamily: 'DMSans_400Regular', textAlign: 'center', lineHeight: 22 },
-    levelBadge: { backgroundColor: 'rgba(99,102,241,0.15)', paddingHorizontal: 18, paddingVertical: 8, borderRadius: 20, borderWidth: 1, borderColor: COLORS.primary },
-    levelBadgeText: { fontSize: 13, color: COLORS.accent, fontFamily: 'DMSans_600SemiBold' },
+    confirmName: { fontSize: 32, fontFamily: 'Fraunces_500Medium', color: theme.colors.text.primary },
+    confirmTagline: { fontSize: 14, color: theme.colors.text.secondary, fontFamily: 'DMSans_400Regular' },
+    confirmPersonality: { fontSize: 14, color: theme.colors.text.secondary, fontFamily: 'DMSans_400Regular', textAlign: 'center', lineHeight: 22 },
+    levelBadge: { backgroundColor: 'rgba(99,102,241,0.15)', paddingHorizontal: 18, paddingVertical: 8, borderRadius: 20, borderWidth: 1, borderColor: theme.colors.primary },
+    levelBadgeText: { fontSize: 13, color: theme.colors.accent, fontFamily: 'DMSans_600SemiBold' },
     confirmBtns: { flexDirection: 'row', gap: 12, marginTop: 8, width: '100%' },
-    backBtn: { flex: 1, height: 50, borderRadius: 14, backgroundColor: COLORS.surface, justifyContent: 'center', alignItems: 'center' },
-    backBtnText: { fontSize: 15, color: COLORS.text2, fontFamily: 'DMSans_600SemiBold' },
+    backBtn: { flex: 1, height: 50, borderRadius: 14, backgroundColor: theme.colors.surface, justifyContent: 'center', alignItems: 'center' },
+    backBtnText: { fontSize: 15, color: theme.colors.text.secondary, fontFamily: 'DMSans_600SemiBold' },
     startBtn: { flex: 2, height: 50, borderRadius: 14, justifyContent: 'center', alignItems: 'center' },
-    startBtnText: { fontSize: 16, fontFamily: 'DMSans_700Bold', color: '#fff' },
+    startBtnText: { fontSize: 16, fontFamily: 'DMSans_700Bold', color: theme.colors.text.primary },
 });
