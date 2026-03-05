@@ -41,6 +41,7 @@ function TabLabel({ label, focused }: { label: string; focused: boolean }) {
       fontSize: 13,
       fontFamily: 'Inter_600SemiBold',
       color: focused ? '#E0E0E8' : '#505068',
+      marginTop: 10,
     }}>
       {label}
     </Text>
