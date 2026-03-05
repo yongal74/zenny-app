@@ -122,9 +122,9 @@ export function CharacterDisplay({ characterType, level, bgTheme, equippedItems,
   // 스킨 글로우 — bgTheme 기반 (장착 스킨 없으면 캐릭터 기본 글로우)
   const skinGlow = SKIN_GLOW[bgTheme] ?? char.glow;
 
-  const SIZE = compact ? 80 : 110;
-  const OUTER = compact ? SIZE + 50 : SIZE + 60;
-  const MID = compact ? SIZE + 30 : SIZE + 36;
+  const SIZE = compact ? 80 : 140;
+  const OUTER = compact ? SIZE + 50 : SIZE + 80;
+  const MID = compact ? SIZE + 30 : SIZE + 50;
 
   return (
     <View style={[styles.wrapper, compact && { gap: 4 }]}>
@@ -177,7 +177,7 @@ export function CharacterDisplay({ characterType, level, bgTheme, equippedItems,
 }
 
 const styles = StyleSheet.create({
-  wrapper: { width: '100%', minHeight: 220, justifyContent: 'center', alignItems: 'center', gap: 6 },
+  wrapper: { width: '100%', minHeight: 260, justifyContent: 'center', alignItems: 'center', gap: 6 },
   outerRing: { position: 'absolute' },
   midRing: { position: 'absolute', borderWidth: 1.5, backgroundColor: 'transparent' },
   characterBody: {
