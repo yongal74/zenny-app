@@ -26,13 +26,13 @@ const { width: W } = Dimensions.get('window');
 // 타입별 시그니처 색상 (A6 스펙)
 const TYPE_COLOR: Record<string, string> = {
     breathing: '#2DD4BF',
-    guided:    '#7C3AED',
+    guided:    '#00D9A0',
     nature:    '#50B464',
     bodyscan:  '#40A4DF',
 };
 const TYPE_GLOW: Record<string, string> = {
     breathing: 'rgba(45,212,191,0.14)',
-    guided:    'rgba(124,58,237,0.14)',
+    guided:    'rgba(0,217,160,0.14)',
     nature:    'rgba(80,180,100,0.14)',
     bodyscan:  'rgba(64,164,223,0.14)',
 };

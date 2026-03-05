@@ -11,44 +11,44 @@
 
 export const theme = {
   colors: {
-    // 배경 계층
-    bg: '#09090F',
-    bg2: '#111118',
-    surface: '#19191F',
-    surface2: '#222230',
+    // 배경 계층 — 딥 다크 에메랄드 (Dribbble Xino 스타일)
+    bg: '#050E0B',
+    bg2: '#081510',
+    surface: '#0D1F19',
+    surface2: '#122A20',
 
     // 텍스트 계층
     text: {
-      primary: '#E0E0E8',
-      secondary: '#8888A0',
-      tertiary: '#505068',
-      inverse: '#09090F',
+      primary: '#E8F5F0',
+      secondary: '#6BAD98',
+      tertiary: '#3A6B57',
+      inverse: '#050E0B',
     },
 
     // 브랜드 색상
-    primary: '#3A3A55',
-    accent: '#B8B8D8',
-    teal: '#8888B8',
-    gold: '#C8A860',
+    primary: '#0A2A22',
+    accent: '#00D9A0',   // 메인 포인트 — 밝은 민트/틸
+    teal: '#00D9A0',
+    gold: '#D4A850',
 
     // 피드백
-    success: '#7EB87E',
-    error: '#C87E7E',
-    warning: '#C8A860',
+    success: '#00D9A0',
+    error: '#E05C5C',
+    warning: '#D4A850',
 
     // 기타
-    border: '#28283A',
-    bottomBar: '#060608',
-    overlay: 'rgba(0,0,0,0.7)',
+    border: '#1A3D30',
+    bottomBar: '#040C09',
+    overlay: 'rgba(0,0,0,0.75)',
 
-    // Dark Aurora 시그니처
-    purple: '#7C3AED',
-    tealVivid: '#2DD4BF',  // EXP 바, 완료 체크마크
+    // 퍼플 자리 → 틸로 교체 (하위호환)
+    purple: '#00D9A0',
+    tealVivid: '#00FFB8',  // EXP 바, 완료 체크마크
 
-    // 글래스모피즘 카드 (Behance 크립토 대시보드 스타일)
-    glass: 'rgba(255,255,255,0.08)',
-    glassBorder: 'rgba(255,255,255,0.16)',
-    glassHighlight: 'rgba(255,255,255,0.12)',
+    // 글래스모피즘 카드 — 틸 틴트
+    glass: 'rgba(0,217,160,0.06)',
+    glassBorder: 'rgba(0,217,160,0.15)',
+    glassHighlight: 'rgba(0,217,160,0.10)',
   },
 
   /** 간격 (8pt 그리드 기반) */
@@ -65,18 +65,18 @@ export const theme = {
   /** 둥근 모서리 */
   radius: {
     sm: 8,
-    md: 12,
-    lg: 16,
-    xl: 20,
-    xxl: 24,
+    md: 14,
+    lg: 18,
+    xl: 22,
+    xxl: 28,
     pill: 999,
   },
 
   /** 타이포그래피 (폰트 로드 후 사용) */
   typography: {
     // 제목 계열 (Manrope - 모던 지오메트릭)
-    h1: { fontSize: 28, fontFamily: 'Manrope_700Bold', lineHeight: 36 },
-    h2: { fontSize: 22, fontFamily: 'Manrope_700Bold', lineHeight: 30 },
+    h1: { fontSize: 32, fontFamily: 'Manrope_700Bold', lineHeight: 40 },
+    h2: { fontSize: 24, fontFamily: 'Manrope_700Bold', lineHeight: 32 },
     h3: { fontSize: 18, fontFamily: 'Manrope_600SemiBold', lineHeight: 26 },
 
     // 본문 계열 (Inter - 클린 모던)
@@ -98,24 +98,23 @@ export const theme = {
   /**
    * 최소 터치 영역
    * iOS HIG: 44pt, Android: 48dp 권장
-   * 44를 기준으로 사용
    */
   minTouchTarget: 44,
 
-  /** 그레이디언트 */
+  /** 그레이디언트 — 에메랄드 다크 */
   gradients: {
-    splash: ['#09090F', '#14141C', '#09090F'] as const,
-    header: ['#111118', '#09090F'] as const,
-    card: ['#19191F', '#14141C'] as const,
-    aurora1: ['#2d0b6b', '#09090F', '#003366'] as const,
-    aurora2: ['#0d2e5a', '#09090F', '#3b0f82'] as const,
+    splash: ['#050E0B', '#0A1C15', '#050E0B'] as const,
+    header: ['#081510', '#050E0B'] as const,
+    card: ['#0D1F19', '#0A1810'] as const,
+    aurora1: ['#003322', '#050E0B', '#001A2E'] as const,  // 틸-다크-네이비
+    aurora2: ['#001E3A', '#050E0B', '#002E22'] as const,
   },
 
-  /** 캐릭터 글로우 */
+  /** 캐릭터 글로우 — 틸 계열 */
   glow: {
-    soft: 'rgba(180,180,220,0.06)',
-    medium: 'rgba(180,180,220,0.10)',
-    strong: 'rgba(200,200,240,0.16)',
+    soft: 'rgba(0,217,160,0.06)',
+    medium: 'rgba(0,217,160,0.12)',
+    strong: 'rgba(0,217,160,0.20)',
   },
 } as const;
 

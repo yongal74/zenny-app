@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     grid: { flexDirection: 'row', gap: 8, marginTop: 6 },
     col: { flex: 1, gap: 8 },
     btn: {
-        backgroundColor: 'rgba(139,92,246,0.10)',
+        backgroundColor: 'rgba(0,217,160,0.08)',
         borderRadius: 10,
         minHeight: theme.minTouchTarget,
         justifyContent: 'center',
@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         paddingVertical: 10,
         borderWidth: 1,
-        borderColor: 'rgba(139,92,246,0.25)',
+        borderColor: 'rgba(0,217,160,0.22)',
     },
     btnText: {
         fontSize: 13,
