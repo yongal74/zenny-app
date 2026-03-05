@@ -85,7 +85,7 @@ export function MeditationScreen(): React.JSX.Element {
     <SafeAreaView style={s.safe} edges={['top']}>
       <ScrollView style={s.scroll} showsVerticalScrollIndicator={false}>
         <View style={s.header}>
-          <Text style={s.title}>{lang === 'ko' ? '🧘 명상' : '🧘 Meditation'}</Text>
+          <Text style={s.title}>{lang === 'ko' ? '명상' : 'Meditation'}</Text>
           <Text style={s.subtitle}>
             {lang === 'ko' ? '마음의 평온을 찾아보세요' : 'Find your inner peace'}
           </Text>
