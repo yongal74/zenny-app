@@ -162,19 +162,19 @@ const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: theme.colors.bg },
 
     header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 20, paddingTop: 24 },
-    title: { fontSize: 20, fontFamily: 'Fraunces_500Medium', color: theme.colors.text.primary },
+    title: { fontSize: 20, fontFamily: 'Manrope_600SemiBold', color: theme.colors.text.primary },
     closeBtn: { width: 44, height: 44, backgroundColor: theme.colors.surface, borderRadius: 22, justifyContent: 'center', alignItems: 'center' },
     closeText: { fontSize: 14, fontWeight: '600', color: theme.colors.text.secondary },
 
     coinsRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginHorizontal: 20, marginBottom: 16, backgroundColor: theme.colors.surface, padding: 12, borderRadius: 12 },
-    coinsLabel: { fontSize: 14, color: theme.colors.gold, fontFamily: 'DMSans_600SemiBold' },
-    coinsValue: { fontSize: 18, color: theme.colors.gold, fontFamily: 'DMSans_700Bold' },
+    coinsLabel: { fontSize: 14, color: theme.colors.gold, fontFamily: 'Inter_600SemiBold' },
+    coinsValue: { fontSize: 18, color: theme.colors.gold, fontFamily: 'Inter_700Bold' },
 
     tabBar: { flexGrow: 0, marginBottom: 16 },
     tabBarContent: { paddingHorizontal: 16, gap: 8 },
     tab: { paddingHorizontal: 16, minHeight: theme.minTouchTarget, borderRadius: 18, backgroundColor: theme.colors.surface, justifyContent: 'center' },
     tabActive: { backgroundColor: 'rgba(124,58,237,0.25)', borderWidth: 1, borderColor: 'rgba(124,58,237,0.5)' },
-    tabText: { fontSize: 13, fontFamily: 'DMSans_600SemiBold', color: theme.colors.text.tertiary },
+    tabText: { fontSize: 13, fontFamily: 'Inter_600SemiBold', color: theme.colors.text.tertiary },
     tabTextActive: { color: theme.colors.text.primary },
 
     grid: { paddingHorizontal: 12, paddingBottom: 40, gap: 10 },
@@ -194,13 +194,13 @@ const styles = StyleSheet.create({
     itemCardEquipped: { borderColor: theme.colors.tealVivid },
     itemCardLocked: { opacity: 0.5 },
     itemEmoji: { fontSize: 28, marginBottom: 2 },
-    itemName: { fontSize: 12, textAlign: 'center', color: theme.colors.text.secondary, fontFamily: 'DMSans_400Regular' },
+    itemName: { fontSize: 12, textAlign: 'center', color: theme.colors.text.secondary, fontFamily: 'Inter_400Regular' },
 
     equippedBadge: { backgroundColor: 'rgba(45,212,191,0.15)', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 8, borderWidth: 1, borderColor: 'rgba(45,212,191,0.3)' },
-    equippedText: { fontSize: 12, color: theme.colors.tealVivid, fontFamily: 'DMSans_700Bold' },
-    ownedText: { fontSize: 12, color: theme.colors.text.tertiary, fontFamily: 'DMSans_400Regular' },
+    equippedText: { fontSize: 12, color: theme.colors.tealVivid, fontFamily: 'Inter_700Bold' },
+    ownedText: { fontSize: 12, color: theme.colors.text.tertiary, fontFamily: 'Inter_400Regular' },
     priceRow: { flexDirection: 'row', alignItems: 'center' },
-    priceText: { fontSize: 12, fontFamily: 'DMSans_600SemiBold' },
+    priceText: { fontSize: 12, fontFamily: 'Inter_600SemiBold' },
 
     rarityDot: { position: 'absolute', top: 8, right: 8, width: 6, height: 6, borderRadius: 3 },
 });

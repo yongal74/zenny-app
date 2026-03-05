@@ -4,10 +4,15 @@ import { NavigationContainer } from '@react-navigation/native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   useFonts,
-  DMSans_400Regular,
-  DMSans_700Bold,
-} from '@expo-google-fonts/dm-sans';
-import { Fraunces_500Medium } from '@expo-google-fonts/fraunces';
+  Inter_400Regular,
+  Inter_600SemiBold,
+  Inter_700Bold,
+} from '@expo-google-fonts/inter';
+import {
+  Manrope_500Medium,
+  Manrope_600SemiBold,
+  Manrope_700Bold,
+} from '@expo-google-fonts/manrope';
 import { registerRootComponent } from 'expo';
 import { RootNavigator } from './src/navigation/RootNavigator';
 import { COLORS } from './src/constants/colors';
@@ -26,9 +31,12 @@ const queryClient = new QueryClient({
 
 function App() {
   const [fontsLoaded, fontError] = useFonts({
-    DMSans_400Regular,
-    DMSans_700Bold,
-    Fraunces_500Medium,
+    Inter_400Regular,
+    Inter_600SemiBold,
+    Inter_700Bold,
+    Manrope_500Medium,
+    Manrope_600SemiBold,
+    Manrope_700Bold,
   });
 
   const onLayoutRootView = useCallback(async () => {

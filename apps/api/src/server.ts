@@ -22,9 +22,15 @@ dotenv.config();
 if (process.env.DATABASE_URL) {
   process.env.DATABASE_URL = process.env.DATABASE_URL.replace(/\s+/g, '');
 }
-if (process.env.OPENAI_API_KEY) {
-  process.env.OPENAI_API_KEY = process.env.OPENAI_API_KEY.replace(/\s+/g, '');
-  console.log('[OpenAI] Key loaded, prefix:', process.env.OPENAI_API_KEY.slice(0, 7) + '...');
+
+// OpenAI 진단 로그
+const openaiRaw = process.env.OPENAI_API_KEY;
+console.log('[OpenAI] OPENAI_API_KEY type:', typeof openaiRaw);
+console.log('[OpenAI] OPENAI_API_KEY length:', openaiRaw?.length ?? 0);
+console.log('[OpenAI] env keys with OPENAI:', Object.keys(process.env).filter(k => k.toUpperCase().includes('OPENAI')));
+if (openaiRaw && openaiRaw.trim().length > 0) {
+  process.env.OPENAI_API_KEY = openaiRaw.trim();
+  console.log('[OpenAI] Key loaded OK, prefix:', process.env.OPENAI_API_KEY.slice(0, 7) + '...');
 } else {
   console.warn('[OpenAI] WARNING: OPENAI_API_KEY is not set!');
 }

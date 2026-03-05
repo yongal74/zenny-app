@@ -44,6 +44,11 @@ export const theme = {
     // Dark Aurora 시그니처
     purple: '#7C3AED',
     tealVivid: '#2DD4BF',  // EXP 바, 완료 체크마크
+
+    // 글래스모피즘 카드 (Behance 크립토 대시보드 스타일)
+    glass: 'rgba(255,255,255,0.08)',
+    glassBorder: 'rgba(255,255,255,0.16)',
+    glassHighlight: 'rgba(255,255,255,0.12)',
   },
 
   /** 간격 (8pt 그리드 기반) */
@@ -69,25 +74,25 @@ export const theme = {
 
   /** 타이포그래피 (폰트 로드 후 사용) */
   typography: {
-    // 제목 계열 (Fraunces - serif 감성)
-    h1: { fontSize: 28, fontFamily: 'Fraunces_500Medium', lineHeight: 36 },
-    h2: { fontSize: 22, fontFamily: 'Fraunces_500Medium', lineHeight: 30 },
-    h3: { fontSize: 18, fontFamily: 'Fraunces_500Medium', lineHeight: 26 },
+    // 제목 계열 (Manrope - 모던 지오메트릭)
+    h1: { fontSize: 28, fontFamily: 'Manrope_700Bold', lineHeight: 36 },
+    h2: { fontSize: 22, fontFamily: 'Manrope_700Bold', lineHeight: 30 },
+    h3: { fontSize: 18, fontFamily: 'Manrope_600SemiBold', lineHeight: 26 },
 
-    // 본문 계열 (DMSans)
-    body1: { fontSize: 16, fontFamily: 'DMSans_400Regular', lineHeight: 24 },
-    body2: { fontSize: 14, fontFamily: 'DMSans_400Regular', lineHeight: 22 },
-    body3: { fontSize: 13, fontFamily: 'DMSans_400Regular', lineHeight: 20 },
+    // 본문 계열 (Inter - 클린 모던)
+    body1: { fontSize: 16, fontFamily: 'Inter_400Regular', lineHeight: 26 },
+    body2: { fontSize: 14, fontFamily: 'Inter_400Regular', lineHeight: 22 },
+    body3: { fontSize: 13, fontFamily: 'Inter_400Regular', lineHeight: 20 },
 
     // 굵은 본문
-    bold1: { fontSize: 16, fontFamily: 'DMSans_700Bold', lineHeight: 24 },
-    bold2: { fontSize: 14, fontFamily: 'DMSans_700Bold', lineHeight: 22 },
-    bold3: { fontSize: 13, fontFamily: 'DMSans_700Bold', lineHeight: 20 },
+    bold1: { fontSize: 16, fontFamily: 'Inter_700Bold', lineHeight: 26 },
+    bold2: { fontSize: 14, fontFamily: 'Inter_700Bold', lineHeight: 22 },
+    bold3: { fontSize: 13, fontFamily: 'Inter_700Bold', lineHeight: 20 },
 
     // 라벨/캡션
-    label: { fontSize: 13, fontFamily: 'DMSans_600SemiBold', lineHeight: 18 },
-    labelSm: { fontSize: 12, fontFamily: 'DMSans_600SemiBold', lineHeight: 16 },
-    caption: { fontSize: 12, fontFamily: 'DMSans_400Regular', lineHeight: 16 },
+    label: { fontSize: 13, fontFamily: 'Inter_600SemiBold', lineHeight: 18 },
+    labelSm: { fontSize: 12, fontFamily: 'Inter_600SemiBold', lineHeight: 16 },
+    caption: { fontSize: 12, fontFamily: 'Inter_400Regular', lineHeight: 16 },
   },
 
   /**
@@ -102,8 +107,8 @@ export const theme = {
     splash: ['#09090F', '#14141C', '#09090F'] as const,
     header: ['#111118', '#09090F'] as const,
     card: ['#19191F', '#14141C'] as const,
-    aurora1: ['#1a0533', '#09090F', '#001233'] as const,
-    aurora2: ['#0d1b2a', '#09090F', '#1a0533'] as const,
+    aurora1: ['#2d0b6b', '#09090F', '#003366'] as const,
+    aurora2: ['#0d2e5a', '#09090F', '#3b0f82'] as const,
   },
 
   /** 캐릭터 글로우 */

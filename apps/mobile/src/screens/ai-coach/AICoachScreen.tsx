@@ -417,7 +417,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: theme.colors.text.primary,
     lineHeight: 30,
-    fontFamily: 'DMSans_700Bold',
+    fontFamily: 'Inter_700Bold',
   },
   typingDots: {
     color: theme.colors.text.tertiary,
@@ -489,7 +489,7 @@ const styles = StyleSheet.create({
     paddingVertical: 11,
     fontSize: 15,
     color: theme.colors.text.primary,
-    fontFamily: 'DMSans_400Regular',
+    fontFamily: 'Inter_400Regular',
     maxHeight: 120,
   },
   sendBtn: {

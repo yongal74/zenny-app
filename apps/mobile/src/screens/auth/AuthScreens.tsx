@@ -33,7 +33,7 @@ export function OnboardingScreen() {
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: theme.colors.bg, justifyContent: 'center', alignItems: 'center' },
     logo: { fontSize: 64, marginBottom: 12 },
-    appName: { fontSize: 36, fontFamily: 'Fraunces_500Medium', color: theme.colors.text.primary, marginBottom: 4 },
-    tagline: { fontSize: 14, color: theme.colors.text.secondary, fontFamily: 'DMSans_400Regular' },
-    title: { fontSize: 24, fontFamily: 'Fraunces_500Medium', color: theme.colors.text.primary },
+    appName: { fontSize: 36, fontFamily: 'Manrope_600SemiBold', color: theme.colors.text.primary, marginBottom: 4 },
+    tagline: { fontSize: 14, color: theme.colors.text.secondary, fontFamily: 'Inter_400Regular' },
+    title: { fontSize: 24, fontFamily: 'Manrope_600SemiBold', color: theme.colors.text.primary },
 });

@@ -11,8 +11,8 @@ interface CharacterDisplayProps {
 }
 
 const CHARACTER_DATA: Record<string, { emoji: string; body: string; color: string; glow: string }> = {
-  hana: { emoji: '✿', body: '🌸', color: '#E8A0BF', glow: 'rgba(232,160,191,0.15)' },
-  sora: { emoji: '☁', body: '💫', color: '#A0C4E8', glow: 'rgba(160,196,232,0.15)' },
+  hana: { emoji: '🌸', body: '🌸', color: '#E8A0BF', glow: 'rgba(232,160,191,0.15)' },
+  sora: { emoji: '🌤️', body: '💫', color: '#A0C4E8', glow: 'rgba(160,196,232,0.15)' },
   tora: { emoji: '🦊', body: '🔥', color: '#E8C0A0', glow: 'rgba(232,192,160,0.15)' },
   mizu: { emoji: '💧', body: '🌊', color: '#A0D8E8', glow: 'rgba(160,216,232,0.15)' },
   kaze: { emoji: '🍃', body: '🌿', color: '#A0E8B0', glow: 'rgba(160,232,176,0.15)' },
@@ -168,14 +168,9 @@ export function CharacterDisplay({ characterType, level, bgTheme, equippedItems,
       </View>
 
       {!compact && (
-        <>
-          <Text style={styles.characterName}>
-            {characterType.charAt(0).toUpperCase() + characterType.slice(1)}
-          </Text>
-          <View style={styles.levelBadge}>
-            <Text style={styles.levelText}>Lv.{level} {levelName.en}</Text>
-          </View>
-        </>
+        <Text style={styles.characterName}>
+          {characterType.charAt(0).toUpperCase() + characterType.slice(1)}
+        </Text>
       )}
     </View>
   );
@@ -193,13 +188,9 @@ const styles = StyleSheet.create({
     zIndex: 2,
   },
   characterEmoji: { fontSize: 48 },
-  characterName: { ...theme.typography.h3, color: theme.colors.text.primary, fontWeight: '500', zIndex: 1, marginTop: 4 },
-  levelBadge: {
-    backgroundColor: 'rgba(200,200,240,0.10)',
-    paddingHorizontal: 14, paddingVertical: 4, borderRadius: 20,
-    borderWidth: 1, borderColor: 'rgba(200,200,240,0.15)', zIndex: 1,
-  },
-  levelText: { ...theme.typography.labelSm, color: theme.colors.accent },
+  nameRow: { flexDirection: 'row', alignItems: 'center', gap: 8, zIndex: 1, marginTop: 4 },
+  characterName: { ...theme.typography.h3, color: theme.colors.text.primary, fontWeight: '500' },
+  levelInline: { ...theme.typography.labelSm, color: theme.colors.accent },
   accessoryHat: { fontSize: 26, zIndex: 3, marginBottom: -10 },
   accessoryBody: { fontSize: 20, zIndex: 3, marginTop: -8 },
   faceItem: { fontSize: 18, position: 'absolute', bottom: 6, right: 6, zIndex: 4 },

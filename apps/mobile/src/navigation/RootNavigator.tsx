@@ -36,7 +36,7 @@ const AppStack = createNativeStackNavigator<AppStackParamList>();
 const MainTab = createBottomTabNavigator<MainTabParamList>();
 
 const TabIcon = ({ label, focused }: { label: string; focused: boolean }) => (
-  <Text style={{ fontSize: 20, opacity: focused ? 1 : 0.4 }}>{label}</Text>
+  <Text style={{ fontSize: 13, opacity: focused ? 1 : 0.4, color: focused ? '#E0E0E8' : '#505068' }}>{label}</Text>
 );
 
 function MainTabs() {
@@ -46,38 +46,50 @@ function MainTabs() {
         headerShown: false,
         tabBarStyle: {
           backgroundColor: theme.colors.bottomBar,
-          borderTopColor: 'rgba(200,200,240,0.06)',
+          borderTopColor: 'rgba(200,200,240,0.08)',
           borderTopWidth: 1,
-          height: 64,
-          paddingBottom: 8,
+          height: 56,
+          paddingBottom: 0,
+          paddingTop: 0,
+          justifyContent: 'center',
         },
         tabBarActiveTintColor: theme.colors.text.primary,
         tabBarInactiveTintColor: theme.colors.text.tertiary,
         tabBarLabelStyle: {
-          fontSize: 12,
-          marginTop: -2,
+          fontSize: 13,
+          fontFamily: 'Inter_600SemiBold',
+          marginTop: 0,
+          marginBottom: 0,
+        },
+        tabBarShowIcon: false,
+        tabBarIconStyle: { height: 0, width: 0 },
+        tabBarItemStyle: {
+          justifyContent: 'center',
+          alignItems: 'center',
+          paddingTop: 0,
+          paddingBottom: 0,
         },
       }}
     >
       <MainTab.Screen
         name="Home"
         component={HomeScreen}
-        options={{ tabBarLabel: 'Home', tabBarIcon: ({ focused }) => <TabIcon label="🏠" focused={focused} /> }}
+        options={{ tabBarIcon: () => null, tabBarLabel: 'Home' }}
       />
       <MainTab.Screen
         name="Quest"
         component={QuestScreen}
-        options={{ tabBarLabel: 'Quests', tabBarIcon: ({ focused }) => <TabIcon label="✦" focused={focused} /> }}
+        options={{ tabBarIcon: () => null, tabBarLabel: 'Quests' }}
       />
       <MainTab.Screen
         name="Meditation"
         component={MeditationScreen}
-        options={{ tabBarLabel: 'Meditation', tabBarIcon: ({ focused }) => <TabIcon label="🧘" focused={focused} /> }}
+        options={{ tabBarIcon: () => null, tabBarLabel: 'Meditation' }}
       />
       <MainTab.Screen
         name="Shop"
         component={ShopScreen}
-        options={{ tabBarLabel: 'Shop', tabBarIcon: ({ focused }) => <TabIcon label="💎" focused={focused} /> }}
+        options={{ tabBarIcon: () => null, tabBarLabel: 'Shop' }}
       />
     </MainTab.Navigator>
   );

@@ -230,9 +230,9 @@ const styles = StyleSheet.create({
     container: { flex: 1, paddingHorizontal: 20 },
 
     header: { alignItems: 'center', paddingTop: 24, paddingBottom: 12 },
-    logo: { fontSize: 28, fontFamily: 'Fraunces_500Medium', color: theme.colors.text.primary, marginBottom: 4 },
-    subtitle: { fontSize: 15, color: theme.colors.text.secondary, fontFamily: 'DMSans_400Regular' },
-    mvpNote: { fontSize: 12, color: theme.colors.text.tertiary, textAlign: 'center', marginBottom: 16, fontFamily: 'DMSans_400Regular' },
+    logo: { fontSize: 28, fontFamily: 'Manrope_600SemiBold', color: theme.colors.text.primary, marginBottom: 4 },
+    subtitle: { fontSize: 15, color: theme.colors.text.secondary, fontFamily: 'Inter_400Regular' },
+    mvpNote: { fontSize: 12, color: theme.colors.text.tertiary, textAlign: 'center', marginBottom: 16, fontFamily: 'Inter_400Regular' },
 
     // 캐릭터 목록
     charList: { paddingBottom: 16, gap: 12 },
@@ -251,30 +251,30 @@ const styles = StyleSheet.create({
     charEmojiWrap: { width: 52, height: 52, borderRadius: 26, justifyContent: 'center', alignItems: 'center' },
     charEmoji: { fontSize: 26 },
     charInfo: { flex: 1 },
-    charName: { fontSize: 17, fontFamily: 'Fraunces_500Medium', color: theme.colors.text.primary, marginBottom: 2 },
-    charTagline: { fontSize: 12, color: theme.colors.text.secondary, fontFamily: 'DMSans_400Regular' },
+    charName: { fontSize: 17, fontFamily: 'Manrope_600SemiBold', color: theme.colors.text.primary, marginBottom: 2 },
+    charTagline: { fontSize: 12, color: theme.colors.text.secondary, fontFamily: 'Inter_400Regular' },
     checkCircle: { width: 26, height: 26, borderRadius: 13, borderWidth: 2, borderColor: theme.colors.border, justifyContent: 'center', alignItems: 'center' },
     checkMark: { fontSize: 13, fontWeight: '700', color: theme.colors.text.primary },
     lockBadge: { backgroundColor: theme.colors.surface2, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 10 },
-    lockText: { fontSize: 12, color: theme.colors.text.tertiary, fontFamily: 'DMSans_600SemiBold' },
+    lockText: { fontSize: 12, color: theme.colors.text.tertiary, fontFamily: 'Inter_600SemiBold' },
 
     // 선택 버튼
     nextBtn: { backgroundColor: theme.colors.primary, borderRadius: 16, height: 54, justifyContent: 'center', alignItems: 'center', marginBottom: 24 },
     nextBtnDisabled: { backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.border },
-    nextBtnText: { fontSize: 16, fontFamily: 'DMSans_700Bold', color: theme.colors.text.primary },
+    nextBtnText: { fontSize: 16, fontFamily: 'Inter_700Bold', color: theme.colors.text.primary },
 
     // 확인 화면
     confirmContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 32, gap: 16 },
     bigCharCircle: { width: 130, height: 130, borderRadius: 65, backgroundColor: theme.colors.surface, justifyContent: 'center', alignItems: 'center', borderWidth: 2, marginBottom: 8 },
     bigEmoji: { fontSize: 60 },
-    confirmName: { fontSize: 32, fontFamily: 'Fraunces_500Medium', color: theme.colors.text.primary },
-    confirmTagline: { fontSize: 14, color: theme.colors.text.secondary, fontFamily: 'DMSans_400Regular' },
-    confirmPersonality: { fontSize: 14, color: theme.colors.text.secondary, fontFamily: 'DMSans_400Regular', textAlign: 'center', lineHeight: 22 },
+    confirmName: { fontSize: 32, fontFamily: 'Manrope_600SemiBold', color: theme.colors.text.primary },
+    confirmTagline: { fontSize: 14, color: theme.colors.text.secondary, fontFamily: 'Inter_400Regular' },
+    confirmPersonality: { fontSize: 14, color: theme.colors.text.secondary, fontFamily: 'Inter_400Regular', textAlign: 'center', lineHeight: 22 },
     levelBadge: { backgroundColor: 'rgba(99,102,241,0.15)', paddingHorizontal: 18, paddingVertical: 8, borderRadius: 20, borderWidth: 1, borderColor: theme.colors.primary },
-    levelBadgeText: { fontSize: 13, color: theme.colors.accent, fontFamily: 'DMSans_600SemiBold' },
+    levelBadgeText: { fontSize: 13, color: theme.colors.accent, fontFamily: 'Inter_600SemiBold' },
     confirmBtns: { flexDirection: 'row', gap: 12, marginTop: 8, width: '100%' },
     backBtn: { flex: 1, height: 50, borderRadius: 14, backgroundColor: theme.colors.surface, justifyContent: 'center', alignItems: 'center' },
-    backBtnText: { fontSize: 15, color: theme.colors.text.secondary, fontFamily: 'DMSans_600SemiBold' },
+    backBtnText: { fontSize: 15, color: theme.colors.text.secondary, fontFamily: 'Inter_600SemiBold' },
     startBtn: { flex: 2, height: 50, borderRadius: 14, justifyContent: 'center', alignItems: 'center' },
-    startBtnText: { fontSize: 16, fontFamily: 'DMSans_700Bold', color: theme.colors.text.primary },
+    startBtnText: { fontSize: 16, fontFamily: 'Inter_700Bold', color: theme.colors.text.primary },
 });

@@ -63,6 +63,6 @@ const styles = StyleSheet.create({
         fontSize: 13,
         fontWeight: '600',
         color: theme.colors.text.primary,
-        fontFamily: 'DMSans_600SemiBold',
+        fontFamily: 'Inter_600SemiBold',
     },
 });

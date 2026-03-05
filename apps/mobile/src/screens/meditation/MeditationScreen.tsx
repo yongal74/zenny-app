@@ -13,6 +13,7 @@ import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useQuery } from '@tanstack/react-query';
 import { theme } from '../../constants/theme';
 import { useCharacterStore } from '../../stores/characterStore';
@@ -23,7 +24,7 @@ import { apiClient } from '../../utils/api';
 const TYPE_EMOJI: Record<string, string> = {
   breathing: '🌬️',
   bodyscan: '🧘',
-  guided: '✿',
+  guided: '🔮',
   nature: '🌿',
 };
 const TYPE_LABEL_KO: Record<string, string> = {
@@ -80,6 +81,7 @@ export function MeditationScreen(): React.JSX.Element {
   }
 
   return (
+    <View style={{ flex: 1, backgroundColor: theme.colors.bg }}>
     <SafeAreaView style={s.safe} edges={['top']}>
       <ScrollView style={s.scroll} showsVerticalScrollIndicator={false}>
         <View style={s.header}>
@@ -125,9 +127,7 @@ export function MeditationScreen(): React.JSX.Element {
                       onPress={() => setSelectedTrack(track)}
                       activeOpacity={0.85}
                     >
-                      <View style={[s.trackCardIcon, { backgroundColor: TYPE_ICON_BG[track.type] ?? 'rgba(136,136,160,0.15)' }]}>
-                        <Text style={s.trackEmoji}>{TYPE_EMOJI[track.type] ?? '✿'}</Text>
-                      </View>
+                      <View style={[s.trackCardIcon, { backgroundColor: TYPE_ICON_BG[track.type] ?? 'rgba(136,136,160,0.15)' }]} />
                       <Text style={s.trackCardTitle} numberOfLines={2}>
                         {lang === 'ko' ? (track.titleKo || track.title) : track.title}
                       </Text>
@@ -162,9 +162,7 @@ export function MeditationScreen(): React.JSX.Element {
                     onPress={() => setSelectedTrack(track)}
                     activeOpacity={0.8}
                   >
-                    <View style={[s.trackListIcon, { backgroundColor: TYPE_ICON_BG[track.type] ?? 'rgba(136,136,160,0.15)' }]}>
-                      <Text style={s.trackListEmoji}>{TYPE_EMOJI[track.type] ?? '✿'}</Text>
-                    </View>
+                    <View style={[s.trackListIcon, { backgroundColor: TYPE_ICON_BG[track.type] ?? 'rgba(136,136,160,0.15)' }]} />
                     <View style={{ flex: 1 }}>
                       <Text style={s.trackListTitle} numberOfLines={1}>
                         {lang === 'ko' ? (track.titleKo || track.title) : track.title}
@@ -185,69 +183,70 @@ export function MeditationScreen(): React.JSX.Element {
         )}
       </ScrollView>
     </SafeAreaView>
+    </View>
   );
 }
 
 const s = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: theme.colors.bg },
+  safe: { flex: 1 },
   scroll: { flex: 1 },
 
-  header: { padding: theme.spacing.xxl, paddingBottom: theme.spacing.lg },
+  header: { paddingHorizontal: theme.spacing.xxl, paddingTop: theme.spacing.xxl, paddingBottom: theme.spacing.lg },
   title: { ...theme.typography.h2, color: theme.colors.text.primary },
-  subtitle: { ...theme.typography.body3, color: theme.colors.text.secondary, marginTop: 4 },
+  subtitle: { ...theme.typography.body3, color: theme.colors.text.secondary, marginTop: 6 },
 
-  section: { paddingHorizontal: theme.spacing.xl, marginBottom: theme.spacing.xl },
-  sectionTitle: { ...theme.typography.bold1, color: theme.colors.text.primary, marginBottom: theme.spacing.md },
+  section: { paddingHorizontal: theme.spacing.xl, marginBottom: theme.spacing.xxl },
+  sectionTitle: { ...theme.typography.bold1, color: theme.colors.text.primary, marginBottom: theme.spacing.lg },
 
-  // 추천 카드 (가로 스크롤)
-  trackRow: { gap: theme.spacing.md, paddingRight: theme.spacing.sm },
+  // 추천 카드 (가로 스크롤) — 글래스모피즘
+  trackRow: { gap: theme.spacing.md, paddingRight: theme.spacing.xl },
   trackCard: {
-    width: 140,
-    backgroundColor: theme.colors.surface,
-    borderRadius: theme.radius.lg,
-    padding: theme.spacing.md,
-    gap: theme.spacing.sm,
+    width: 148,
+    backgroundColor: theme.colors.glass,
+    borderWidth: 1,
+    borderColor: theme.colors.glassBorder,
+    borderRadius: theme.radius.xl,
+    padding: theme.spacing.lg,
+    gap: 10,
   },
   trackCardIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: theme.colors.bg,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  trackEmoji: { fontSize: 22 },
-  trackCardTitle: { ...theme.typography.label, color: theme.colors.text.primary, lineHeight: 18 },
-  // 11→12px
+  trackEmoji: { fontSize: 24 },
+  trackCardTitle: { ...theme.typography.bold2, color: theme.colors.text.primary, lineHeight: 20 },
   trackCardDur: { ...theme.typography.caption, color: theme.colors.text.tertiary },
 
-  // 전체 트랙 리스트
+  // 전체 트랙 리스트 — 글래스모피즘
   trackListItem: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 14,
-    backgroundColor: theme.colors.surface,
-    borderRadius: theme.radius.md,
-    padding: theme.spacing.md,
-    marginBottom: theme.spacing.sm,
-    minHeight: theme.minTouchTarget,
+    backgroundColor: theme.colors.glass,
+    borderWidth: 1,
+    borderColor: theme.colors.glassBorder,
+    borderRadius: theme.radius.lg,
+    padding: theme.spacing.lg,
+    marginBottom: 10,
+    minHeight: 64,
   },
   trackListIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: theme.colors.bg,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  trackListEmoji: { fontSize: 22 },
-  trackListTitle: { ...theme.typography.label, color: theme.colors.text.primary },
-  // 11→12px
-  trackListType: { ...theme.typography.caption, color: theme.colors.text.tertiary, marginTop: 2 },
+  trackListEmoji: { fontSize: 24 },
+  trackListTitle: { ...theme.typography.bold2, color: theme.colors.text.primary },
+  trackListType: { ...theme.typography.caption, color: theme.colors.text.tertiary, marginTop: 3 },
   trackListDur: { ...theme.typography.body3, color: theme.colors.text.secondary },
 
   // 빈 상태
-  emptyState: { alignItems: 'center', padding: 40, gap: 12 },
-  emptyEmoji: { fontSize: 40 },
-  emptyText: { ...theme.typography.body2, color: theme.colors.text.secondary, textAlign: 'center' },
+  emptyState: { alignItems: 'center', padding: 48, gap: 12 },
+  emptyEmoji: { fontSize: 44 },
+  emptyText: { ...theme.typography.body2, color: theme.colors.text.secondary, textAlign: 'center', lineHeight: 22 },
 });

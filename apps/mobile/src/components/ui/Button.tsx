@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
   },
   fullWidth: { width: '100%' },
   disabled: { opacity: 0.4 },
-  label: { fontFamily: 'DMSans_600SemiBold' },
+  label: { fontFamily: 'Inter_600SemiBold' },
   icon: { fontSize: 18 },
 });
 

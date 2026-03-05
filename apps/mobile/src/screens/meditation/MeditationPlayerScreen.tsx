@@ -187,7 +187,7 @@ export function MeditationPlayerScreen({ track, onClose, lang = 'en' }: Meditati
 
     return (
         <SafeAreaView style={s.safe} edges={['top', 'bottom']}>
-            <LinearGradient colors={theme.gradients.aurora1} start={{ x: 0.3, y: 0 }} end={{ x: 0.7, y: 1 }} style={s.container}>
+            <View style={s.container}>
                 {/* 헤더 */}
                 <View style={s.header}>
                     <TouchableOpacity onPress={onClose} style={s.closeBtn}>
@@ -201,7 +201,9 @@ export function MeditationPlayerScreen({ track, onClose, lang = 'en' }: Meditati
                 <View style={s.centerArea}>
                     <Animated.View style={[s.outerGlow, { backgroundColor: typeGlow, transform: [{ scale: glowAnim }] }]} />
                     <Animated.View style={[s.breathCircle, { borderColor: typeColor + '40', transform: [{ scale: breathAnim }] }]}>
-                        <Text style={s.breathEmoji}>✿</Text>
+                        <Text style={s.breathEmoji}>
+                            {track.type === 'breathing' ? '🌬️' : track.type === 'guided' ? '🔮' : track.type === 'nature' ? '🌿' : '🧘'}
+                        </Text>
                     </Animated.View>
                     {showBreath && playing && (
                         <Text style={[s.phaseText, { color: typeColor }]}>
@@ -253,7 +255,7 @@ export function MeditationPlayerScreen({ track, onClose, lang = 'en' }: Meditati
                             : `Earn ${track.type === 'breathing' ? 30 : 50} Zen Coins on completion ✦`}
                     </Text>
                 )}
-            </LinearGradient>
+            </View>
 
             {/* ─── 완료 리워드 모달 (gold 강조) ─────────────────────── */}
             <Modal visible={showRewardModal} transparent animationType="none">
@@ -301,7 +303,7 @@ const CIRCLE = W * 0.52;
 
 const s = StyleSheet.create({
     safe: { flex: 1, backgroundColor: theme.colors.bg },
-    container: { flex: 1, alignItems: 'center', paddingHorizontal: 24 },
+    container: { flex: 1, alignItems: 'center', paddingHorizontal: 24, backgroundColor: theme.colors.bg },
 
     header: {
         flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
@@ -312,7 +314,7 @@ const s = StyleSheet.create({
         borderRadius: 22, justifyContent: 'center', alignItems: 'center',
     },
     closeText: { fontSize: 13, color: theme.colors.text.secondary, fontWeight: '600' },
-    trackType: { fontSize: 12, letterSpacing: 2, fontFamily: 'DMSans_600SemiBold' },
+    trackType: { fontSize: 12, letterSpacing: 2, fontFamily: 'Inter_600SemiBold' },
 
     centerArea: { flex: 1, justifyContent: 'center', alignItems: 'center' },
     outerGlow: {
@@ -329,12 +331,12 @@ const s = StyleSheet.create({
     breathEmoji: { fontSize: 64 },
     phaseText: {
         position: 'absolute', bottom: -44,
-        fontSize: 18, fontFamily: 'Fraunces_500Medium',
+        fontSize: 18, fontFamily: 'Manrope_600SemiBold',
     },
 
     trackInfo: { alignItems: 'center', gap: 6, marginBottom: 16 },
-    trackTitle: { fontSize: 20, fontFamily: 'Fraunces_500Medium', color: theme.colors.text.primary, textAlign: 'center' },
-    trackDuration: { fontSize: 32, fontFamily: 'DMSans_700Bold', color: theme.colors.text.primary, letterSpacing: 2 },
+    trackTitle: { fontSize: 20, fontFamily: 'Manrope_600SemiBold', color: theme.colors.text.primary, textAlign: 'center' },
+    trackDuration: { fontSize: 32, fontFamily: 'Inter_700Bold', color: theme.colors.text.primary, letterSpacing: 2 },
 
     progressBarBg: { width: '100%', height: 4, backgroundColor: theme.colors.border, borderRadius: 2, marginBottom: 16 },
     progressBarFill: { height: '100%', borderRadius: 2 },
@@ -345,7 +347,7 @@ const s = StyleSheet.create({
         backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.border,
         minHeight: theme.minTouchTarget, justifyContent: 'center',
     },
-    patternText: { fontSize: 12, color: theme.colors.text.tertiary, fontFamily: 'DMSans_600SemiBold' },
+    patternText: { fontSize: 12, color: theme.colors.text.tertiary, fontFamily: 'Inter_600SemiBold' },
 
     controls: { marginBottom: 24 },
     playBtn: { width: 72, height: 72, borderRadius: 36, justifyContent: 'center', alignItems: 'center' },
@@ -353,7 +355,7 @@ const s = StyleSheet.create({
 
     hint: {
         fontSize: 12, color: theme.colors.text.tertiary,
-        fontFamily: 'DMSans_400Regular', marginBottom: 16, textAlign: 'center',
+        fontFamily: 'Inter_400Regular', marginBottom: 16, textAlign: 'center',
     },
 
     // ── 완료 리워드 모달 ──────────────────────────────────────
@@ -397,7 +399,7 @@ const s = StyleSheet.create({
         gap: 24,
     },
     rewardItem: { alignItems: 'center', gap: 4 },
-    rewardValue: { fontSize: 28, fontFamily: 'DMSans_700Bold', color: theme.colors.gold },
+    rewardValue: { fontSize: 28, fontFamily: 'Inter_700Bold', color: theme.colors.gold },
     rewardLabel: { ...theme.typography.labelSm, color: theme.colors.text.tertiary },
     rewardDivider: { width: 1, height: 40, backgroundColor: 'rgba(200,168,96,0.25)' },
     rewardCloseBtn: {

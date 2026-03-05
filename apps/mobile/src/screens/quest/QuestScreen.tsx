@@ -13,6 +13,7 @@ import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity, Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { theme } from '../../constants/theme';
 import { useCharacterStore } from '../../stores/characterStore';
@@ -69,6 +70,7 @@ export function QuestScreen(): React.JSX.Element {
   const barWidth = barProgress.interpolate({ inputRange: [0, 1], outputRange: ['0%', '100%'] });
 
   return (
+    <View style={{ flex: 1, backgroundColor: theme.colors.bg }}>
     <SafeAreaView style={s.safe} edges={['top']}>
       <ScrollView style={s.scroll} showsVerticalScrollIndicator={false}>
         <View style={s.header}>
@@ -157,6 +159,7 @@ export function QuestScreen(): React.JSX.Element {
         </View>
       </ScrollView>
     </SafeAreaView>
+    </View>
   );
 }
 
@@ -175,18 +178,10 @@ function QuestCard({ quest, lang, onComplete, done = false }: {
   return (
     <View style={[s.card, done && s.cardDone]}>
       <View style={s.cardLeft}>
-        {done ? (
-          <Animated.Text style={[s.cardCheck, s.cardCheckDone, { transform: [{ scale }], opacity }]}>
-            ✓
-          </Animated.Text>
-        ) : (
-          <Text style={s.cardCheck}>○</Text>
-        )}
         <View style={{ flex: 1 }}>
           <Text style={[s.cardTitle, done && s.cardTitleDone]}>
             {lang === 'ko' ? quest.titleKo : quest.title}
           </Text>
-          {/* 11→12px */}
           <Text style={s.cardDesc} numberOfLines={1}>{quest.description}</Text>
         </View>
       </View>
@@ -211,28 +206,29 @@ function QuestCard({ quest, lang, onComplete, done = false }: {
 }
 
 const s = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: theme.colors.bg },
+  safe: { flex: 1 },
   scroll: { flex: 1 },
-  header: { padding: theme.spacing.xxl, paddingBottom: theme.spacing.sm },
+  header: { paddingHorizontal: theme.spacing.xxl, paddingTop: theme.spacing.xxl, paddingBottom: theme.spacing.md },
   title: { ...theme.typography.h2, color: theme.colors.text.primary },
-  progressLabel: { ...theme.typography.body3, color: theme.colors.text.secondary, marginTop: 4 },
+  progressLabel: { ...theme.typography.body3, color: theme.colors.text.secondary, marginTop: 6 },
 
   overallBar: {
-    height: 4,
-    backgroundColor: theme.colors.border,
+    height: 3,
+    backgroundColor: 'rgba(255,255,255,0.08)',
     marginHorizontal: theme.spacing.xl,
     marginBottom: theme.spacing.xl,
     borderRadius: 2,
     overflow: 'hidden',
   },
-  overallFill: { height: '100%', backgroundColor: theme.colors.accent, borderRadius: 2 },
+  overallFill: { height: '100%', backgroundColor: theme.colors.tealVivid, borderRadius: 2 },
 
   sectionDivider: {
     ...theme.typography.labelSm,
     color: theme.colors.text.tertiary,
     marginHorizontal: theme.spacing.xl,
-    marginTop: theme.spacing.sm,
+    marginTop: theme.spacing.md,
     marginBottom: theme.spacing.sm,
+    letterSpacing: 0.5,
   },
 
   card: {
@@ -241,70 +237,79 @@ const s = StyleSheet.create({
     justifyContent: 'space-between',
     marginHorizontal: theme.spacing.xl,
     marginBottom: 10,
-    backgroundColor: theme.colors.surface,
-    borderRadius: theme.radius.md,
-    padding: theme.spacing.md,
-    minHeight: theme.minTouchTarget,
+    backgroundColor: theme.colors.glass,
+    borderWidth: 1,
+    borderColor: theme.colors.glassBorder,
+    borderRadius: theme.radius.lg,
+    padding: theme.spacing.lg,
+    minHeight: 64,
   },
-  cardDone: { opacity: 0.5 },
-  cardLeft: { flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1, marginRight: 12 },
-  cardCheck: { fontSize: 18, color: theme.colors.accent, width: 24 },
+  cardDone: { opacity: 0.45 },
+  cardLeft: { flexDirection: 'row', alignItems: 'center', gap: 14, flex: 1, marginRight: 12 },
+  cardCheck: { fontSize: 18, color: 'rgba(255,255,255,0.3)', width: 24 },
   cardCheckDone: { color: theme.colors.tealVivid },
-  cardTitle: { ...theme.typography.label, color: theme.colors.text.primary, marginBottom: 2 },
+  cardTitle: { ...theme.typography.bold2, color: theme.colors.text.primary, marginBottom: 3 },
   cardTitleDone: { textDecorationLine: 'line-through', color: theme.colors.text.tertiary },
-  cardDesc: { ...theme.typography.caption, color: theme.colors.text.tertiary },   // 11→12
-  cardRight: { alignItems: 'flex-end', gap: 6 },
+  cardDesc: { ...theme.typography.caption, color: theme.colors.text.tertiary, lineHeight: 18 },
+  cardRight: { alignItems: 'flex-end', gap: 8 },
   rewardBadge: {
-    backgroundColor: 'rgba(245,158,11,0.15)',
-    paddingHorizontal: 10,
-    paddingVertical: 3,
+    backgroundColor: 'rgba(200,168,96,0.15)',
+    paddingHorizontal: 12,
+    paddingVertical: 4,
     borderRadius: theme.radius.pill,
+    borderWidth: 1,
+    borderColor: 'rgba(200,168,96,0.25)',
   },
   rewardText: { ...theme.typography.bold3, color: theme.colors.gold },
-  // paddingVertical 6→10, minHeight 44
   completeBtn: {
-    backgroundColor: theme.colors.primary,
-    paddingHorizontal: 12,
+    backgroundColor: 'rgba(124,58,237,0.8)',
+    paddingHorizontal: 14,
     paddingVertical: 10,
-    borderRadius: theme.radius.sm,
+    borderRadius: theme.radius.md,
     minHeight: theme.minTouchTarget,
     justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(124,58,237,0.5)',
   },
-  completeBtnText: { ...theme.typography.bold3, color: theme.colors.text.primary },
+  completeBtnText: { ...theme.typography.bold3, color: '#fff' },
 
-  emptyState: { alignItems: 'center', padding: 40, gap: 12 },
+  emptyState: { alignItems: 'center', padding: 48, gap: 12 },
   emptyEmoji: { fontSize: 48 },
-  emptyText: { ...theme.typography.body2, color: theme.colors.text.secondary, textAlign: 'center' },
+  emptyText: { ...theme.typography.body2, color: theme.colors.text.secondary, textAlign: 'center', lineHeight: 22 },
   retryBtn: {
     marginTop: 4,
-    backgroundColor: theme.colors.surface2,
+    backgroundColor: theme.colors.glass,
     paddingHorizontal: 24,
     paddingVertical: 10,
     borderRadius: theme.radius.pill,
     minHeight: theme.minTouchTarget,
     justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: theme.colors.glassBorder,
   },
   retryBtnText: { ...theme.typography.label, color: theme.colors.text.primary },
 
   allDoneCard: {
     marginHorizontal: theme.spacing.xl,
     marginBottom: theme.spacing.lg,
-    backgroundColor: theme.colors.surface,
-    borderRadius: theme.radius.md,
+    backgroundColor: 'rgba(45,212,191,0.08)',
+    borderRadius: theme.radius.lg,
     padding: theme.spacing.lg,
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(45,212,191,0.2)',
   },
-  allDoneText: { ...theme.typography.label, color: theme.colors.text.primary },
+  allDoneText: { ...theme.typography.bold2, color: theme.colors.tealVivid },
 
   tipCard: {
     marginHorizontal: theme.spacing.xl,
     marginBottom: theme.spacing.xxl,
     marginTop: theme.spacing.sm,
-    backgroundColor: theme.glow.soft,
-    borderRadius: theme.radius.md,
-    padding: theme.spacing.md,
+    backgroundColor: 'rgba(124,58,237,0.08)',
+    borderRadius: theme.radius.lg,
+    padding: theme.spacing.lg,
     borderWidth: 1,
-    borderColor: theme.glow.medium,
+    borderColor: 'rgba(124,58,237,0.2)',
   },
-  tipText: { ...theme.typography.body3, color: theme.colors.text.secondary, lineHeight: 20 },
+  tipText: { ...theme.typography.body3, color: theme.colors.text.secondary, lineHeight: 22 },
 });

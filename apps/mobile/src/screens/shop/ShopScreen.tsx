@@ -21,7 +21,7 @@ import { useCharacterStore } from '../../stores/characterStore';
 import { apiClient } from '../../utils/api';
 
 const COIN_PACKAGES = [
-  { id: 'coins-100',  label: '100 Zen Coins',   coins: 100,  price: '$0.99',  emoji: '✦' },
+  { id: 'coins-100',  label: '100 Zen Coins',   coins: 100,  price: '$0.99',  emoji: '⭐' },
   { id: 'coins-500',  label: '500 Zen Coins',   coins: 500,  price: '$3.99',  emoji: '💎', popular: true },
   { id: 'coins-1200', label: '1,200 Zen Coins', coins: 1200, price: '$7.99',  emoji: '🌟' },
   { id: 'coins-3000', label: '3,000 Zen Coins', coins: 3000, price: '$14.99', emoji: '👑' },
@@ -58,7 +58,7 @@ export function ShopScreen(): React.JSX.Element {
   };
 
   return (
-    <LinearGradient colors={theme.gradients.aurora2} start={{ x: 0.3, y: 0 }} end={{ x: 0.7, y: 1 }} style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: theme.colors.bg }}>
     <SafeAreaView style={s.safe} edges={['top']}>
       <ScrollView style={s.scroll} showsVerticalScrollIndicator={false}>
         <View style={s.header}>
@@ -78,7 +78,6 @@ export function ShopScreen(): React.JSX.Element {
           activeOpacity={0.85}
         >
           <View style={s.customizeLeft}>
-            <Text style={s.customizeEmoji}>✿</Text>
             <View>
               <Text style={s.customizeTitle}>
                 {lang === 'ko' ? '캐릭터 꾸미기' : 'Customize Character'}
@@ -143,7 +142,7 @@ export function ShopScreen(): React.JSX.Element {
 
       <CustomizeModal visible={showCustomize} onClose={() => setShowCustomize(false)} />
     </SafeAreaView>
-    </LinearGradient>
+    </View>
   );
 }
 
@@ -164,7 +163,7 @@ const s = StyleSheet.create({
     gap: 4,
   },
   balanceLabel: { ...theme.typography.labelSm, color: theme.colors.gold },
-  balanceAmount: { fontSize: 28, color: theme.colors.gold, fontFamily: 'DMSans_700Bold' },
+  balanceAmount: { fontSize: 28, color: theme.colors.gold, fontFamily: 'Inter_700Bold' },
 
   customizeCard: {
     flexDirection: 'row',
@@ -195,18 +194,19 @@ const s = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: theme.colors.surface,
+    backgroundColor: theme.colors.glass,
     borderRadius: theme.radius.lg,
     padding: theme.spacing.lg,
     marginBottom: 10,
-    borderWidth: 1.5,
-    borderColor: 'transparent',
+    borderWidth: 1,
+    borderColor: theme.colors.glassBorder,
     position: 'relative',
-    minHeight: theme.minTouchTarget,
+    minHeight: 64,
   },
   coinPackagePopular: {
     borderColor: theme.colors.gold,
     backgroundColor: 'rgba(200,168,96,0.08)',
+    marginTop: 10,
   },
   coinPackageLeft: { flexDirection: 'row', alignItems: 'center', gap: 14 },
   coinPackageEmoji: { fontSize: 28 },
@@ -235,8 +235,10 @@ const s = StyleSheet.create({
   popularText: { ...theme.typography.labelSm, color: theme.colors.bg },
 
   infoCard: {
-    backgroundColor: theme.colors.surface,
-    borderRadius: theme.radius.md,
+    backgroundColor: theme.colors.glass,
+    borderWidth: 1,
+    borderColor: theme.colors.glassBorder,
+    borderRadius: theme.radius.lg,
     padding: theme.spacing.lg,
   },
   infoText: { ...theme.typography.body3, color: theme.colors.text.tertiary, textAlign: 'center' },
