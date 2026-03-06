@@ -75,6 +75,25 @@ router.post('/feed', async (req: Request, res: Response) => {
     return res.json({ hunger: newHunger, mood: newMood, coinsSpent: 5, remainingCoins: user.zenCoins - 5 });
 });
 
+// ─── POST /api/character/switch-type — 캐릭터 타입 변경 ──────
+router.post('/switch-type', async (req: Request, res: Response) => {
+    const { userId } = req as any;
+    const { characterType } = req.body as { characterType: string };
+
+    const VALID_TYPES = ['hana', 'sora', 'tora', 'mizu', 'kaze'];
+    if (!VALID_TYPES.includes(characterType)) {
+        return res.status(400).json({ error: 'Invalid character type' });
+    }
+
+    const updated = await prisma.character.update({
+        where: { userId },
+        data: { characterType },
+    });
+
+    console.warn(`[Zenny:Character] switch-type — userId=${userId} type=${characterType}`);
+    return res.json({ character: updated });
+});
+
 // ─── GET /api/character/owned — 보유 아이템 목록 ─────────────
 router.get('/owned', async (req: Request, res: Response) => {
     const { userId } = req as any;

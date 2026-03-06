@@ -39,7 +39,7 @@ const HISTORY_MAX_H = SCREEN_HEIGHT * 0.38;
 
 // 캐릭터 인라인 아바타용 간이 이모지 맵
 const CHAR_EMOJI: Record<string, string> = {
-  hana: '✿', sora: '☁', tora: '🦊', mizu: '💧', kaze: '🍃',
+  hana: '🌸', sora: '🌤️', tora: '🦊', mizu: '💧', kaze: '🍃',
 };
 
 export function AICoachScreen(): React.JSX.Element {
@@ -413,10 +413,10 @@ const styles = StyleSheet.create({
     gap: theme.spacing.lg,
   },
   pureFocusText: {
-    fontSize: 20,
+    fontSize: 38,
     fontWeight: '700',
     color: theme.colors.text.primary,
-    lineHeight: 30,
+    lineHeight: 50,
     fontFamily: 'Inter_700Bold',
   },
   typingDots: {

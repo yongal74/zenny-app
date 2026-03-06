@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   View, Text, ScrollView, StyleSheet, TouchableOpacity, Modal,
-  TextInput, KeyboardAvoidingView, Platform, Animated,
+  TextInput, KeyboardAvoidingView, Platform, Animated, Vibration,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -27,8 +27,9 @@ const EMOTIONS = [
 
 export function HomeScreen(): React.JSX.Element {
   const navigation = useNavigation<HomeNavProp>();
-  const { character, lang, zenCoins, updateExp, setZenCoins, setCharacter } = useCharacterStore();
+  const { character, lang, zenCoins, updateExp, setZenCoins, setCharacterType } = useCharacterStore();
   const [showCheckin, setShowCheckin] = useState(false);
+  const [showCharSwitch, setShowCharSwitch] = useState(false);
 
   const greeting = lang === 'ko' ? '좋은 하루예요' : 'Good day';
   const dateStr = new Date().toLocaleDateString(lang === 'ko' ? 'ko-KR' : 'en-US', {
@@ -68,12 +69,18 @@ export function HomeScreen(): React.JSX.Element {
           </View>
 
           {/* 캐릭터 카드 */}
-          <View style={styles.characterCard}>
+          <TouchableOpacity
+            style={styles.characterCard}
+            activeOpacity={1}
+            onLongPress={() => { Vibration.vibrate(40); setShowCharSwitch(true); }}
+            delayLongPress={500}
+          >
             <CharacterDisplay
               characterType={character?.characterType ?? 'hana'}
               level={level}
               bgTheme={character?.bgTheme ?? 'starlight'}
             />
+            <Text style={styles.charHint}>Hold to change character</Text>
 
             {/* EXP 바 */}
             <View style={styles.expBarWrapper}>
@@ -85,7 +92,7 @@ export function HomeScreen(): React.JSX.Element {
                 <Animated.View style={[styles.expBarFill, { width: expBarWidth }]} />
               </View>
             </View>
-          </View>
+          </TouchableOpacity>
 
           {/* 오늘 기분 + AI 코치 */}
           <View style={styles.section}>
@@ -123,6 +130,14 @@ export function HomeScreen(): React.JSX.Element {
           </View>
         </ScrollView>
 
+        {/* 캐릭터 변경 모달 */}
+        <CharacterSwitchModal
+          visible={showCharSwitch}
+          currentType={character?.characterType ?? 'hana'}
+          onClose={() => setShowCharSwitch(false)}
+          onSwitch={(type) => { setCharacterType(type); setShowCharSwitch(false); }}
+        />
+
         {/* 감정 체크인 모달 */}
         <EmotionCheckinModal
           visible={showCheckin}
@@ -139,6 +154,115 @@ export function HomeScreen(): React.JSX.Element {
     </View>
   );
 }
+
+// ────────── 캐릭터 변경 모달 ──────────
+const CHARACTER_OPTIONS: Array<{
+  type: string;
+  emoji: string;
+  name: string;
+  tagline: string;
+  color: string;
+}> = [
+  { type: 'hana', emoji: '✿',  name: 'Hana', tagline: 'Warm & Nurturing',       color: '#7EECD4' },
+  { type: 'sora', emoji: '🌤️', name: 'Sora', tagline: 'Calm & Intellectual',    color: '#A0C4E8' },
+  { type: 'tora', emoji: '🦊', name: 'Tora', tagline: 'Energetic & Bold',       color: '#E8C0A0' },
+  { type: 'mizu', emoji: '💧', name: 'Mizu', tagline: 'Gentle & Empathetic',    color: '#A0D8E8' },
+  { type: 'kaze', emoji: '🍃', name: 'Kaze', tagline: 'Free-Spirited & Intuitive', color: '#A0E8B0' },
+];
+
+function CharacterSwitchModal({
+  visible, currentType, onClose, onSwitch,
+}: {
+  visible: boolean;
+  currentType: string;
+  onClose: () => void;
+  onSwitch: (type: string) => void;
+}): React.JSX.Element {
+  const handleSwitch = async (type: string): Promise<void> => {
+    onSwitch(type);
+    try {
+      await apiClient.post('/character/switch-type', { characterType: type });
+    } catch {
+      // 로컬 상태는 이미 변경됨, 백엔드 실패는 무시
+    }
+  };
+
+  return (
+    <Modal visible={visible} animationType="slide" transparent presentationStyle="overFullScreen">
+      <View style={styles.modalOverlay}>
+        <View style={[styles.modalSheet, { gap: 0 }]}>
+          <View style={styles.modalHeader}>
+            <Text style={styles.modalTitle}>Choose Your Character</Text>
+            <TouchableOpacity onPress={onClose} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+              <Text style={styles.modalClose}>✕</Text>
+            </TouchableOpacity>
+          </View>
+          <Text style={[styles.charHint, { marginBottom: 20, opacity: 1 }]}>
+            Your companion on the mindfulness journey
+          </Text>
+          {CHARACTER_OPTIONS.map((opt) => {
+            const isActive = opt.type === currentType;
+            return (
+              <TouchableOpacity
+                key={opt.type}
+                style={[switchStyles.charRow, isActive && { borderColor: opt.color, backgroundColor: `${opt.color}12` }]}
+                activeOpacity={0.8}
+                onPress={() => { void handleSwitch(opt.type); }}
+              >
+                <View style={[switchStyles.charCircle, { borderColor: opt.color }]}>
+                  <Text style={switchStyles.charEmoji}>{opt.emoji}</Text>
+                </View>
+                <View style={switchStyles.charInfo}>
+                  <Text style={switchStyles.charName}>{opt.name}</Text>
+                  <Text style={switchStyles.charTagline}>{opt.tagline}</Text>
+                </View>
+                {isActive && (
+                  <View style={[switchStyles.activeBadge, { backgroundColor: `${opt.color}22`, borderColor: opt.color }]}>
+                    <Text style={[switchStyles.activeBadgeText, { color: opt.color }]}>Active</Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      </View>
+    </Modal>
+  );
+}
+
+const switchStyles = StyleSheet.create({
+  charRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.radius.lg,
+    padding: theme.spacing.md,
+    marginBottom: 10,
+    borderWidth: 1.5,
+    borderColor: 'transparent',
+  },
+  charCircle: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    borderWidth: 2,
+    backgroundColor: theme.colors.bg,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  charEmoji: { fontSize: 26 },
+  charInfo: { flex: 1 },
+  charName: { ...theme.typography.bold1, color: theme.colors.text.primary },
+  charTagline: { ...theme.typography.body3, color: theme.colors.text.secondary, marginTop: 2 },
+  activeBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: theme.radius.pill,
+    borderWidth: 1,
+  },
+  activeBadgeText: { fontSize: 12, fontFamily: 'Inter_600SemiBold' },
+});
 
 // ────────── 감정 체크인 모달 ──────────
 function EmotionCheckinModal({
@@ -338,6 +462,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 20,
   },
+  charHint: { ...theme.typography.caption, color: theme.colors.text.tertiary, opacity: 0.6, letterSpacing: 0.3 },
   expBarWrapper: { width: '100%', gap: 6 },
   expRowLabel: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   levelBadgeText: { ...theme.typography.labelSm, color: theme.colors.accent },

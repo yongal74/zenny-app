@@ -56,7 +56,9 @@ function MainTabs() {
           backgroundColor: theme.colors.bottomBar,
           borderTopColor: 'rgba(200,200,240,0.08)',
           borderTopWidth: 1,
-          height: 56,
+          height: Platform.OS === 'ios' ? 80 : 64,
+          paddingBottom: Platform.OS === 'ios' ? 20 : 6,
+          paddingTop: 6,
         },
         tabBarShowLabel: false,
         tabBarIconStyle: {
@@ -67,7 +69,6 @@ function MainTabs() {
         tabBarItemStyle: {
           justifyContent: 'center',
           alignItems: 'center',
-          paddingTop: 6,
         },
       }}
     >

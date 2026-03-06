@@ -11,7 +11,7 @@ interface CharacterDisplayProps {
 }
 
 const CHARACTER_DATA: Record<string, { emoji: string; body: string; color: string; glow: string }> = {
-  hana: { emoji: '✿',  body: '✿',  color: '#7EECD4', glow: 'rgba(126,236,212,0.18)' }, // 에메랄드 민트 (틸 계열)
+  hana: { emoji: '🌸', body: '🌸', color: '#7EECD4', glow: 'rgba(126,236,212,0.22)' }, // 에메랄드 민트 (틸 계열)
   sora: { emoji: '🌤️', body: '💫', color: '#A0C4E8', glow: 'rgba(160,196,232,0.15)' },
   tora: { emoji: '🦊', body: '🔥', color: '#E8C0A0', glow: 'rgba(232,192,160,0.15)' },
   mizu: { emoji: '💧', body: '🌊', color: '#A0D8E8', glow: 'rgba(160,216,232,0.15)' },
@@ -139,7 +139,7 @@ export function CharacterDisplay({ characterType, level, bgTheme, equippedItems,
           {hatItem && (
             <Text style={[styles.accessoryHat, compact && { fontSize: 20 }]}>{hatItem}</Text>
           )}
-          <View style={[styles.characterBody, { width: SIZE, height: SIZE, borderRadius: SIZE / 2, borderColor: char.color }]}>
+          <View style={[styles.characterBody, { width: SIZE, height: SIZE, borderRadius: SIZE / 2, borderColor: char.color, backgroundColor: char.color + '18' }]}>
             <Text style={[styles.characterEmoji, compact && { fontSize: 36 }]}>{char.emoji}</Text>
             {faceItem && (
               <Text style={[styles.faceItem, compact && { fontSize: 14 }]}>{faceItem}</Text>

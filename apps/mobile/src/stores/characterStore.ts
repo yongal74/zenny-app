@@ -12,6 +12,7 @@ interface CharacterStore {
   setZenCoins: (coins: number) => void;
   equipItem: (slot: ItemSlot, itemId: string) => void;
   updateExp: (amount: number) => void;
+  setCharacterType: (type: string) => void;
 }
 
 export const useCharacterStore = create<CharacterStore>((set) => ({
@@ -40,5 +41,11 @@ export const useCharacterStore = create<CharacterStore>((set) => ({
       const newExp = state.character.exp + amount;
       const newLevel = calcLevel(newExp);
       return { character: { ...state.character, exp: newExp, level: newLevel } };
+    }),
+
+  setCharacterType: (type) =>
+    set((state) => {
+      if (!state.character) return state;
+      return { character: { ...state.character, characterType: type as Character['characterType'] } };
     }),
 }));
