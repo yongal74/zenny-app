@@ -163,7 +163,7 @@ const CHARACTER_OPTIONS: Array<{
   tagline: string;
   color: string;
 }> = [
-  { type: 'hana', emoji: '✿',  name: 'Hana', tagline: 'Warm & Nurturing',       color: '#7EECD4' },
+  { type: 'hana', emoji: '🌸', name: 'Hana', tagline: 'Warm & Nurturing',       color: '#7EECD4' },
   { type: 'sora', emoji: '🌤️', name: 'Sora', tagline: 'Calm & Intellectual',    color: '#A0C4E8' },
   { type: 'tora', emoji: '🦊', name: 'Tora', tagline: 'Energetic & Bold',       color: '#E8C0A0' },
   { type: 'mizu', emoji: '💧', name: 'Mizu', tagline: 'Gentle & Empathetic',    color: '#A0D8E8' },
@@ -209,7 +209,7 @@ function CharacterSwitchModal({
                 activeOpacity={0.8}
                 onPress={() => { void handleSwitch(opt.type); }}
               >
-                <View style={[switchStyles.charCircle, { borderColor: opt.color }]}>
+                <View style={[switchStyles.charCircle, { borderColor: opt.color, backgroundColor: `${opt.color}20` }]}>
                   <Text style={switchStyles.charEmoji}>{opt.emoji}</Text>
                 </View>
                 <View style={switchStyles.charInfo}>
@@ -243,15 +243,14 @@ const switchStyles = StyleSheet.create({
     borderColor: 'transparent',
   },
   charCircle: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
+    width: 64,
+    height: 64,
+    borderRadius: 32,
     borderWidth: 2,
-    backgroundColor: theme.colors.bg,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  charEmoji: { fontSize: 26 },
+  charEmoji: { fontSize: 34 },
   charInfo: { flex: 1 },
   charName: { ...theme.typography.bold1, color: theme.colors.text.primary },
   charTagline: { ...theme.typography.body3, color: theme.colors.text.secondary, marginTop: 2 },
@@ -485,27 +484,27 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   actionBtnPrimary: {
-    backgroundColor: 'rgba(0,217,160,0.07)',
-    borderColor: 'rgba(0,217,160,0.22)',
+    backgroundColor: 'rgba(212,168,80,0.13)',
+    borderColor: 'rgba(212,168,80,0.35)',
   },
   actionBtnSecondary: {
-    backgroundColor: 'rgba(0,180,210,0.07)',
-    borderColor: 'rgba(0,180,210,0.18)',
+    backgroundColor: 'rgba(212,168,80,0.07)',
+    borderColor: 'rgba(212,168,80,0.20)',
   },
   actionBtnIcon: {
     fontSize: 22,
-    color: theme.colors.accent,
+    color: theme.colors.gold,
     marginBottom: 8,
     alignSelf: 'flex-start',
   },
   actionBtnLabel: {
     ...theme.typography.bold1,
-    color: theme.colors.text.primary,
+    color: theme.colors.gold,
     letterSpacing: 0.3,
   },
   actionBtnSub: {
     ...theme.typography.caption,
-    color: theme.colors.text.secondary,
+    color: 'rgba(212,168,80,0.75)',
   },
   actionBtnText: { ...theme.typography.bold2, color: theme.colors.text.primary },
 

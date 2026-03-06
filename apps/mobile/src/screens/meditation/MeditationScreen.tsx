@@ -129,7 +129,7 @@ export function MeditationScreen(): React.JSX.Element {
                       <ImageBackground
                         source={track.imageUrl ? { uri: track.imageUrl } : undefined}
                         style={s.trackCardImage}
-                        imageStyle={{ borderTopLeftRadius: theme.radius.xl, borderTopRightRadius: theme.radius.xl }}
+                        imageStyle={{ borderRadius: 0 }}
                         resizeMode="cover"
                       >
                         <View style={[s.trackCardOverlay, { backgroundColor: TYPE_OVERLAY[track.type] ?? 'rgba(0,100,80,0.35)' }]} />
@@ -222,11 +222,12 @@ const s = StyleSheet.create({
   },
   trackCardImage: {
     width: 148,
-    height: 100,
+    height: 104,
     justifyContent: 'flex-end',
     alignItems: 'flex-start',
     padding: theme.spacing.sm,
     backgroundColor: theme.colors.surface,
+    overflow: 'hidden',
   },
   trackCardOverlay: {
     ...StyleSheet.absoluteFillObject,

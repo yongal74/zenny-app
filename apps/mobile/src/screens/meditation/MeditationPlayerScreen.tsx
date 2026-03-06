@@ -247,7 +247,7 @@ export function MeditationPlayerScreen({ track, onClose, lang = 'en' }: Meditati
                 {/* 컨트롤 */}
                 <View style={s.controls}>
                     <TouchableOpacity style={[s.playBtn, { backgroundColor: typeColor }]} onPress={togglePlay} activeOpacity={0.85}>
-                        <Text style={s.playIcon}>{playing ? '⏸' : '▶'}</Text>
+                        <Text style={s.playIcon}>{playing ? '❚❚' : '▶'}</Text>
                     </TouchableOpacity>
                 </View>
 

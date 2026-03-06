@@ -42,3 +42,5 @@ yarn-error.*
 
 # Large pixel art sprite sheets (use Git LFS in production)
 apps/mobile/assets/characters/*.png
+apps/api/audio/
+zenny-qr.png
