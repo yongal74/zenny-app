@@ -62,6 +62,43 @@ function getInitialQuickReplies(lang: Language): QuickReply[] {
     }));
 }
 
+// ─── OpenAI 불가 시 로컬 폴백 응답 ────────────────────────────
+function getFallbackResponse(message: string, lang: Language, turnCount: number): string {
+    const msg = message.toLowerCase();
+    const isKo = lang === 'ko';
+
+    if (msg.includes('anxi') || msg.includes('worry') || msg.includes('불안')) {
+        return isKo
+            ? '불안함을 느끼고 계시는군요. 4-7-8 호흡을 해보세요: 4초 들이쉬고, 7초 멈추고, 8초 내쉬세요. 부교감신경을 활성화해 불안을 빠르게 줄여줍니다. 지금 한번 해보실까요?'
+            : 'I hear you\'re feeling anxious. Try 4-7-8 breathing: inhale 4s, hold 7s, exhale 8s. This activates your parasympathetic system and reduces anxiety within minutes. Want to try it now?';
+    }
+    if (msg.includes('tired') || msg.includes('exhausted') || msg.includes('피곤') || msg.includes('지쳐')) {
+        return isKo
+            ? '피곤하시군요. 눈을 감고 3번 깊게 숨을 쉬어보세요. 뇌과학적으로 짧은 마음챙김 호흡도 피질의 피로 신호를 줄여줍니다. 지금 잠깐 쉬어가는 건 어떨까요?'
+            : 'You sound tired. Close your eyes and take 3 deep breaths. Even brief mindful breathing reduces cortical fatigue signals. How about a short rest right now?';
+    }
+    if (msg.includes('stress') || msg.includes('스트레스') || msg.includes('힘들')) {
+        return isKo
+            ? '스트레스가 많으시군요. 스토아 철학자 마르쿠스 아우렐리우스는 말했습니다: "우리가 통제할 수 없는 것에 에너지를 쓰지 말라." 지금 내가 통제할 수 있는 것에만 집중해보세요. 무엇이 가장 힘드신가요?'
+            : 'Stress is weighing on you. Marcus Aurelius wrote: "You have power over your mind, not outside events." Let\'s focus only on what you can control. What\'s weighing on you most right now?';
+    }
+    if (msg.includes('happy') || msg.includes('good') || msg.includes('행복') || msg.includes('좋아')) {
+        return isKo
+            ? '좋은 기분이시군요! 긍정적인 감정을 더 깊게 느끼려면, 지금 이 순간 감사한 것 3가지를 생각해보세요. 감사 명상은 옥시토신 분비를 촉진해 행복감을 증폭시킵니다.'
+            : 'That\'s wonderful! To deepen this positive feeling, try naming 3 things you\'re grateful for right now. Gratitude meditation amplifies joy by boosting oxytocin. What are you thankful for today?';
+    }
+    if (msg.includes('sad') || msg.includes('슬픔') || msg.includes('슬퍼')) {
+        return isKo
+            ? '슬픔을 느끼고 계시는군요. 슬픔은 자연스러운 감정이에요. 자애 명상(Loving-Kindness)을 해보세요: "나는 행복하기를, 나는 평안하기를, 나는 건강하기를." 이 연습이 옥시토신을 높여 외로움을 줄여줍니다.'
+            : 'I\'m sorry you\'re feeling sad. Sadness is natural and valid. Try Loving-Kindness meditation: "May I be happy, may I be peaceful, may I be well." This practice increases oxytocin and eases loneliness.';
+    }
+    // 기본 응답 (턴 수에 따라 변화)
+    const defaults = isKo
+        ? ['오늘 어떤 감정을 가장 많이 느끼셨나요? 감정을 인식하는 것 자체가 마음챙김의 시작이에요.', '지금 이 순간, 몸의 어느 부분에 긴장이 느껴지나요? 그 부분에 부드러운 호흡을 보내보세요.', '오늘 하루 중 가장 평화로웠던 순간은 언제였나요?']
+        : ['What emotion stands out most for you today? Simply noticing it is the first step of mindfulness.', 'Right now, where do you feel tension in your body? Try sending a soft breath to that area.', 'What was the most peaceful moment of your day so far?'];
+    return defaults[turnCount % defaults.length];
+}
+
 // ─── AI 응답 생성 (메인) ────────────────────────────────────────
 export async function generateCoachResponse(opts: {
     userId: string;
@@ -92,27 +129,34 @@ export async function generateCoachResponse(opts: {
     // 3. 모델 선택 (비용 최적화)
     const model = turnCount > 15 ? 'gpt-4o' : 'gpt-4o-mini';
 
-    // 4. OpenAI 호출
-    const completion = await getOpenAI().chat.completions.create({
-        model,
-        max_tokens: 200,
-        temperature: 0.72,
-        messages: [
-            { role: 'system', content: getSystemPrompt(lang, characterType) },
-            ...contextMessages.map((m) => ({ role: m.role as 'user' | 'assistant', content: m.content })),
-            { role: 'user', content: message },
-        ],
-    });
-
-    const response = completion.choices[0]?.message?.content ?? '';
+    // 4. OpenAI 호출 (실패 시 로컬 폴백으로 대체)
+    let response = '';
+    let usedModel = model;
+    try {
+        const completion = await getOpenAI().chat.completions.create({
+            model,
+            max_tokens: 200,
+            temperature: 0.72,
+            messages: [
+                { role: 'system', content: getSystemPrompt(lang, characterType) },
+                ...contextMessages.map((m) => ({ role: m.role as 'user' | 'assistant', content: m.content })),
+                { role: 'user', content: message },
+            ],
+        });
+        response = completion.choices[0]?.message?.content ?? '';
+    } catch (err: any) {
+        console.warn('[Zenny:Coach] OpenAI failed, using local fallback:', err?.message ?? err);
+        response = getFallbackResponse(message, lang, turnCount);
+        usedModel = 'fallback';
+    }
 
     // 5. 캐시 저장 (Redis 미연결 시 무시)
-    if (response) try { await redisService.setex(cacheKey, 300, response); } catch { /* skip */ }
+    if (response && usedModel !== 'fallback') try { await redisService.setex(cacheKey, 300, response); } catch { /* skip */ }
 
     // 6. 첫 턴이거나 짧은 메시지 → quickReplies 제공
     const quickReplies = turnCount === 0 ? getInitialQuickReplies(lang) : undefined;
 
-    return { response, quickReplies, model };
+    return { response, quickReplies, model: usedModel };
 }
 
 // ─── 세션 요약 (10턴 초과 시 컨텍스트 압축) ──────────────────

@@ -155,13 +155,17 @@ export function MeditationPlayerScreen({ track, onClose, lang = 'en' }: Meditati
             setPlaying(false);
         } else {
             if (!soundRef.current && track.audioUrl) {
-                const { sound } = await Audio.Sound.createAsync(
-                    { uri: track.audioUrl },
-                    { shouldPlay: true, volume: 1.0 }
-                );
-                soundRef.current = sound;
+                try {
+                    const { sound } = await Audio.Sound.createAsync(
+                        { uri: track.audioUrl },
+                        { shouldPlay: true, volume: 1.0 }
+                    );
+                    soundRef.current = sound;
+                } catch {
+                    // 오디오 URL이 없거나 로드 실패 시 타이머만 진행
+                }
             } else {
-                await soundRef.current?.playAsync();
+                await soundRef.current?.playAsync().catch(() => {});
             }
             intervalRef.current = setInterval(() => {
                 setElapsed((e) => {

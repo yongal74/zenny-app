@@ -61,7 +61,7 @@ export function CustomizeModal({ visible, onClose }: CustomizeModalProps) {
     const handleBuy = useCallback(async (itemId: string, price: number) => {
         const coins = zenCoins;
         if (coins < price) {
-            Alert.alert('Zen Coins 부족', `${price - coins} 코인이 더 필요해요. 상점에서 구매하세요!`);
+            Alert.alert('Not Enough Zen Coins', `You need ${price - coins} more coins. Visit the Shop to get more!`);
             return;
         }
         try {
@@ -70,8 +70,8 @@ export function CustomizeModal({ visible, onClose }: CustomizeModalProps) {
                 useCharacterStore.getState().setZenCoins(data.remainingCoins);
             }
         } catch (e: any) {
-            const msg = e?.response?.data?.error || '구매 실패';
-            Alert.alert('오류', msg);
+            const msg = e?.response?.data?.error || 'Purchase failed. Please try again.';
+            Alert.alert('Error', msg);
         }
     }, []);
 

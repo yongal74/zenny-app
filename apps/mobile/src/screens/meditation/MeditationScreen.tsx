@@ -132,7 +132,6 @@ export function MeditationScreen(): React.JSX.Element {
                         imageStyle={{ borderRadius: theme.radius.xl }}
                       >
                         <View style={[s.trackCardOverlay, { backgroundColor: TYPE_OVERLAY[track.type] ?? 'rgba(0,100,80,0.35)' }]} />
-                        <Text style={s.trackCardEmoji}>{TYPE_EMOJI[track.type] ?? '🧘'}</Text>
                       </ImageBackground>
                       <Text style={s.trackCardTitle} numberOfLines={2}>
                         {lang === 'ko' ? (track.titleKo || track.title) : track.title}
@@ -173,7 +172,6 @@ export function MeditationScreen(): React.JSX.Element {
                       imageStyle={{ borderRadius: theme.radius.md }}
                     >
                       <View style={[StyleSheet.absoluteFill, { borderRadius: theme.radius.md, backgroundColor: TYPE_OVERLAY[track.type] ?? 'rgba(0,100,80,0.35)' }]} />
-                      <Text style={s.trackListEmoji}>{TYPE_EMOJI[track.type] ?? '🧘'}</Text>
                     </ImageBackground>
                     <View style={{ flex: 1 }}>
                       <Text style={s.trackListTitle} numberOfLines={1}>

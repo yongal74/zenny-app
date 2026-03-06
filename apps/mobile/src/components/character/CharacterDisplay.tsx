@@ -11,7 +11,7 @@ interface CharacterDisplayProps {
 }
 
 const CHARACTER_DATA: Record<string, { emoji: string; body: string; color: string; glow: string }> = {
-  hana: { emoji: '🌸', body: '🌸', color: '#E8A0BF', glow: 'rgba(232,160,191,0.15)' },
+  hana: { emoji: '✿',  body: '✿',  color: '#7EECD4', glow: 'rgba(126,236,212,0.18)' }, // 에메랄드 민트 (틸 계열)
   sora: { emoji: '🌤️', body: '💫', color: '#A0C4E8', glow: 'rgba(160,196,232,0.15)' },
   tora: { emoji: '🦊', body: '🔥', color: '#E8C0A0', glow: 'rgba(232,192,160,0.15)' },
   mizu: { emoji: '💧', body: '🌊', color: '#A0D8E8', glow: 'rgba(160,216,232,0.15)' },

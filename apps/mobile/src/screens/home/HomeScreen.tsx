@@ -95,20 +95,28 @@ export function HomeScreen(): React.JSX.Element {
             <View style={styles.btnRow}>
               <TouchableOpacity
                 style={[styles.actionBtn, styles.actionBtnPrimary]}
-                activeOpacity={0.85}
+                activeOpacity={0.82}
                 onPress={() => setShowCheckin(true)}
               >
-                <Text style={styles.actionBtnText}>
-                  {lang === 'ko' ? '기분 기록하기' : 'Log Emotion'}
+                <Text style={styles.actionBtnIcon}>◈</Text>
+                <Text style={styles.actionBtnLabel}>
+                  {lang === 'ko' ? 'Log Emotions' : 'Log Emotions'}
+                </Text>
+                <Text style={styles.actionBtnSub}>
+                  {lang === 'ko' ? '감정 기록 · +100 ✦' : 'Check in · +100 ✦'}
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.actionBtn, styles.actionBtnSecondary]}
-                activeOpacity={0.85}
+                activeOpacity={0.82}
                 onPress={() => navigation.navigate('AICoach')}
               >
-                <Text style={styles.actionBtnText}>
-                  {lang === 'ko' ? 'AI 코치' : 'AI Coach'}
+                <Text style={styles.actionBtnIcon}>✦</Text>
+                <Text style={styles.actionBtnLabel}>
+                  {lang === 'ko' ? 'AI Coach' : 'AI Coach'}
+                </Text>
+                <Text style={styles.actionBtnSub}>
+                  {lang === 'ko' ? '마음 대화' : 'Talk to Zenny'}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -343,14 +351,37 @@ const styles = StyleSheet.create({
   btnRow: { flexDirection: 'row', gap: theme.spacing.md },
   actionBtn: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: theme.radius.lg,
-    minHeight: 130,
-    paddingVertical: 36,
+    alignItems: 'flex-start',
+    justifyContent: 'flex-end',
+    borderRadius: theme.radius.xl,
+    minHeight: 140,
+    padding: theme.spacing.lg,
+    borderWidth: 1,
+    gap: 4,
   },
-  actionBtnPrimary: { backgroundColor: theme.colors.primary },
-  actionBtnSecondary: { backgroundColor: theme.colors.surface2 },
+  actionBtnPrimary: {
+    backgroundColor: 'rgba(0,217,160,0.07)',
+    borderColor: 'rgba(0,217,160,0.22)',
+  },
+  actionBtnSecondary: {
+    backgroundColor: 'rgba(0,180,210,0.07)',
+    borderColor: 'rgba(0,180,210,0.18)',
+  },
+  actionBtnIcon: {
+    fontSize: 22,
+    color: theme.colors.accent,
+    marginBottom: 8,
+    alignSelf: 'flex-start',
+  },
+  actionBtnLabel: {
+    ...theme.typography.bold1,
+    color: theme.colors.text.primary,
+    letterSpacing: 0.3,
+  },
+  actionBtnSub: {
+    ...theme.typography.caption,
+    color: theme.colors.text.secondary,
+  },
   actionBtnText: { ...theme.typography.bold2, color: theme.colors.text.primary },
 
   modalOverlay: { flex: 1, justifyContent: 'flex-end', backgroundColor: theme.colors.overlay },
