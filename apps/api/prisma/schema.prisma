@@ -165,6 +165,7 @@ model MeditationTrack {
   emotion     String?
   audioUrl    String  @default("")
   musicUrl    String?
+  imageUrl    String  @default("")         // 카드 배경 이미지 (Unsplash/CDN)
   duration    Int     @default(120)        // 초 단위 (2분 = 120)
   lang        String  @default("en")       // "en" | "ko"
   weekCreated String  @default("2026-W09") // 생성 주차

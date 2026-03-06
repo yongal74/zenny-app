@@ -75,7 +75,8 @@ export async function generateCoachResponse(opts: {
 
     // 1. Redis 캐시 확인 (동일 패턴 재활용, 5분 TTL)
     const cacheKey = `coach:${lang}:${characterType}:${message.toLowerCase().slice(0, 60)}`;
-    const cached = await redisService.get(cacheKey);
+    let cached: string | null = null;
+    try { cached = await redisService.get(cacheKey); } catch { /* Redis 미연결 시 무시 */ }
     if (cached) return { response: cached, model: 'cache' };
 
     // 2. 10턴 이상 → 컨텍스트 압축 (토큰 절약)
@@ -105,8 +106,8 @@ export async function generateCoachResponse(opts: {
 
     const response = completion.choices[0]?.message?.content ?? '';
 
-    // 5. 캐시 저장
-    if (response) await redisService.setex(cacheKey, 300, response);
+    // 5. 캐시 저장 (Redis 미연결 시 무시)
+    if (response) try { await redisService.setex(cacheKey, 300, response); } catch { /* skip */ }
 
     // 6. 첫 턴이거나 짧은 메시지 → quickReplies 제공
     const quickReplies = turnCount === 0 ? getInitialQuickReplies(lang) : undefined;

@@ -4,7 +4,8 @@
     "strict": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
-    "jsx": "react-native"
+    "jsx": "react-native",
+    "types": ["jest"]
   },
   "include": [
     "**/*.ts",

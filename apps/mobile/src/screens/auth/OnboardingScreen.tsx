@@ -4,7 +4,6 @@ import {
     Dimensions, Animated, ScrollView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import { theme } from '../../constants/theme';
 import { useCharacterStore } from '../../stores/characterStore';
@@ -41,7 +40,7 @@ const CHARACTERS: Array<{
             taglineKo: '차분하고 지적인',
             personality: 'Sora guides you with clarity and insight. Rooted in Stoic philosophy and neuroscience.',
             personalityKo: '소라는 명료하고 통찰력 있는 가이드입니다. 스토아 철학과 신경과학을 기반으로 합니다.',
-            color: '#6366F1',
+            color: '#40A4DF',
         },
         {
             type: 'tora',
@@ -108,7 +107,7 @@ export function OnboardingScreen({ lang = 'en' }: OnboardingScreenProps) {
     if (step === 'confirm' && selectedChar) {
         return (
             <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
-                <LinearGradient colors={[theme.colors.bg2, theme.colors.bg]} style={styles.confirmContainer}>
+                <View style={styles.confirmContainer}>
                     {/* 캐릭터 대형 표시 */}
                     <View style={[styles.bigCharCircle, { borderColor: selectedChar.color + '55' }]}>
                         <Text style={styles.bigEmoji}>{selectedChar.emoji}</Text>
@@ -141,7 +140,7 @@ export function OnboardingScreen({ lang = 'en' }: OnboardingScreenProps) {
                             </Text>
                         </TouchableOpacity>
                     </View>
-                </LinearGradient>
+                </View>
             </SafeAreaView>
         );
     }
@@ -264,7 +263,7 @@ const styles = StyleSheet.create({
     nextBtnText: { fontSize: 16, fontFamily: 'Inter_700Bold', color: theme.colors.text.primary },
 
     // 확인 화면
-    confirmContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 32, gap: 16 },
+    confirmContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 32, gap: 16, backgroundColor: theme.colors.bg },
     bigCharCircle: { width: 130, height: 130, borderRadius: 65, backgroundColor: theme.colors.surface, justifyContent: 'center', alignItems: 'center', borderWidth: 2, marginBottom: 8 },
     bigEmoji: { fontSize: 60 },
     confirmName: { fontSize: 32, fontFamily: 'Manrope_600SemiBold', color: theme.colors.text.primary },

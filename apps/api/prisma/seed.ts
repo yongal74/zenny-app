@@ -8,33 +8,44 @@ async function main() {
     // ─── 명상 트랙 초기 20개 (EN 10 + KO 10) ─────────────────
     const CDN = 'https://cdn.zenny.app/tracks';
     const MUSIC = 'https://cdn.zenny.app/music';
+    // 타입별 대표 이미지 (picsum.photos — seed 고정이라 항상 동일 사진)
+    const IMG: Record<string, string> = {
+        breathing:  'https://picsum.photos/seed/breath-zen/400/260',
+        bodyscan:   'https://picsum.photos/seed/bodyscan-calm/400/260',
+        guided:     'https://picsum.photos/seed/guided-light/400/260',
+        nature:     'https://picsum.photos/seed/nature-forest/400/260',
+        ocean:      'https://picsum.photos/seed/ocean-waves/400/260',
+        rain:       'https://picsum.photos/seed/rain-forest/400/260',
+        morning:    'https://picsum.photos/seed/morning-sun/400/260',
+        gratitude:  'https://picsum.photos/seed/gratitude-warm/400/260',
+    };
 
     await prisma.meditationTrack.createMany({
         skipDuplicates: true,
         data: [
             // ── EN 10개 ──
-            { id: 'en-breath-box-01', title: '2-Min Box Breathing', titleKo: '박스 호흡 2분', type: 'breathing', emotion: 'stressed', lang: 'en', duration: 120, audioUrl: `${CDN}/en/breath-box-01.mp3`, musicUrl: `${MUSIC}/calm-focus-01.mp3`, weekCreated: '2026-W09' },
-            { id: 'en-breath-478-01', title: '4-7-8 Anxiety Relief', titleKo: '4-7-8 불안 해소', type: 'breathing', emotion: 'anxious', lang: 'en', duration: 120, audioUrl: `${CDN}/en/breath-478-01.mp3`, musicUrl: `${MUSIC}/soft-rain-01.mp3`, weekCreated: '2026-W09' },
-            { id: 'en-body-scan-01', title: 'Full Body Relaxation Scan', titleKo: '전신 이완 스캔', type: 'bodyscan', emotion: 'tired', lang: 'en', duration: 120, audioUrl: `${CDN}/en/body-scan-01.mp3`, musicUrl: `${MUSIC}/deep-calm-01.mp3`, weekCreated: '2026-W09' },
-            { id: 'en-guided-love-01', title: 'Loving Kindness (Metta)', titleKo: '자애 명상', type: 'guided', emotion: 'lonely', lang: 'en', duration: 120, audioUrl: `${CDN}/en/loving-kindness-01.mp3`, musicUrl: `${MUSIC}/warm-glow-01.mp3`, weekCreated: '2026-W09' },
-            { id: 'en-guided-zen-01', title: 'Zen Stillness', titleKo: '선 고요 명상', type: 'guided', emotion: 'stressed', lang: 'en', duration: 120, audioUrl: `${CDN}/en/zen-stillness-01.mp3`, musicUrl: `${MUSIC}/zen-bells-01.mp3`, weekCreated: '2026-W09' },
-            { id: 'en-nature-rain-01', title: 'Rain Forest Calm', titleKo: '숲속 빗소리', type: 'nature', emotion: 'tired', lang: 'en', duration: 120, audioUrl: `${CDN}/en/rain-forest-01.mp3`, musicUrl: `${MUSIC}/forest-rain-01.mp3`, weekCreated: '2026-W09' },
-            { id: 'en-nature-ocean-01', title: 'Ocean Waves Meditation', titleKo: '파도 소리 명상', type: 'nature', emotion: 'anxious', lang: 'en', duration: 120, audioUrl: `${CDN}/en/ocean-waves-01.mp3`, musicUrl: `${MUSIC}/ocean-calm-01.mp3`, weekCreated: '2026-W09' },
-            { id: 'en-breath-pranayama-01', title: 'Pranayama Breathwork', titleKo: '프라나야마 호흡', type: 'breathing', emotion: 'confused', lang: 'en', duration: 120, audioUrl: `${CDN}/en/pranayama-01.mp3`, musicUrl: `${MUSIC}/deep-breath-01.mp3`, weekCreated: '2026-W09' },
-            { id: 'en-guided-stoic-01', title: 'Stoic Morning Reflection', titleKo: '스토아 아침 명상', type: 'guided', emotion: 'sad', lang: 'en', duration: 120, audioUrl: `${CDN}/en/stoic-morning-01.mp3`, musicUrl: `${MUSIC}/morning-light-01.mp3`, weekCreated: '2026-W09' },
-            { id: 'en-guided-gratitude-01', title: 'Gratitude Visualization', titleKo: '감사 시각화', type: 'guided', emotion: 'happy', lang: 'en', duration: 120, audioUrl: `${CDN}/en/gratitude-01.mp3`, musicUrl: `${MUSIC}/bright-joy-01.mp3`, weekCreated: '2026-W09' },
+            { id: 'en-breath-box-01',      title: '2-Min Box Breathing',       titleKo: '박스 호흡 2분',       type: 'breathing', emotion: 'stressed', lang: 'en', duration: 120, audioUrl: `${CDN}/en/breath-box-01.mp3`,       musicUrl: `${MUSIC}/calm-focus-01.mp3`,   imageUrl: IMG.breathing, weekCreated: '2026-W09' },
+            { id: 'en-breath-478-01',      title: '4-7-8 Anxiety Relief',      titleKo: '4-7-8 불안 해소',     type: 'breathing', emotion: 'anxious',  lang: 'en', duration: 120, audioUrl: `${CDN}/en/breath-478-01.mp3`,       musicUrl: `${MUSIC}/soft-rain-01.mp3`,    imageUrl: IMG.breathing, weekCreated: '2026-W09' },
+            { id: 'en-body-scan-01',       title: 'Full Body Relaxation Scan', titleKo: '전신 이완 스캔',       type: 'bodyscan',  emotion: 'tired',    lang: 'en', duration: 120, audioUrl: `${CDN}/en/body-scan-01.mp3`,        musicUrl: `${MUSIC}/deep-calm-01.mp3`,    imageUrl: IMG.bodyscan,  weekCreated: '2026-W09' },
+            { id: 'en-guided-love-01',     title: 'Loving Kindness (Metta)',   titleKo: '자애 명상',           type: 'guided',    emotion: 'lonely',   lang: 'en', duration: 120, audioUrl: `${CDN}/en/loving-kindness-01.mp3`,  musicUrl: `${MUSIC}/warm-glow-01.mp3`,    imageUrl: IMG.guided,    weekCreated: '2026-W09' },
+            { id: 'en-guided-zen-01',      title: 'Zen Stillness',             titleKo: '선 고요 명상',         type: 'guided',    emotion: 'stressed', lang: 'en', duration: 120, audioUrl: `${CDN}/en/zen-stillness-01.mp3`,    musicUrl: `${MUSIC}/zen-bells-01.mp3`,    imageUrl: IMG.guided,    weekCreated: '2026-W09' },
+            { id: 'en-nature-rain-01',     title: 'Rain Forest Calm',          titleKo: '숲속 빗소리',          type: 'nature',    emotion: 'tired',    lang: 'en', duration: 120, audioUrl: `${CDN}/en/rain-forest-01.mp3`,      musicUrl: `${MUSIC}/forest-rain-01.mp3`,  imageUrl: IMG.rain,      weekCreated: '2026-W09' },
+            { id: 'en-nature-ocean-01',    title: 'Ocean Waves Meditation',    titleKo: '파도 소리 명상',       type: 'nature',    emotion: 'anxious',  lang: 'en', duration: 120, audioUrl: `${CDN}/en/ocean-waves-01.mp3`,      musicUrl: `${MUSIC}/ocean-calm-01.mp3`,   imageUrl: IMG.ocean,     weekCreated: '2026-W09' },
+            { id: 'en-breath-pranayama-01',title: 'Pranayama Breathwork',      titleKo: '프라나야마 호흡',       type: 'breathing', emotion: 'confused', lang: 'en', duration: 120, audioUrl: `${CDN}/en/pranayama-01.mp3`,        musicUrl: `${MUSIC}/deep-breath-01.mp3`,  imageUrl: IMG.breathing, weekCreated: '2026-W09' },
+            { id: 'en-guided-stoic-01',    title: 'Stoic Morning Reflection',  titleKo: '스토아 아침 명상',      type: 'guided',    emotion: 'sad',      lang: 'en', duration: 120, audioUrl: `${CDN}/en/stoic-morning-01.mp3`,    musicUrl: `${MUSIC}/morning-light-01.mp3`,imageUrl: IMG.morning,   weekCreated: '2026-W09' },
+            { id: 'en-guided-gratitude-01',title: 'Gratitude Visualization',   titleKo: '감사 시각화',          type: 'guided',    emotion: 'happy',    lang: 'en', duration: 120, audioUrl: `${CDN}/en/gratitude-01.mp3`,        musicUrl: `${MUSIC}/bright-joy-01.mp3`,   imageUrl: IMG.gratitude, weekCreated: '2026-W09' },
 
             // ── KO 10개 ──
-            { id: 'ko-breath-box-01', title: 'Box Breathing 2분', titleKo: '박스 호흡 2분', type: 'breathing', emotion: 'stressed', lang: 'ko', duration: 120, audioUrl: `${CDN}/ko/breath-box-01.mp3`, musicUrl: `${MUSIC}/calm-focus-01.mp3`, weekCreated: '2026-W09' },
-            { id: 'ko-breath-478-01', title: '4-7-8 Breathing', titleKo: '4-7-8 불안 해소 호흡', type: 'breathing', emotion: 'anxious', lang: 'ko', duration: 120, audioUrl: `${CDN}/ko/breath-478-01.mp3`, musicUrl: `${MUSIC}/soft-rain-01.mp3`, weekCreated: '2026-W09' },
-            { id: 'ko-body-scan-01', title: 'Body Scan', titleKo: '전신 바디스캔', type: 'bodyscan', emotion: 'tired', lang: 'ko', duration: 120, audioUrl: `${CDN}/ko/body-scan-01.mp3`, musicUrl: `${MUSIC}/deep-calm-01.mp3`, weekCreated: '2026-W09' },
-            { id: 'ko-guided-love-01', title: 'Loving Kindness', titleKo: '자애 명상 (메타)', type: 'guided', emotion: 'lonely', lang: 'ko', duration: 120, audioUrl: `${CDN}/ko/loving-kindness-01.mp3`, musicUrl: `${MUSIC}/warm-glow-01.mp3`, weekCreated: '2026-W09' },
-            { id: 'ko-guided-zen-01', title: 'Zen Stillness', titleKo: '선(禪) 고요 명상', type: 'guided', emotion: 'stressed', lang: 'ko', duration: 120, audioUrl: `${CDN}/ko/zen-stillness-01.mp3`, musicUrl: `${MUSIC}/zen-bells-01.mp3`, weekCreated: '2026-W09' },
-            { id: 'ko-nature-rain-01', title: 'Rain Forest', titleKo: '숲속 빗소리', type: 'nature', emotion: 'tired', lang: 'ko', duration: 120, audioUrl: `${CDN}/ko/rain-forest-01.mp3`, musicUrl: `${MUSIC}/forest-rain-01.mp3`, weekCreated: '2026-W09' },
-            { id: 'ko-nature-ocean-01', title: 'Ocean Waves', titleKo: '파도 소리 명상', type: 'nature', emotion: 'anxious', lang: 'ko', duration: 120, audioUrl: `${CDN}/ko/ocean-waves-01.mp3`, musicUrl: `${MUSIC}/ocean-calm-01.mp3`, weekCreated: '2026-W09' },
-            { id: 'ko-breath-pranayama-01', title: 'Pranayama', titleKo: '프라나야마 호흡법', type: 'breathing', emotion: 'confused', lang: 'ko', duration: 120, audioUrl: `${CDN}/ko/pranayama-01.mp3`, musicUrl: `${MUSIC}/deep-breath-01.mp3`, weekCreated: '2026-W09' },
-            { id: 'ko-guided-cbt-01', title: 'CBT Morning', titleKo: 'CBT 기반 아침 명상', type: 'guided', emotion: 'sad', lang: 'ko', duration: 120, audioUrl: `${CDN}/ko/cbt-morning-01.mp3`, musicUrl: `${MUSIC}/morning-light-01.mp3`, weekCreated: '2026-W09' },
-            { id: 'ko-guided-gratitude-01', title: 'Gratitude', titleKo: '감사 시각화 명상', type: 'guided', emotion: 'happy', lang: 'ko', duration: 120, audioUrl: `${CDN}/ko/gratitude-01.mp3`, musicUrl: `${MUSIC}/bright-joy-01.mp3`, weekCreated: '2026-W09' },
+            { id: 'ko-breath-box-01',      title: 'Box Breathing 2분',         titleKo: '박스 호흡 2분',        type: 'breathing', emotion: 'stressed', lang: 'ko', duration: 120, audioUrl: `${CDN}/ko/breath-box-01.mp3`,       musicUrl: `${MUSIC}/calm-focus-01.mp3`,   imageUrl: IMG.breathing, weekCreated: '2026-W09' },
+            { id: 'ko-breath-478-01',      title: '4-7-8 Breathing',           titleKo: '4-7-8 불안 해소 호흡', type: 'breathing', emotion: 'anxious',  lang: 'ko', duration: 120, audioUrl: `${CDN}/ko/breath-478-01.mp3`,       musicUrl: `${MUSIC}/soft-rain-01.mp3`,    imageUrl: IMG.breathing, weekCreated: '2026-W09' },
+            { id: 'ko-body-scan-01',       title: 'Body Scan',                 titleKo: '전신 바디스캔',         type: 'bodyscan',  emotion: 'tired',    lang: 'ko', duration: 120, audioUrl: `${CDN}/ko/body-scan-01.mp3`,        musicUrl: `${MUSIC}/deep-calm-01.mp3`,    imageUrl: IMG.bodyscan,  weekCreated: '2026-W09' },
+            { id: 'ko-guided-love-01',     title: 'Loving Kindness',           titleKo: '자애 명상 (메타)',      type: 'guided',    emotion: 'lonely',   lang: 'ko', duration: 120, audioUrl: `${CDN}/ko/loving-kindness-01.mp3`,  musicUrl: `${MUSIC}/warm-glow-01.mp3`,    imageUrl: IMG.guided,    weekCreated: '2026-W09' },
+            { id: 'ko-guided-zen-01',      title: 'Zen Stillness',             titleKo: '선(禪) 고요 명상',     type: 'guided',    emotion: 'stressed', lang: 'ko', duration: 120, audioUrl: `${CDN}/ko/zen-stillness-01.mp3`,    musicUrl: `${MUSIC}/zen-bells-01.mp3`,    imageUrl: IMG.guided,    weekCreated: '2026-W09' },
+            { id: 'ko-nature-rain-01',     title: 'Rain Forest',               titleKo: '숲속 빗소리',           type: 'nature',    emotion: 'tired',    lang: 'ko', duration: 120, audioUrl: `${CDN}/ko/rain-forest-01.mp3`,      musicUrl: `${MUSIC}/forest-rain-01.mp3`,  imageUrl: IMG.rain,      weekCreated: '2026-W09' },
+            { id: 'ko-nature-ocean-01',    title: 'Ocean Waves',               titleKo: '파도 소리 명상',        type: 'nature',    emotion: 'anxious',  lang: 'ko', duration: 120, audioUrl: `${CDN}/ko/ocean-waves-01.mp3`,      musicUrl: `${MUSIC}/ocean-calm-01.mp3`,   imageUrl: IMG.ocean,     weekCreated: '2026-W09' },
+            { id: 'ko-breath-pranayama-01',title: 'Pranayama',                 titleKo: '프라나야마 호흡법',     type: 'breathing', emotion: 'confused', lang: 'ko', duration: 120, audioUrl: `${CDN}/ko/pranayama-01.mp3`,        musicUrl: `${MUSIC}/deep-breath-01.mp3`,  imageUrl: IMG.breathing, weekCreated: '2026-W09' },
+            { id: 'ko-guided-cbt-01',      title: 'CBT Morning',               titleKo: 'CBT 기반 아침 명상',   type: 'guided',    emotion: 'sad',      lang: 'ko', duration: 120, audioUrl: `${CDN}/ko/cbt-morning-01.mp3`,      musicUrl: `${MUSIC}/morning-light-01.mp3`,imageUrl: IMG.morning,   weekCreated: '2026-W09' },
+            { id: 'ko-guided-gratitude-01',title: 'Gratitude',                 titleKo: '감사 시각화 명상',      type: 'guided',    emotion: 'happy',    lang: 'ko', duration: 120, audioUrl: `${CDN}/ko/gratitude-01.mp3`,        musicUrl: `${MUSIC}/bright-joy-01.mp3`,   imageUrl: IMG.gratitude, weekCreated: '2026-W09' },
         ],
     });
     console.log('✅ 명상 트랙 20개 (EN 10 + KO 10) 생성 완료');

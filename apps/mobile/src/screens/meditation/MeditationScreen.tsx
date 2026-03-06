@@ -10,10 +10,9 @@
  */
 import React, { useState } from 'react';
 import {
-  View, Text, StyleSheet, ScrollView, TouchableOpacity,
+  View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, ImageBackground,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useQuery } from '@tanstack/react-query';
 import { theme } from '../../constants/theme';
 import { useCharacterStore } from '../../stores/characterStore';
@@ -33,12 +32,12 @@ const TYPE_LABEL_KO: Record<string, string> = {
   guided: '가이드',
   nature: '자연',
 };
-// A6 스펙: breathing=teal, guided=purple, nature=green, bodyscan=blue
-const TYPE_ICON_BG: Record<string, string> = {
-  breathing: 'rgba(45,212,191,0.18)',
-  guided:    'rgba(124,58,237,0.18)',
-  nature:    'rgba(80,180,100,0.18)',
-  bodyscan:  'rgba(64,164,223,0.18)',
+// 타입별 컬러 오버레이 (틸 계열로 통일, 틴트만 다름)
+const TYPE_OVERLAY: Record<string, string> = {
+  breathing: 'rgba(0,217,160,0.35)',
+  guided:    'rgba(0,200,180,0.35)',
+  nature:    'rgba(20,180,130,0.35)',
+  bodyscan:  'rgba(0,180,210,0.35)',
 };
 
 function formatDuration(seconds: number): string {
@@ -127,11 +126,17 @@ export function MeditationScreen(): React.JSX.Element {
                       onPress={() => setSelectedTrack(track)}
                       activeOpacity={0.85}
                     >
-                      <View style={[s.trackCardIcon, { backgroundColor: TYPE_ICON_BG[track.type] ?? 'rgba(136,136,160,0.15)' }]} />
+                      <ImageBackground
+                        source={track.imageUrl ? { uri: track.imageUrl } : undefined}
+                        style={s.trackCardImage}
+                        imageStyle={{ borderRadius: theme.radius.xl }}
+                      >
+                        <View style={[s.trackCardOverlay, { backgroundColor: TYPE_OVERLAY[track.type] ?? 'rgba(0,100,80,0.35)' }]} />
+                        <Text style={s.trackCardEmoji}>{TYPE_EMOJI[track.type] ?? '🧘'}</Text>
+                      </ImageBackground>
                       <Text style={s.trackCardTitle} numberOfLines={2}>
                         {lang === 'ko' ? (track.titleKo || track.title) : track.title}
                       </Text>
-                      {/* 11→12px */}
                       <Text style={s.trackCardDur}>{formatDuration(track.duration)}</Text>
                     </TouchableOpacity>
                   ))}
@@ -162,12 +167,18 @@ export function MeditationScreen(): React.JSX.Element {
                     onPress={() => setSelectedTrack(track)}
                     activeOpacity={0.8}
                   >
-                    <View style={[s.trackListIcon, { backgroundColor: TYPE_ICON_BG[track.type] ?? 'rgba(136,136,160,0.15)' }]} />
+                    <ImageBackground
+                      source={track.imageUrl ? { uri: track.imageUrl } : undefined}
+                      style={s.trackListImage}
+                      imageStyle={{ borderRadius: theme.radius.md }}
+                    >
+                      <View style={[StyleSheet.absoluteFill, { borderRadius: theme.radius.md, backgroundColor: TYPE_OVERLAY[track.type] ?? 'rgba(0,100,80,0.35)' }]} />
+                      <Text style={s.trackListEmoji}>{TYPE_EMOJI[track.type] ?? '🧘'}</Text>
+                    </ImageBackground>
                     <View style={{ flex: 1 }}>
                       <Text style={s.trackListTitle} numberOfLines={1}>
                         {lang === 'ko' ? (track.titleKo || track.title) : track.title}
                       </Text>
-                      {/* 11→12px */}
                       <Text style={s.trackListType}>
                         {lang === 'ko' ? (TYPE_LABEL_KO[track.type] ?? track.type) : track.type}
                       </Text>
@@ -198,7 +209,7 @@ const s = StyleSheet.create({
   section: { paddingHorizontal: theme.spacing.xl, marginBottom: theme.spacing.xxl },
   sectionTitle: { ...theme.typography.bold1, color: theme.colors.text.primary, marginBottom: theme.spacing.lg },
 
-  // 추천 카드 (가로 스크롤) — 글래스모피즘
+  // 추천 카드 (가로 스크롤) — 이미지 카드
   trackRow: { gap: theme.spacing.md, paddingRight: theme.spacing.xl },
   trackCard: {
     width: 148,
@@ -206,21 +217,27 @@ const s = StyleSheet.create({
     borderWidth: 1,
     borderColor: theme.colors.glassBorder,
     borderRadius: theme.radius.xl,
-    padding: theme.spacing.lg,
-    gap: 10,
+    overflow: 'hidden',
+    gap: 8,
+    paddingBottom: theme.spacing.md,
   },
-  trackCardIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
+  trackCardImage: {
+    width: '100%',
+    height: 100,
+    justifyContent: 'flex-end',
+    alignItems: 'flex-start',
+    padding: theme.spacing.sm,
+    backgroundColor: theme.colors.surface,
   },
-  trackEmoji: { fontSize: 24 },
-  trackCardTitle: { ...theme.typography.bold2, color: theme.colors.text.primary, lineHeight: 20 },
-  trackCardDur: { ...theme.typography.caption, color: theme.colors.text.tertiary },
+  trackCardOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: theme.radius.xl,
+  },
+  trackCardEmoji: { fontSize: 22, zIndex: 1 },
+  trackCardTitle: { ...theme.typography.bold2, color: theme.colors.text.primary, lineHeight: 20, paddingHorizontal: theme.spacing.md },
+  trackCardDur: { ...theme.typography.caption, color: theme.colors.text.tertiary, paddingHorizontal: theme.spacing.md },
 
-  // 전체 트랙 리스트 — 글래스모피즘
+  // 전체 트랙 리스트 — 이미지 썸네일
   trackListItem: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -229,18 +246,21 @@ const s = StyleSheet.create({
     borderWidth: 1,
     borderColor: theme.colors.glassBorder,
     borderRadius: theme.radius.lg,
-    padding: theme.spacing.lg,
+    padding: theme.spacing.md,
     marginBottom: 10,
     minHeight: 64,
+    overflow: 'hidden',
   },
-  trackListIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+  trackListImage: {
+    width: 56,
+    height: 56,
+    borderRadius: theme.radius.md,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: theme.colors.surface,
+    overflow: 'hidden',
   },
-  trackListEmoji: { fontSize: 24 },
+  trackListEmoji: { fontSize: 22, zIndex: 1 },
   trackListTitle: { ...theme.typography.bold2, color: theme.colors.text.primary },
   trackListType: { ...theme.typography.caption, color: theme.colors.text.tertiary, marginTop: 3 },
   trackListDur: { ...theme.typography.body3, color: theme.colors.text.secondary },

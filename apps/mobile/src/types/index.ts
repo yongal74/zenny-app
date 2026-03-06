@@ -66,6 +66,7 @@ export interface MeditationTrack {
     duration: number;
     audioUrl: string;
     musicUrl?: string;
+    imageUrl?: string;
     weekCreated: string;
 }
 
