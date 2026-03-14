@@ -1,48 +1,37 @@
-import * as fs from 'fs';
-import * as path from 'path';
+// OpenAI TTS — calm meditation voice guide
+// Using "nova" voice: warm, gentle female voice, great for meditation
 
-const ELEVENLABS_API = 'https://api.elevenlabs.io/v1';
-
-// Best voice for calm meditation guidance
-// "Rachel" = calm, warm, professional
-const VOICE_ID = '21m00Tcm4TlvDq8ikWAM'; // Rachel
+const OPENAI_TTS_API = 'https://api.openai.com/v1/audio/speech';
+const TTS_VOICE = 'nova'; // nova = warm/gentle female, shimmer = softer alternative
 
 interface GenerateOpts {
     text: string;
-    voiceId?: string;
-    stability?: number;      // 0-1, higher = more consistent
-    similarityBoost?: number; // 0-1, higher = more expressive
-    style?: number;           // 0-1
+    voice?: string;
+    speed?: number; // 0.25–4.0, default 1.0 (use ~0.9 for meditation)
 }
 
 export async function generateSpeech(opts: GenerateOpts): Promise<Buffer> {
-    const apiKey = process.env.ELEVENLABS_API_KEY;
-    if (!apiKey) throw new Error('ELEVENLABS_API_KEY not set');
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) throw new Error('OPENAI_API_KEY not set');
 
-    const voiceId = opts.voiceId ?? VOICE_ID;
-
-    const response = await fetch(`${ELEVENLABS_API}/text-to-speech/${voiceId}`, {
+    const response = await fetch(OPENAI_TTS_API, {
         method: 'POST',
         headers: {
-            'xi-api-key': apiKey,
+            'Authorization': `Bearer ${apiKey}`,
             'Content-Type': 'application/json',
-            'Accept': 'audio/mpeg',
         },
         body: JSON.stringify({
-            text: opts.text,
-            model_id: 'eleven_turbo_v2_5',
-            voice_settings: {
-                stability: opts.stability ?? 0.75,
-                similarity_boost: opts.similarityBoost ?? 0.75,
-                style: opts.style ?? 0.3,
-                use_speaker_boost: true,
-            },
+            model: 'tts-1',
+            input: opts.text,
+            voice: opts.voice ?? TTS_VOICE,
+            speed: opts.speed ?? 0.9,
+            response_format: 'mp3',
         }),
     });
 
     if (!response.ok) {
         const err = await response.text();
-        throw new Error(`ElevenLabs error ${response.status}: ${err}`);
+        throw new Error(`OpenAI TTS error ${response.status}: ${err}`);
     }
 
     const arrayBuffer = await response.arrayBuffer();
