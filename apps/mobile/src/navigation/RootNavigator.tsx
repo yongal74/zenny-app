@@ -10,7 +10,6 @@ import { apiClient, API_BASE } from '../utils/api';
 import { HomeScreen } from '../screens/home/HomeScreen';
 import { AICoachScreen } from '../screens/ai-coach/AICoachScreen';
 import { ShopScreen } from '../screens/shop/ShopScreen';
-import { QuestScreen } from '../screens/quest/QuestScreen';
 import { MeditationScreen } from '../screens/meditation/MeditationScreen';
 import { SplashScreen } from '../screens/auth/SplashScreen';
 import { LoginScreen } from '../screens/auth/LoginScreen';
@@ -22,7 +21,6 @@ export type AuthStackParamList = {
 };
 export type MainTabParamList = {
   Home: undefined;
-  Quest: undefined;
   Meditation: undefined;
   Shop: undefined;
 };
@@ -39,7 +37,7 @@ function TabLabel({ label, focused }: { label: string; focused: boolean }) {
   return (
     <Text style={{
       fontSize: 13,
-      fontFamily: 'Inter_600SemiBold',
+      fontFamily: 'DMSans_500Medium',
       color: focused ? '#E0E0E8' : '#505068',
     }}>
       {label}
@@ -76,11 +74,6 @@ function MainTabs() {
         name="Home"
         component={HomeScreen}
         options={{ tabBarIcon: ({ focused }) => <TabLabel label="Home" focused={focused} /> }}
-      />
-      <MainTab.Screen
-        name="Quest"
-        component={QuestScreen}
-        options={{ tabBarIcon: ({ focused }) => <TabLabel label="Quests" focused={focused} /> }}
       />
       <MainTab.Screen
         name="Meditation"

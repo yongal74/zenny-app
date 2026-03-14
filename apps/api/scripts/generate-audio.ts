@@ -322,24 +322,15 @@ const SCRIPTS_KO: Record<string, string> = {
 
 // ─── 생성할 트랙 목록 ─────────────────────────────────────────────────────
 const TRACKS = [
-  // EN
-  { id: 'en-breath-box-01',       voice: 'nova'    as const, script: SCRIPTS_EN['en-breath-box-01'] },
-  { id: 'en-breath-478-01',       voice: 'nova'    as const, script: SCRIPTS_EN['en-breath-478-01'] },
-  { id: 'en-breath-pranayama-01', voice: 'nova'    as const, script: SCRIPTS_EN['en-breath-pranayama-01'] },
+  // EN only — fable: 따뜻하고 자연스러운 영어, onyx: 깊고 안정감, shimmer: 부드럽고 섬세
+  { id: 'en-breath-box-01',       voice: 'fable'   as const, script: SCRIPTS_EN['en-breath-box-01'] },
+  { id: 'en-breath-478-01',       voice: 'fable'   as const, script: SCRIPTS_EN['en-breath-478-01'] },
+  { id: 'en-breath-pranayama-01', voice: 'fable'   as const, script: SCRIPTS_EN['en-breath-pranayama-01'] },
   { id: 'en-body-scan-01',        voice: 'shimmer' as const, script: SCRIPTS_EN['en-body-scan-01'] },
   { id: 'en-guided-love-01',      voice: 'shimmer' as const, script: SCRIPTS_EN['en-guided-love-01'] },
   { id: 'en-guided-zen-01',       voice: 'onyx'    as const, script: SCRIPTS_EN['en-guided-zen-01'] },
   { id: 'en-guided-stoic-01',     voice: 'onyx'    as const, script: SCRIPTS_EN['en-guided-stoic-01'] },
   { id: 'en-guided-gratitude-01', voice: 'shimmer' as const, script: SCRIPTS_EN['en-guided-gratitude-01'] },
-  // KO
-  { id: 'ko-breath-box-01',       voice: 'nova'    as const, script: SCRIPTS_KO['ko-breath-box-01'] },
-  { id: 'ko-breath-478-01',       voice: 'nova'    as const, script: SCRIPTS_KO['ko-breath-478-01'] },
-  { id: 'ko-breath-pranayama-01', voice: 'nova'    as const, script: SCRIPTS_KO['ko-breath-pranayama-01'] },
-  { id: 'ko-body-scan-01',        voice: 'shimmer' as const, script: SCRIPTS_KO['ko-body-scan-01'] },
-  { id: 'ko-guided-love-01',      voice: 'shimmer' as const, script: SCRIPTS_KO['ko-guided-love-01'] },
-  { id: 'ko-guided-zen-01',       voice: 'onyx'    as const, script: SCRIPTS_KO['ko-guided-zen-01'] },
-  { id: 'ko-guided-cbt-01',       voice: 'onyx'    as const, script: SCRIPTS_KO['ko-guided-cbt-01'] },
-  { id: 'ko-guided-gratitude-01', voice: 'shimmer' as const, script: SCRIPTS_KO['ko-guided-gratitude-01'] },
 ];
 
 async function generate() {
@@ -354,11 +345,11 @@ async function generate() {
     try {
       process.stdout.write(`  GEN   ${track.id}.mp3 (voice: ${track.voice})... `);
       const res = await openai.audio.speech.create({
-        model: 'tts-1',
+        model: 'tts-1-hd',  // HD: 더 자연스럽고 사람다운 음성
         voice: track.voice,
         input: track.script,
         response_format: 'mp3',
-        speed: 0.88, // 명상에 적합한 느린 속도
+        speed: 0.85,  // 명상에 맞게 좀 더 천천히
       });
       const buffer = Buffer.from(await res.arrayBuffer());
       fs.writeFileSync(outPath, buffer);

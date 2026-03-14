@@ -226,7 +226,7 @@ const styles = StyleSheet.create({
     aiHeader: {
         fontSize: 12,
         color: theme.colors.text.tertiary,
-        fontFamily: 'Inter_400Regular',
+        fontFamily: 'DMSans_400Regular',
         marginBottom: 2,
     },
     messageBubble: {
@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
     messageText: {
         fontSize: 15,
         color: theme.colors.text.primary,
-        fontFamily: 'Inter_400Regular',
+        fontFamily: 'DMSans_400Regular',
         lineHeight: 22,
     },
 
@@ -270,7 +270,7 @@ const styles = StyleSheet.create({
         fontSize: 13,
         fontWeight: '600',
         color: theme.colors.text.primary,
-        fontFamily: 'Inter_700Bold',
+        fontFamily: 'DMSans_700Bold',
     },
 
     // 입력 바
@@ -290,7 +290,7 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         fontSize: 15,
         color: theme.colors.text.primary,
-        fontFamily: 'Inter_400Regular',
+        fontFamily: 'DMSans_400Regular',
         maxHeight: 120,
     },
     sendBtn: {

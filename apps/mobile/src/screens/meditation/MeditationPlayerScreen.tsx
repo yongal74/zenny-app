@@ -18,8 +18,15 @@ import { Audio } from 'expo-av';
 import * as Haptics from 'expo-haptics';
 import { theme } from '../../constants/theme';
 import { useCharacterStore } from '../../stores/characterStore';
-import { apiClient } from '../../utils/api';
+import { apiClient, API_BASE } from '../../utils/api';
 import type { MeditationTrack } from '../../types';
+
+// TTS 스크립트가 있는 트랙 ID 목록 (백엔드 MEDITATION_SCRIPTS 키와 동일)
+const HAS_TTS_SCRIPT = new Set([
+    'en-breath-box-01', 'en-breath-478-01', 'en-breath-pranayama-01',
+    'en-guided-zen-01', 'en-guided-gratitude-01', 'en-guided-love-01', 'en-guided-stoic-01',
+    'en-body-scan-01', 'en-nature-ocean-01',
+]);
 
 const { width: W } = Dimensions.get('window');
 
@@ -62,7 +69,8 @@ export function MeditationPlayerScreen({ track, onClose, lang = 'en' }: Meditati
     const [rewardClaimed, setRewardClaimed] = useState(false);
     const [showRewardModal, setShowRewardModal] = useState(false);
 
-    const soundRef = useRef<Audio.Sound | null>(null);
+    const voiceRef = useRef<Audio.Sound | null>(null);   // TTS 보이스
+    const musicRef = useRef<Audio.Sound | null>(null);   // 배경음악
     const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
     const breathIntervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -78,7 +86,8 @@ export function MeditationPlayerScreen({ track, onClose, lang = 'en' }: Meditati
 
     useEffect(() => {
         return () => {
-            soundRef.current?.unloadAsync();
+            voiceRef.current?.unloadAsync();
+            musicRef.current?.unloadAsync();
             if (intervalRef.current) clearInterval(intervalRef.current);
             if (breathIntervalRef.current) clearTimeout(breathIntervalRef.current);
         };
@@ -87,8 +96,8 @@ export function MeditationPlayerScreen({ track, onClose, lang = 'en' }: Meditati
     useEffect(() => {
         Animated.loop(
             Animated.sequence([
-                Animated.timing(glowAnim, { toValue: 1.15, duration: 2200, useNativeDriver: true }),
-                Animated.timing(glowAnim, { toValue: 0.8, duration: 2200, useNativeDriver: true }),
+                Animated.timing(glowAnim, { toValue: 1.18, duration: 4000, useNativeDriver: true }),
+                Animated.timing(glowAnim, { toValue: 0.82, duration: 4000, useNativeDriver: true }),
             ])
         ).start();
     }, []);
@@ -128,8 +137,15 @@ export function MeditationPlayerScreen({ track, onClose, lang = 'en' }: Meditati
     const animateBreath = (phase: number, duration: number) => {
         const isInhale = phase === 0;
         const isExhale = pattern.phases[phase] === 'Exhale';
-        const scale = isInhale ? 1.3 : isExhale ? 0.85 : 1.0;
-        Animated.timing(breathAnim, { toValue: scale, duration: duration * 900, useNativeDriver: true }).start();
+        const isHold = pattern.phases[phase] === 'Hold';
+        const scale = isInhale ? 1.35 : isExhale ? 0.80 : 1.0;
+        // Hold 구간은 현재 크기 유지 (duration 전체), 나머지는 부드럽게 전환
+        if (isHold) return;
+        Animated.timing(breathAnim, {
+            toValue: scale,
+            duration: duration * 1000,
+            useNativeDriver: true,
+        }).start();
     };
 
     const startBreathCycle = () => {
@@ -149,23 +165,51 @@ export function MeditationPlayerScreen({ track, onClose, lang = 'en' }: Meditati
 
     const togglePlay = async () => {
         if (playing) {
-            await soundRef.current?.pauseAsync();
+            await voiceRef.current?.pauseAsync();
+            await musicRef.current?.pauseAsync();
             if (intervalRef.current) clearInterval(intervalRef.current);
             if (breathIntervalRef.current) clearTimeout(breathIntervalRef.current);
             setPlaying(false);
         } else {
-            if (!soundRef.current && track.audioUrl) {
+            await Audio.setAudioModeAsync({
+                allowsRecordingIOS: false,
+                playsInSilentModeIOS: true,
+                shouldDuckAndroid: true,
+                staysActiveInBackground: true,
+            });
+
+            // 배경음악 로드 — /api/audio/music/:id (CORS 프록시)
+            if (!musicRef.current) {
+                const musicUrl = `${API_BASE}/audio/music/${track.id}`;
+                console.log('[Audio] Loading music:', musicUrl);
                 try {
-                    const { sound } = await Audio.Sound.createAsync(
-                        { uri: track.audioUrl },
-                        { shouldPlay: true, volume: 1.0 }
+                    const { sound: ms } = await Audio.Sound.createAsync(
+                        { uri: musicUrl },
+                        { shouldPlay: true, volume: 0.35, isLooping: true }
                     );
-                    soundRef.current = sound;
-                } catch {
-                    // 오디오 URL이 없거나 로드 실패 시 타이머만 진행
+                    musicRef.current = ms;
+                } catch (e) {
+                    console.warn('[Audio] Music load failed:', e);
                 }
             } else {
-                await soundRef.current?.playAsync().catch(() => {});
+                await musicRef.current.playAsync().catch(() => {});
+            }
+
+            // TTS 보이스 로드 — /api/audio/stream/:id (OpenAI TTS 프록시)
+            if (!voiceRef.current && HAS_TTS_SCRIPT.has(track.id)) {
+                const voiceUrl = `${API_BASE}/audio/stream/${track.id}`;
+                console.log('[Audio] Loading voice:', voiceUrl);
+                try {
+                    const { sound: vs } = await Audio.Sound.createAsync(
+                        { uri: voiceUrl },
+                        { shouldPlay: true, volume: 1.0 }
+                    );
+                    voiceRef.current = vs;
+                } catch (e) {
+                    console.warn('[Audio] Voice load failed:', e);
+                }
+            } else {
+                await voiceRef.current?.playAsync().catch(() => {});
             }
             intervalRef.current = setInterval(() => {
                 setElapsed((e) => {
@@ -318,7 +362,7 @@ const s = StyleSheet.create({
         borderRadius: 22, justifyContent: 'center', alignItems: 'center',
     },
     closeText: { fontSize: 13, color: theme.colors.text.secondary, fontWeight: '600' },
-    trackType: { fontSize: 12, letterSpacing: 2, fontFamily: 'Inter_600SemiBold' },
+    trackType: { fontSize: 12, letterSpacing: 2, fontFamily: 'DMSans_500Medium' },
 
     centerArea: { flex: 1, justifyContent: 'center', alignItems: 'center' },
     outerGlow: {
@@ -335,12 +379,12 @@ const s = StyleSheet.create({
     breathEmoji: { fontSize: 64 },
     phaseText: {
         position: 'absolute', bottom: -44,
-        fontSize: 18, fontFamily: 'Manrope_600SemiBold',
+        fontSize: 18, fontFamily: 'DMSans_700Bold',
     },
 
     trackInfo: { alignItems: 'center', gap: 6, marginBottom: 16 },
-    trackTitle: { fontSize: 20, fontFamily: 'Manrope_600SemiBold', color: theme.colors.text.primary, textAlign: 'center' },
-    trackDuration: { fontSize: 32, fontFamily: 'Inter_700Bold', color: theme.colors.text.primary, letterSpacing: 2 },
+    trackTitle: { fontSize: 20, fontFamily: 'DMSans_700Bold', color: theme.colors.text.primary, textAlign: 'center' },
+    trackDuration: { fontSize: 32, fontFamily: 'DMSans_700Bold', color: theme.colors.text.primary, letterSpacing: 2 },
 
     progressBarBg: { width: '100%', height: 4, backgroundColor: theme.colors.border, borderRadius: 2, marginBottom: 16 },
     progressBarFill: { height: '100%', borderRadius: 2 },
@@ -351,7 +395,7 @@ const s = StyleSheet.create({
         backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.border,
         minHeight: theme.minTouchTarget, justifyContent: 'center',
     },
-    patternText: { fontSize: 12, color: theme.colors.text.tertiary, fontFamily: 'Inter_600SemiBold' },
+    patternText: { fontSize: 12, color: theme.colors.text.tertiary, fontFamily: 'DMSans_500Medium' },
 
     controls: { marginBottom: 24 },
     playBtn: { width: 72, height: 72, borderRadius: 36, justifyContent: 'center', alignItems: 'center' },
@@ -359,7 +403,7 @@ const s = StyleSheet.create({
 
     hint: {
         fontSize: 12, color: theme.colors.text.tertiary,
-        fontFamily: 'Inter_400Regular', marginBottom: 16, textAlign: 'center',
+        fontFamily: 'DMSans_400Regular', marginBottom: 16, textAlign: 'center',
     },
 
     // ── 완료 리워드 모달 ──────────────────────────────────────
@@ -403,7 +447,7 @@ const s = StyleSheet.create({
         gap: 24,
     },
     rewardItem: { alignItems: 'center', gap: 4 },
-    rewardValue: { fontSize: 28, fontFamily: 'Inter_700Bold', color: theme.colors.gold },
+    rewardValue: { fontSize: 28, fontFamily: 'DMSans_700Bold', color: theme.colors.gold },
     rewardLabel: { ...theme.typography.labelSm, color: theme.colors.text.tertiary },
     rewardDivider: { width: 1, height: 40, backgroundColor: 'rgba(200,168,96,0.25)' },
     rewardCloseBtn: {

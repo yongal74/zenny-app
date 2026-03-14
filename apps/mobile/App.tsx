@@ -13,6 +13,14 @@ import {
   Manrope_600SemiBold,
   Manrope_700Bold,
 } from '@expo-google-fonts/manrope';
+import {
+  BebasNeue_400Regular,
+} from '@expo-google-fonts/bebas-neue';
+import {
+  DMSans_400Regular,
+  DMSans_500Medium,
+  DMSans_700Bold,
+} from '@expo-google-fonts/dm-sans';
 import { registerRootComponent } from 'expo';
 import { RootNavigator } from './src/navigation/RootNavigator';
 import { COLORS } from './src/constants/colors';
@@ -37,6 +45,10 @@ function App() {
     Manrope_500Medium,
     Manrope_600SemiBold,
     Manrope_700Bold,
+    BebasNeue_400Regular,
+    DMSans_400Regular,
+    DMSans_500Medium,
+    DMSans_700Bold,
   });
 
   const onLayoutRootView = useCallback(async () => {

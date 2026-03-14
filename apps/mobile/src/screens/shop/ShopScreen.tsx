@@ -150,20 +150,20 @@ const s = StyleSheet.create({
   safe: { flex: 1 },
   scroll: { flex: 1 },
   header: { padding: theme.spacing.xxl, paddingBottom: theme.spacing.md },
-  title: { ...theme.typography.h2, color: theme.colors.text.primary },
+  title: { fontSize: 40, fontFamily: 'BebasNeue_400Regular', letterSpacing: 1.5, color: theme.colors.text.primary },
 
   balanceCard: {
     marginHorizontal: theme.spacing.xl,
     marginBottom: theme.spacing.lg,
-    backgroundColor: 'rgba(200,168,96,0.12)',
+    backgroundColor: 'rgba(240,192,96,0.10)',
     borderRadius: theme.radius.lg,
     padding: theme.spacing.lg,
     borderWidth: 1.5,
-    borderColor: 'rgba(200,168,96,0.25)',
+    borderColor: 'rgba(240,192,96,0.28)',
     gap: 4,
   },
-  balanceLabel: { ...theme.typography.labelSm, color: theme.colors.gold },
-  balanceAmount: { fontSize: 28, color: theme.colors.gold, fontFamily: 'Inter_700Bold' },
+  balanceLabel: { fontSize: 12, fontFamily: 'DMSans_500Medium', color: theme.colors.gold, letterSpacing: 1 },
+  balanceAmount: { fontSize: 36, color: theme.colors.gold, fontFamily: 'BebasNeue_400Regular', letterSpacing: 1 },
 
   customizeCard: {
     flexDirection: 'row',
@@ -180,15 +180,14 @@ const s = StyleSheet.create({
   },
   customizeLeft: { flexDirection: 'row', alignItems: 'center', gap: 14 },
   customizeEmoji: { fontSize: 32 },
-  customizeTitle: { ...theme.typography.bold1, color: theme.colors.text.primary, marginBottom: 2 },
+  customizeTitle: { fontSize: 16, fontFamily: 'DMSans_700Bold', color: theme.colors.text.primary, marginBottom: 2 },
   // 12→13px
   customizeSub: { ...theme.typography.body3, color: theme.colors.text.secondary },
   arrowText: { fontSize: 18, color: theme.colors.accent },
 
   section: { paddingHorizontal: theme.spacing.xl, marginBottom: theme.spacing.xxl },
-  sectionTitle: { ...theme.typography.h3, color: theme.colors.text.primary, marginBottom: 4 },
-  // 12→13px
-  sectionSub: { ...theme.typography.body3, color: theme.colors.text.tertiary, marginBottom: theme.spacing.lg },
+  sectionTitle: { fontSize: 26, fontFamily: 'BebasNeue_400Regular', letterSpacing: 1, color: theme.colors.text.primary, marginBottom: 4 },
+  sectionSub: { fontSize: 13, fontFamily: 'DMSans_400Regular', color: theme.colors.text.tertiary, marginBottom: theme.spacing.lg },
 
   coinPackage: {
     flexDirection: 'row',
@@ -210,18 +209,19 @@ const s = StyleSheet.create({
   },
   coinPackageLeft: { flexDirection: 'row', alignItems: 'center', gap: 14 },
   coinPackageEmoji: { fontSize: 28 },
-  coinPackageLabel: { ...theme.typography.bold1, color: theme.colors.text.primary },
-  // minHeight 44px 확보
+  coinPackageLabel: { fontSize: 16, fontFamily: 'DMSans_700Bold', color: theme.colors.text.primary },
   coinPackagePriceBtn: {
-    backgroundColor: theme.colors.primary,
+    backgroundColor: 'rgba(0,232,168,0.12)',
     paddingHorizontal: 18,
     paddingVertical: 10,
     borderRadius: theme.radius.pill,
     minHeight: theme.minTouchTarget,
     justifyContent: 'center',
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(0,232,168,0.25)',
   },
-  coinPackagePrice: { ...theme.typography.bold2, color: theme.colors.text.primary },
+  coinPackagePrice: { fontSize: 15, fontFamily: 'DMSans_700Bold', color: theme.colors.accent },
   popularBadge: {
     position: 'absolute',
     top: -8,

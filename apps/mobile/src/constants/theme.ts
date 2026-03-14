@@ -11,44 +11,44 @@
 
 export const theme = {
   colors: {
-    // 배경 계층 — 딥 다크 에메랄드 (Dribbble Xino 스타일)
-    bg: '#050E0B',
-    bg2: '#081510',
-    surface: '#0D1F19',
-    surface2: '#122A20',
+    // 배경 계층 — 딥 네이비/블랙 (퍼플 언더톤)
+    bg: '#0a0a14',
+    bg2: '#0d0d1a',
+    surface: '#12121e',
+    surface2: '#1a1a2e',
 
     // 텍스트 계층
     text: {
-      primary: '#E8F5F0',
-      secondary: '#6BAD98',
-      tertiary: '#3A6B57',
-      inverse: '#050E0B',
+      primary: '#FFFFFF',
+      secondary: '#9CA3AF',
+      tertiary: '#6B7280',
+      inverse: '#0a0a14',
     },
 
-    // 브랜드 색상
-    primary: '#0A2A22',
-    accent: '#00D9A0',   // 메인 포인트 — 밝은 민트/틸
-    teal: '#00D9A0',
-    gold: '#D4A850',
+    // 브랜드 색상 — 퍼플 + 시안
+    primary: '#8B5CF6',       // 퍼플
+    accent: '#22D3EE',        // 시안 (민트 → 시안)
+    teal: '#22D3EE',
+    gold: '#F0C060',
 
     // 피드백
-    success: '#00D9A0',
-    error: '#E05C5C',
-    warning: '#D4A850',
+    success: '#22D3EE',
+    error: '#FF4D6D',
+    warning: '#F0C060',
 
     // 기타
-    border: '#1A3D30',
-    bottomBar: '#040C09',
-    overlay: 'rgba(0,0,0,0.75)',
+    border: '#2a2a4a',
+    bottomBar: '#0a0a14',
+    overlay: 'rgba(0,0,0,0.85)',
 
-    // 퍼플 자리 → 틸로 교체 (하위호환)
-    purple: '#00D9A0',
-    tealVivid: '#00FFB8',  // EXP 바, 완료 체크마크
+    // 하위호환
+    purple: '#8B5CF6',
+    tealVivid: '#00FFE0',
 
-    // 글래스모피즘 카드 — 틸 틴트
-    glass: 'rgba(0,217,160,0.06)',
-    glassBorder: 'rgba(0,217,160,0.15)',
-    glassHighlight: 'rgba(0,217,160,0.10)',
+    // 글래스모피즘 — 퍼플 테두리
+    glass: 'rgba(139,92,246,0.05)',
+    glassBorder: 'rgba(139,92,246,0.20)',
+    glassHighlight: 'rgba(139,92,246,0.10)',
   },
 
   /** 간격 (8pt 그리드 기반) */
@@ -74,25 +74,27 @@ export const theme = {
 
   /** 타이포그래피 (폰트 로드 후 사용) */
   typography: {
-    // 제목 계열 (Manrope - 모던 지오메트릭)
-    h1: { fontSize: 32, fontFamily: 'Manrope_700Bold', lineHeight: 40 },
-    h2: { fontSize: 24, fontFamily: 'Manrope_700Bold', lineHeight: 32 },
-    h3: { fontSize: 18, fontFamily: 'Manrope_600SemiBold', lineHeight: 26 },
+    // 디스플레이 계열 (Bebas Neue — Tungsten 대체, 임팩트 있는 대문자 컨덴스드)
+    display1: { fontSize: 64, fontFamily: 'BebasNeue_400Regular', lineHeight: 64, letterSpacing: 2 },
+    display2: { fontSize: 48, fontFamily: 'BebasNeue_400Regular', lineHeight: 50, letterSpacing: 1.5 },
+    h1: { fontSize: 36, fontFamily: 'BebasNeue_400Regular', lineHeight: 38, letterSpacing: 1 },
+    h2: { fontSize: 28, fontFamily: 'BebasNeue_400Regular', lineHeight: 30, letterSpacing: 0.5 },
+    h3: { fontSize: 20, fontFamily: 'DMSans_700Bold', lineHeight: 28 },
 
-    // 본문 계열 (Inter - 클린 모던)
-    body1: { fontSize: 16, fontFamily: 'Inter_400Regular', lineHeight: 26 },
-    body2: { fontSize: 14, fontFamily: 'Inter_400Regular', lineHeight: 22 },
-    body3: { fontSize: 13, fontFamily: 'Inter_400Regular', lineHeight: 20 },
+    // 본문 계열 (DM Sans — Acumin Pro 대체, 클린 모던)
+    body1: { fontSize: 16, fontFamily: 'DMSans_400Regular', lineHeight: 26 },
+    body2: { fontSize: 14, fontFamily: 'DMSans_400Regular', lineHeight: 22 },
+    body3: { fontSize: 13, fontFamily: 'DMSans_400Regular', lineHeight: 20 },
 
     // 굵은 본문
-    bold1: { fontSize: 16, fontFamily: 'Inter_700Bold', lineHeight: 26 },
-    bold2: { fontSize: 14, fontFamily: 'Inter_700Bold', lineHeight: 22 },
-    bold3: { fontSize: 13, fontFamily: 'Inter_700Bold', lineHeight: 20 },
+    bold1: { fontSize: 16, fontFamily: 'DMSans_700Bold', lineHeight: 26 },
+    bold2: { fontSize: 14, fontFamily: 'DMSans_700Bold', lineHeight: 22 },
+    bold3: { fontSize: 13, fontFamily: 'DMSans_700Bold', lineHeight: 20 },
 
     // 라벨/캡션
-    label: { fontSize: 13, fontFamily: 'Inter_600SemiBold', lineHeight: 18 },
-    labelSm: { fontSize: 12, fontFamily: 'Inter_600SemiBold', lineHeight: 16 },
-    caption: { fontSize: 12, fontFamily: 'Inter_400Regular', lineHeight: 16 },
+    label: { fontSize: 13, fontFamily: 'DMSans_500Medium', lineHeight: 18 },
+    labelSm: { fontSize: 12, fontFamily: 'DMSans_500Medium', lineHeight: 16 },
+    caption: { fontSize: 12, fontFamily: 'DMSans_400Regular', lineHeight: 16 },
   },
 
   /**
@@ -101,20 +103,23 @@ export const theme = {
    */
   minTouchTarget: 44,
 
-  /** 그레이디언트 — 에메랄드 다크 */
+  /** 그레이디언트 — 딥 네이비 + 퍼플 */
   gradients: {
-    splash: ['#050E0B', '#0A1C15', '#050E0B'] as const,
-    header: ['#081510', '#050E0B'] as const,
-    card: ['#0D1F19', '#0A1810'] as const,
-    aurora1: ['#003322', '#050E0B', '#001A2E'] as const,  // 틸-다크-네이비
-    aurora2: ['#001E3A', '#050E0B', '#002E22'] as const,
+    splash: ['#0a0a14', '#0d0d1a', '#0a0a14'] as const,
+    header: ['#0d0d1a', '#0a0a14'] as const,
+    card: ['#12121e', '#0d0d1a'] as const,
+    // 퍼플-핑크 강조 그라데이션 (버튼, 배지 등)
+    purple: ['#8B5CF6', '#EC4899'] as const,
+    // Aurora: 딥 퍼플 → 네이비 블랙 → 딥 블루
+    aurora1: ['#1a0a2e', '#0a0a14', '#0a0f28'] as const,
+    aurora2: ['#0a0f28', '#0a0a14', '#1a0a2e'] as const,
   },
 
-  /** 캐릭터 글로우 — 틸 계열 */
+  /** 캐릭터 글로우 — 퍼플 */
   glow: {
-    soft: 'rgba(0,217,160,0.06)',
-    medium: 'rgba(0,217,160,0.12)',
-    strong: 'rgba(0,217,160,0.20)',
+    soft: 'rgba(139,92,246,0.07)',
+    medium: 'rgba(139,92,246,0.18)',
+    strong: 'rgba(139,92,246,0.32)',
   },
 } as const;
 

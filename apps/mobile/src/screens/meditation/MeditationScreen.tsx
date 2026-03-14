@@ -26,11 +26,24 @@ const TYPE_EMOJI: Record<string, string> = {
   guided: '🔮',
   nature: '🌿',
 };
+const TYPE_LABEL: Record<string, string> = {
+  breathing: 'Breathing',
+  bodyscan:  'Body Scan',
+  guided:    'Guided',
+  nature:    'Nature',
+};
 const TYPE_LABEL_KO: Record<string, string> = {
   breathing: '호흡',
-  bodyscan: '바디스캔',
-  guided: '가이드',
-  nature: '자연',
+  bodyscan:  '바디스캔',
+  guided:    '가이드',
+  nature:    '자연',
+};
+const TYPE_ORDER = ['nature', 'breathing', 'guided', 'bodyscan'];
+const TYPE_COLOR: Record<string, string> = {
+  breathing: '#2DD4BF',
+  guided:    '#00E8A8',
+  bodyscan:  '#60B8FF',
+  nature:    '#4ADE80',
 };
 // 타입별 컬러 오버레이 (틸 계열로 통일, 틴트만 다름)
 const TYPE_OVERLAY: Record<string, string> = {
@@ -144,51 +157,65 @@ export function MeditationScreen(): React.JSX.Element {
               </View>
             )}
 
-            {/* 전체 트랙 목록 */}
-            <View style={s.section}>
-              <Text style={s.sectionTitle}>
-                {lang === 'ko' ? '전체 트랙' : 'All Tracks'}
-              </Text>
-
-              {allTracks.length === 0 ? (
+            {/* 유형별 섹션 */}
+            {allTracks.length === 0 ? (
+              <View style={s.section}>
                 <View style={s.emptyState}>
                   <Text style={s.emptyEmoji}>🎵</Text>
                   <Text style={s.emptyText}>
-                    {lang === 'ko'
-                      ? '아직 트랙이 없어요.\n곧 업데이트될 예정이에요!'
-                      : 'No tracks available yet.\nCheck back soon!'}
+                    {lang === 'ko' ? '아직 트랙이 없어요.' : 'No tracks available yet.'}
                   </Text>
                 </View>
-              ) : (
-                allTracks.map((track: MeditationTrack) => (
-                  <TouchableOpacity
-                    key={track.id}
-                    style={s.trackListItem}
-                    onPress={() => setSelectedTrack(track)}
-                    activeOpacity={0.8}
-                  >
-                    <ImageBackground
-                      source={track.imageUrl ? { uri: track.imageUrl } : undefined}
-                      style={s.trackListImage}
-                      imageStyle={{ borderRadius: theme.radius.md }}
-                    >
-                      <View style={[StyleSheet.absoluteFill, { borderRadius: theme.radius.md, backgroundColor: TYPE_OVERLAY[track.type] ?? 'rgba(0,100,80,0.35)' }]} />
-                    </ImageBackground>
-                    <View style={{ flex: 1 }}>
-                      <Text style={s.trackListTitle} numberOfLines={1}>
-                        {lang === 'ko' ? (track.titleKo || track.title) : track.title}
-                      </Text>
-                      <Text style={s.trackListType}>
-                        {lang === 'ko' ? (TYPE_LABEL_KO[track.type] ?? track.type) : track.type}
-                      </Text>
+              </View>
+            ) : (
+              TYPE_ORDER.map(type => {
+                const tracks = allTracks.filter((t: MeditationTrack) => t.type === type);
+                if (tracks.length === 0) return null;
+                const color = TYPE_COLOR[type] ?? theme.colors.accent;
+                return (
+                  <View key={type} style={s.section}>
+                    {/* 섹션 헤더 */}
+                    <View style={s.typeSectionHeader}>
+                      <View style={[s.typeTag, { backgroundColor: color + '18', borderColor: color + '40' }]}>
+                        <Text style={s.typeTagEmoji}>{TYPE_EMOJI[type]}</Text>
+                        <Text style={[s.typeTagLabel, { color }]}>
+                          {lang === 'ko' ? TYPE_LABEL_KO[type] : TYPE_LABEL[type]}
+                        </Text>
+                      </View>
+                      <Text style={s.typeTrackCount}>{tracks.length} tracks</Text>
                     </View>
-                    <Text style={s.trackListDur}>
-                      {Math.floor(track.duration / 60)} min
-                    </Text>
-                  </TouchableOpacity>
-                ))
-              )}
-            </View>
+
+                    {tracks.map((track: MeditationTrack) => (
+                      <TouchableOpacity
+                        key={track.id}
+                        style={s.trackListItem}
+                        onPress={() => setSelectedTrack(track)}
+                        activeOpacity={0.8}
+                      >
+                        <ImageBackground
+                          source={track.imageUrl ? { uri: track.imageUrl } : undefined}
+                          style={s.trackListImage}
+                          imageStyle={{ borderRadius: theme.radius.md }}
+                        >
+                          <View style={[StyleSheet.absoluteFill, { borderRadius: theme.radius.md, backgroundColor: TYPE_OVERLAY[track.type] ?? 'rgba(0,100,80,0.35)' }]} />
+                        </ImageBackground>
+                        <View style={{ flex: 1 }}>
+                          <Text style={s.trackListTitle} numberOfLines={1}>
+                            {lang === 'ko' ? (track.titleKo || track.title) : track.title}
+                          </Text>
+                          <Text style={[s.trackListType, { color }]}>
+                            {lang === 'ko' ? (TYPE_LABEL_KO[track.type] ?? track.type) : TYPE_LABEL[track.type] ?? track.type}
+                          </Text>
+                        </View>
+                        <Text style={s.trackListDur}>
+                          {Math.floor(track.duration / 60)} min
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                );
+              })
+            )}
           </>
         )}
       </ScrollView>
@@ -264,6 +291,34 @@ const s = StyleSheet.create({
   trackListTitle: { ...theme.typography.bold2, color: theme.colors.text.primary },
   trackListType: { ...theme.typography.caption, color: theme.colors.text.tertiary, marginTop: 3 },
   trackListDur: { ...theme.typography.body3, color: theme.colors.text.secondary },
+
+  // 유형별 섹션 헤더
+  typeSectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: theme.spacing.md,
+  },
+  typeTag: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: theme.radius.pill,
+    borderWidth: 1,
+  },
+  typeTagEmoji: { fontSize: 15 },
+  typeTagLabel: {
+    fontSize: 13,
+    fontFamily: 'DMSans_700Bold',
+    letterSpacing: 0.3,
+  },
+  typeTrackCount: {
+    fontSize: 12,
+    fontFamily: 'DMSans_400Regular',
+    color: theme.colors.text.tertiary,
+  },
 
   // 빈 상태
   emptyState: { alignItems: 'center', padding: 48, gap: 12 },

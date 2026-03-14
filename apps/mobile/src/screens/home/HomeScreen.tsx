@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import {
   View, Text, ScrollView, StyleSheet, TouchableOpacity, Modal,
-  TextInput, KeyboardAvoidingView, Platform, Animated, Vibration,
+  TextInput, Animated, Vibration,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { theme } from '../../constants/theme';
 import { CharacterDisplay } from '../../components/character/CharacterDisplay';
 import { useCharacterStore } from '../../stores/characterStore';
@@ -13,6 +14,17 @@ import { apiClient } from '../../utils/api';
 import { useProgressBar, useBounceSelect } from '../../hooks/useAnimation';
 import type { AppStackParamList } from '../../navigation/RootNavigator';
 import { getExpProgress } from '../../utils/exp';
+
+interface UserQuest {
+  id: string;
+  questId: string;
+  title: string;
+  titleKo: string;
+  description: string;
+  coinsReward: number;
+  expReward: number;
+  completedAt: string | null;
+}
 
 type HomeNavProp = NativeStackNavigationProp<AppStackParamList>;
 
@@ -30,6 +42,25 @@ export function HomeScreen(): React.JSX.Element {
   const { character, lang, zenCoins, updateExp, setZenCoins, setCharacterType } = useCharacterStore();
   const [showCheckin, setShowCheckin] = useState(false);
   const [showCharSwitch, setShowCharSwitch] = useState(false);
+  const queryClient = useQueryClient();
+
+  // Daily Quest 데이터
+  const { data: quests = [], isLoading: questLoading } = useQuery<UserQuest[]>({
+    queryKey: ['quests'],
+    queryFn: async () => { const { data } = await apiClient.get('/quests'); return data; },
+  });
+  const completeQuest = useMutation({
+    mutationFn: async (questId: string) => {
+      const { data } = await apiClient.post(`/quests/${questId}/complete`); return data;
+    },
+    onSuccess: (data) => {
+      updateExp(data.expGained ?? 0);
+      if (data.totalCoins !== undefined) setZenCoins(data.totalCoins);
+      queryClient.invalidateQueries({ queryKey: ['quests'] });
+    },
+  });
+  const completedQuests = quests.filter(q => q.completedAt);
+  const pendingQuests = quests.filter(q => !q.completedAt);
 
   const greeting = lang === 'ko' ? '좋은 하루예요' : 'Good day';
   const dateStr = new Date().toLocaleDateString(lang === 'ko' ? 'ko-KR' : 'en-US', {
@@ -105,7 +136,6 @@ export function HomeScreen(): React.JSX.Element {
                 activeOpacity={0.82}
                 onPress={() => setShowCheckin(true)}
               >
-                <Text style={styles.actionBtnIcon}>◈</Text>
                 <Text style={styles.actionBtnLabel}>
                   {lang === 'ko' ? 'Log Emotions' : 'Log Emotions'}
                 </Text>
@@ -118,7 +148,6 @@ export function HomeScreen(): React.JSX.Element {
                 activeOpacity={0.82}
                 onPress={() => navigation.navigate('AICoach')}
               >
-                <Text style={styles.actionBtnIcon}>✦</Text>
                 <Text style={styles.actionBtnLabel}>
                   {lang === 'ko' ? 'AI Coach' : 'AI Coach'}
                 </Text>
@@ -128,6 +157,67 @@ export function HomeScreen(): React.JSX.Element {
               </TouchableOpacity>
             </View>
           </View>
+          {/* Daily Quest 섹션 */}
+          <View style={styles.section}>
+            <View style={styles.questHeader}>
+              <Text style={styles.sectionTitle}>
+                {lang === 'ko' ? 'Daily Quests' : 'Daily Quests'}
+              </Text>
+              {quests.length > 0 && (
+                <Text style={styles.questProgress}>
+                  {completedQuests.length}/{quests.length} · ✦ {completedQuests.reduce((s, q) => s + q.coinsReward, 0)}
+                </Text>
+              )}
+            </View>
+
+            {/* 전체 진행 바 */}
+            {quests.length > 0 && (
+              <View style={styles.questBarBg}>
+                <View style={[styles.questBarFill, { width: `${(completedQuests.length / quests.length) * 100}%` as any }]} />
+              </View>
+            )}
+
+            {questLoading ? (
+              <Text style={styles.questEmptyText}>{lang === 'ko' ? '불러오는 중...' : 'Loading...'}</Text>
+            ) : quests.length === 0 ? (
+              <Text style={styles.questEmptyText}>{lang === 'ko' ? '오늘의 퀘스트가 없어요.' : 'No quests today.'}</Text>
+            ) : (
+              <>
+                {pendingQuests.map(q => (
+                  <View key={q.id} style={styles.questCard}>
+                    <View style={styles.questCardLeft}>
+                      <Text style={styles.questTitle}>{lang === 'ko' ? q.titleKo : q.title}</Text>
+                      <Text style={styles.questDesc} numberOfLines={1}>{q.description}</Text>
+                    </View>
+                    <View style={styles.questCardRight}>
+                      <Text style={styles.questReward}>✦ {q.coinsReward}</Text>
+                      <TouchableOpacity
+                        style={styles.questDoneBtn}
+                        onPress={() => completeQuest.mutate(q.id)}
+                        activeOpacity={0.8}
+                      >
+                        <Text style={styles.questDoneBtnText}>{lang === 'ko' ? '완료' : 'Done'}</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                ))}
+                {pendingQuests.length === 0 && (
+                  <View style={styles.questAllDone}>
+                    <Text style={styles.questAllDoneText}>
+                      {lang === 'ko' ? '🎉 오늘 퀘스트 모두 완료!' : '🎉 All done today!'}
+                    </Text>
+                  </View>
+                )}
+                {completedQuests.map(q => (
+                  <View key={q.id} style={[styles.questCard, { opacity: 0.35 }]}>
+                    <Text style={[styles.questTitle, { textDecorationLine: 'line-through' }]}>{lang === 'ko' ? q.titleKo : q.title}</Text>
+                    <Text style={styles.questReward}>✦ {q.coinsReward}</Text>
+                  </View>
+                ))}
+              </>
+            )}
+          </View>
+
         </ScrollView>
 
         {/* 캐릭터 변경 모달 */}
@@ -260,7 +350,7 @@ const switchStyles = StyleSheet.create({
     borderRadius: theme.radius.pill,
     borderWidth: 1,
   },
-  activeBadgeText: { fontSize: 12, fontFamily: 'Inter_600SemiBold' },
+  activeBadgeText: { fontSize: 12, fontFamily: 'DMSans_500Medium' },
 });
 
 // ────────── 감정 체크인 모달 ──────────
@@ -309,85 +399,88 @@ function EmotionCheckinModal({
 
   return (
     <Modal visible={visible} animationType="slide" transparent presentationStyle="overFullScreen">
-      <KeyboardAvoidingView
-        style={styles.modalOverlay}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      >
-        <View style={styles.modalSheet}>
-          {done ? (
-            <View style={styles.doneView}>
-              <Text style={styles.doneEmoji}>✨</Text>
-              <Text style={styles.doneText}>
-                {lang === 'ko' ? `+${doneExp} EXP · +${doneCoins} Coins 획득!` : `+${doneExp} EXP · +${doneCoins} Coins earned!`}
-              </Text>
-            </View>
-          ) : (
-            <>
-              <View style={styles.modalHeader}>
-                <Text style={styles.modalTitle}>
-                  {lang === 'ko' ? '오늘 기분은 어때요?' : 'How are you feeling?'}
+      <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={onClose}>
+        <TouchableOpacity activeOpacity={1} style={styles.modalSheet} onPress={() => {}}>
+          <ScrollView
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ gap: theme.spacing.xl }}
+          >
+            {done ? (
+              <View style={styles.doneView}>
+                <Text style={styles.doneEmoji}>✨</Text>
+                <Text style={styles.doneText}>
+                  {lang === 'ko' ? `+${doneExp} EXP · +${doneCoins} Coins 획득!` : `+${doneExp} EXP · +${doneCoins} Coins earned!`}
                 </Text>
-                <TouchableOpacity onPress={onClose} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-                  <Text style={styles.modalClose}>✕</Text>
-                </TouchableOpacity>
               </View>
-
-              <View style={styles.emojiGrid}>
-                {EMOTIONS.map((e) => (
-                  <AnimatedEmojiBtn
-                    key={e.label}
-                    emotion={e}
-                    lang={lang}
-                    selected={selectedEmotion === e.label}
-                    onPress={() => setSelectedEmotion(e.label)}
-                  />
-                ))}
-              </View>
-
-              <View style={styles.intensityRow}>
-                <Text style={styles.intensityLabel}>
-                  {lang === 'ko' ? '강도' : 'Intensity'}
-                </Text>
-                {[1, 2, 3, 4, 5].map((v) => (
-                  <TouchableOpacity
-                    key={v}
-                    style={[styles.intensityBtn, intensity === v && styles.intensityBtnSelected]}
-                    onPress={() => setIntensity(v)}
-                    hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
-                  >
-                    <Text style={[styles.intensityBtnText, intensity === v && styles.intensityBtnTextSelected]}>
-                      {v}
-                    </Text>
+            ) : (
+              <>
+                <View style={styles.modalHeader}>
+                  <Text style={styles.modalTitle}>
+                    {lang === 'ko' ? '오늘 기분은 어때요?' : 'How are you feeling?'}
+                  </Text>
+                  <TouchableOpacity onPress={onClose} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                    <Text style={styles.modalClose}>✕</Text>
                   </TouchableOpacity>
-                ))}
-              </View>
+                </View>
 
-              <TextInput
-                style={styles.textInput}
-                placeholder={lang === 'ko' ? '오늘 하루는 어땠나요? (선택사항)' : 'How was your day? (optional)'}
-                placeholderTextColor={theme.colors.text.tertiary}
-                value={text}
-                onChangeText={setText}
-                multiline
-                maxLength={500}
-              />
+                <View style={styles.emojiGrid}>
+                  {EMOTIONS.map((e) => (
+                    <AnimatedEmojiBtn
+                      key={e.label}
+                      emotion={e}
+                      lang={lang}
+                      selected={selectedEmotion === e.label}
+                      onPress={() => setSelectedEmotion(e.label)}
+                    />
+                  ))}
+                </View>
 
-              <TouchableOpacity
-                style={[styles.submitBtn, (!selectedEmotion || loading) && styles.submitBtnDisabled]}
-                onPress={handleSubmit}
-                disabled={!selectedEmotion || loading}
-                activeOpacity={0.85}
-              >
-                <Text style={styles.submitBtnText}>
-                  {loading
-                    ? (lang === 'ko' ? '저장 중...' : 'Saving...')
-                    : (lang === 'ko' ? '기록하기 ✦ +100 Coins' : 'Save ✦ +100 Coins')}
-                </Text>
-              </TouchableOpacity>
-            </>
-          )}
-        </View>
-      </KeyboardAvoidingView>
+                <View style={styles.intensityRow}>
+                  <Text style={styles.intensityLabel}>
+                    {lang === 'ko' ? '강도' : 'Intensity'}
+                  </Text>
+                  {[1, 2, 3, 4, 5].map((v) => (
+                    <TouchableOpacity
+                      key={v}
+                      style={[styles.intensityBtn, intensity === v && styles.intensityBtnSelected]}
+                      onPress={() => setIntensity(v)}
+                      hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
+                    >
+                      <Text style={[styles.intensityBtnText, intensity === v && styles.intensityBtnTextSelected]}>
+                        {v}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+
+                <TextInput
+                  style={styles.textInput}
+                  placeholder={lang === 'ko' ? '오늘 하루는 어땠나요? (선택사항)' : 'How was your day? (optional)'}
+                  placeholderTextColor={theme.colors.text.tertiary}
+                  value={text}
+                  onChangeText={setText}
+                  multiline
+                  maxLength={500}
+                />
+
+                <TouchableOpacity
+                  style={[styles.submitBtn, (!selectedEmotion || loading) && styles.submitBtnDisabled]}
+                  onPress={handleSubmit}
+                  disabled={!selectedEmotion || loading}
+                  activeOpacity={0.85}
+                >
+                  <Text style={styles.submitBtnText}>
+                    {loading
+                      ? (lang === 'ko' ? '저장 중...' : 'Saving...')
+                      : (lang === 'ko' ? '기록하기 ✦ +100 Coins' : 'Save ✦ +100 Coins')}
+                  </Text>
+                </TouchableOpacity>
+              </>
+            )}
+          </ScrollView>
+        </TouchableOpacity>
+      </TouchableOpacity>
     </Modal>
   );
 }
@@ -430,11 +523,11 @@ const styles = StyleSheet.create({
   header: { paddingHorizontal: theme.spacing.xxl, paddingTop: theme.spacing.xl, paddingBottom: theme.spacing.md },
   headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
   greeting: {
-    fontSize: 30,
-    fontFamily: 'Manrope_700Bold',
+    fontSize: 36,
+    fontFamily: 'BebasNeue_400Regular',
     color: theme.colors.text.primary,
     lineHeight: 38,
-    letterSpacing: -0.5,
+    letterSpacing: 1.5,
     marginBottom: 4,
   },
   date: { ...theme.typography.body3, color: theme.colors.text.secondary },
@@ -452,59 +545,63 @@ const styles = StyleSheet.create({
 
   characterCard: {
     margin: theme.spacing.xl,
-    backgroundColor: theme.colors.glass,
+    backgroundColor: 'rgba(0,232,168,0.04)',
     borderWidth: 1,
-    borderColor: theme.colors.glassBorder,
+    borderColor: 'rgba(0,232,168,0.20)',
     borderRadius: theme.radius.xxl,
     paddingHorizontal: theme.spacing.xl,
-    paddingVertical: 32,
+    paddingVertical: 16,
     alignItems: 'center',
-    gap: 20,
+    gap: 12,
+    shadowColor: '#00E8A8',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.08,
+    shadowRadius: 24,
+    elevation: 6,
   },
   charHint: { ...theme.typography.caption, color: theme.colors.text.tertiary, opacity: 0.6, letterSpacing: 0.3 },
   expBarWrapper: { width: '100%', gap: 6 },
   expRowLabel: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   levelBadgeText: { ...theme.typography.labelSm, color: theme.colors.accent },
-  expBarBg: { height: 6, backgroundColor: theme.colors.border, borderRadius: 3, overflow: 'hidden' },
-  expBarFill: { height: '100%', backgroundColor: theme.colors.tealVivid, borderRadius: 3 },
+  expBarBg: { height: 4, backgroundColor: 'rgba(0,232,168,0.12)', borderRadius: 2, overflow: 'hidden' },
+  expBarFill: { height: '100%', backgroundColor: theme.colors.tealVivid, borderRadius: 2, shadowColor: '#00FFB8', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.8, shadowRadius: 4 },
   expText: { ...theme.typography.caption, color: theme.colors.text.tertiary },
 
   section: { paddingHorizontal: theme.spacing.xl, marginBottom: theme.spacing.xxl, marginTop: theme.spacing.lg },
-  sectionTitle: { ...theme.typography.bold1, color: theme.colors.text.primary, marginBottom: theme.spacing.md },
+  sectionTitle: { fontSize: 22, fontFamily: 'BebasNeue_400Regular', letterSpacing: 1, color: theme.colors.text.primary, marginBottom: theme.spacing.md },
 
   btnRow: { flexDirection: 'row', gap: theme.spacing.md },
   actionBtn: {
     flex: 1,
     alignItems: 'flex-start',
-    justifyContent: 'flex-end',
-    borderRadius: theme.radius.xl,
-    minHeight: 140,
-    padding: theme.spacing.lg,
+    justifyContent: 'center',
+    borderRadius: theme.radius.lg,
+    paddingHorizontal: theme.spacing.lg,
+    paddingVertical: theme.spacing.md,
     borderWidth: 1,
-    gap: 4,
+    gap: 3,
+    shadowColor: '#00E8A8',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.10,
+    shadowRadius: 12,
+    elevation: 4,
   },
   actionBtnPrimary: {
-    backgroundColor: 'rgba(212,168,80,0.13)',
-    borderColor: 'rgba(212,168,80,0.35)',
+    backgroundColor: 'rgba(0,232,168,0.13)',
+    borderColor: 'rgba(0,232,168,0.30)',
   },
   actionBtnSecondary: {
-    backgroundColor: 'rgba(212,168,80,0.07)',
-    borderColor: 'rgba(212,168,80,0.20)',
-  },
-  actionBtnIcon: {
-    fontSize: 22,
-    color: theme.colors.gold,
-    marginBottom: 8,
-    alignSelf: 'flex-start',
+    backgroundColor: 'rgba(0,232,168,0.07)',
+    borderColor: 'rgba(0,232,168,0.20)',
   },
   actionBtnLabel: {
     ...theme.typography.bold1,
-    color: theme.colors.gold,
+    color: theme.colors.accent,
     letterSpacing: 0.3,
   },
   actionBtnSub: {
     ...theme.typography.caption,
-    color: 'rgba(212,168,80,0.75)',
+    color: 'rgba(0,232,168,0.65)',
   },
   actionBtnText: { ...theme.typography.bold2, color: theme.colors.text.primary },
 
@@ -557,7 +654,7 @@ const styles = StyleSheet.create({
     borderRadius: theme.radius.md,
     padding: theme.spacing.md,
     color: theme.colors.text.primary,
-    fontFamily: 'Inter_400Regular',
+    fontFamily: 'DMSans_400Regular',
     fontSize: 14,
     minHeight: 80,
     textAlignVertical: 'top',
@@ -578,4 +675,48 @@ const styles = StyleSheet.create({
   doneView: { alignItems: 'center', paddingVertical: 40, gap: 16 },
   doneEmoji: { fontSize: 64 },
   doneText: { ...theme.typography.h3, color: theme.colors.tealVivid },
+
+  // Daily Quest
+  questHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: theme.spacing.sm },
+  questProgress: { ...theme.typography.caption, color: theme.colors.gold },
+  questBarBg: { height: 3, backgroundColor: 'rgba(0,232,168,0.10)', borderRadius: 2, marginBottom: theme.spacing.md, overflow: 'hidden' },
+  questBarFill: { height: '100%', backgroundColor: theme.colors.tealVivid, borderRadius: 2 },
+  questEmptyText: { ...theme.typography.body3, color: theme.colors.text.tertiary, paddingVertical: 12 },
+  questCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: theme.colors.glass,
+    borderWidth: 1,
+    borderColor: theme.colors.glassBorder,
+    borderRadius: theme.radius.lg,
+    padding: theme.spacing.md,
+    marginBottom: 8,
+  },
+  questCardLeft: { flex: 1, marginRight: 12 },
+  questTitle: { ...theme.typography.bold2, color: theme.colors.text.primary, marginBottom: 2 },
+  questDesc: { ...theme.typography.caption, color: theme.colors.text.tertiary },
+  questCardRight: { alignItems: 'flex-end', gap: 6 },
+  questReward: { ...theme.typography.bold3, color: theme.colors.gold },
+  questDoneBtn: {
+    backgroundColor: 'rgba(0,232,168,0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(0,232,168,0.30)',
+    borderRadius: theme.radius.md,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    minHeight: 32,
+    justifyContent: 'center',
+  },
+  questDoneBtnText: { ...theme.typography.bold3, color: theme.colors.accent },
+  questAllDone: {
+    backgroundColor: 'rgba(0,232,168,0.06)',
+    borderRadius: theme.radius.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(0,232,168,0.18)',
+    padding: theme.spacing.lg,
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  questAllDoneText: { ...theme.typography.bold2, color: theme.colors.tealVivid },
 });

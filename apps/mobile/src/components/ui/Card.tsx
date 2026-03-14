@@ -5,12 +5,13 @@
  *   <Card>...</Card>
  *   <Card variant="elevated" padding="xxl">...</Card>
  *   <Card variant="bordered">...</Card>
+ *   <Card variant="glow">...</Card>  ← 퍼플 글로우 강조 카드
  */
 import React from 'react';
 import { View, StyleSheet, type ViewProps } from 'react-native';
 import { theme } from '../../constants/theme';
 
-export type CardVariant = 'default' | 'elevated' | 'bordered';
+export type CardVariant = 'default' | 'elevated' | 'bordered' | 'glow';
 
 export interface CardProps extends ViewProps {
   variant?: CardVariant;
@@ -49,18 +50,32 @@ const styles = StyleSheet.create({
 const variantStyles = StyleSheet.create({
   default: {
     backgroundColor: theme.colors.surface,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
   },
   elevated: {
-    backgroundColor: theme.colors.surface,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 4,
+    backgroundColor: theme.colors.surface2,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    shadowColor: theme.colors.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 6,
   },
   bordered: {
     backgroundColor: theme.colors.surface,
     borderWidth: 1,
-    borderColor: theme.colors.border,
+    borderColor: theme.colors.glassBorder,
+  },
+  glow: {
+    backgroundColor: theme.colors.surface2,
+    borderWidth: 1,
+    borderColor: theme.colors.glassBorder,
+    shadowColor: theme.colors.primary,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.35,
+    shadowRadius: 16,
+    elevation: 8,
   },
 });

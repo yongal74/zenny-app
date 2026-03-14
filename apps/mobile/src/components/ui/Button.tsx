@@ -9,9 +9,10 @@
  */
 import React from 'react';
 import {
-  TouchableOpacity, Text, ActivityIndicator,
+  TouchableOpacity, Text, ActivityIndicator, View,
   StyleSheet, type TouchableOpacityProps, type ViewStyle,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { theme } from '../../constants/theme';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'teal' | 'danger';
@@ -38,6 +39,45 @@ export function Button({
   style,
   ...props
 }: ButtonProps): React.JSX.Element {
+  const isGradient = variant === 'primary';
+
+  const content = loading ? (
+    <ActivityIndicator size="small" color={theme.colors.text.primary} />
+  ) : (
+    <>
+      {icon ? <Text style={styles.icon}>{icon}</Text> : null}
+      <Text style={[styles.label, labelVariantStyles[variant], labelSizeStyles[size]]}>
+        {label}
+      </Text>
+    </>
+  );
+
+  if (isGradient) {
+    return (
+      <TouchableOpacity
+        style={[
+          styles.gradientWrapper,
+          sizeStyles[size],
+          fullWidth && styles.fullWidth,
+          (disabled || loading) && styles.disabled,
+          style as ViewStyle,
+        ]}
+        disabled={disabled || loading}
+        activeOpacity={0.82}
+        {...props}
+      >
+        <LinearGradient
+          colors={theme.gradients.purple}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={[styles.gradient, sizeStyles[size]]}
+        >
+          <View style={styles.gradientInner}>{content}</View>
+        </LinearGradient>
+      </TouchableOpacity>
+    );
+  }
+
   return (
     <TouchableOpacity
       style={[
@@ -52,16 +92,7 @@ export function Button({
       activeOpacity={0.82}
       {...props}
     >
-      {loading ? (
-        <ActivityIndicator size="small" color={theme.colors.text.primary} />
-      ) : (
-        <>
-          {icon ? <Text style={styles.icon}>{icon}</Text> : null}
-          <Text style={[styles.label, labelVariantStyles[variant], labelSizeStyles[size]]}>
-            {label}
-          </Text>
-        </>
-      )}
+      {content}
     </TouchableOpacity>
   );
 }
@@ -73,18 +104,36 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: theme.spacing.sm,
     borderRadius: theme.radius.md,
-    // 최소 터치 영역 보장 (iOS 44pt / Android 48dp)
     minHeight: theme.minTouchTarget,
+  },
+  gradientWrapper: {
+    borderRadius: theme.radius.md,
+    minHeight: theme.minTouchTarget,
+    overflow: 'hidden',
+  },
+  gradient: {
+    borderRadius: theme.radius.md,
+  },
+  gradientInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: theme.spacing.sm,
+    flex: 1,
   },
   fullWidth: { width: '100%' },
   disabled: { opacity: 0.4 },
-  label: { fontFamily: 'Inter_600SemiBold' },
+  label: { fontFamily: 'DMSans_500Medium' },
   icon: { fontSize: 18 },
 });
 
 const variantStyles = StyleSheet.create({
   primary: { backgroundColor: theme.colors.primary },
-  secondary: { backgroundColor: theme.colors.surface2 },
+  secondary: {
+    backgroundColor: theme.colors.surface2,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+  },
   ghost: {
     backgroundColor: 'transparent',
     borderWidth: 1,
@@ -98,7 +147,7 @@ const labelVariantStyles = StyleSheet.create({
   primary: { color: theme.colors.text.primary },
   secondary: { color: theme.colors.text.primary },
   ghost: { color: theme.colors.text.secondary },
-  teal: { color: theme.colors.text.primary },
+  teal: { color: theme.colors.text.inverse },
   danger: { color: theme.colors.text.primary },
 });
 

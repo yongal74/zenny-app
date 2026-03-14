@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
     },
     label: {
         fontSize: 13,
-        fontFamily: 'Inter_600SemiBold',
+        fontFamily: 'DMSans_500Medium',
         fontWeight: '600',
         color: theme.colors.text.tertiary,
     },

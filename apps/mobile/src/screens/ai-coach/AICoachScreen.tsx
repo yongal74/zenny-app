@@ -111,6 +111,8 @@ export function AICoachScreen(): React.JSX.Element {
 
   // Zone 2: 마지막 AI 메시지
   const lastAiMsg = [...messages].reverse().find(m => m.role === 'assistant');
+  const aiMsgCount = messages.filter(m => m.role === 'assistant').length;
+  const isFirstAiMsg = aiMsgCount <= 1;
   // Zone 3: 마지막 AI 메시지 제외한 히스토리
   const historyMsgs = lastAiMsg ? messages.filter(m => m.id !== lastAiMsg.id) : [];
   const pairCount = Math.floor(historyMsgs.filter(m => m.role === 'assistant').length);
@@ -169,8 +171,8 @@ export function AICoachScreen(): React.JSX.Element {
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <KeyboardAvoidingView
         style={styles.container}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={0}
+        behavior="padding"
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 30}
       >
         {/* ─── Zone 1: Character Zone ───────────────────────────── */}
         <Animated.View style={[styles.characterZone, { height: characterZoneH }]}>
@@ -236,7 +238,7 @@ export function AICoachScreen(): React.JSX.Element {
               showsVerticalScrollIndicator={false}
             >
               {lastAiMsg && (
-                <Text style={styles.pureFocusText}>{lastAiMsg.content}</Text>
+                <Text style={[styles.pureFocusText, !isFirstAiMsg && styles.pureFocusTextSmall]}>{lastAiMsg.content}</Text>
               )}
               {loading && (
                 <Text style={styles.typingDots}>• • •</Text>
@@ -396,7 +398,9 @@ const styles = StyleSheet.create({
     gap: theme.spacing.md,
   },
   welcomeQ: {
-    ...theme.typography.h2,
+    fontSize: 36,
+    fontFamily: 'BebasNeue_400Regular',
+    letterSpacing: 1,
     color: theme.colors.text.primary,
     textAlign: 'center',
   },
@@ -413,11 +417,17 @@ const styles = StyleSheet.create({
     gap: theme.spacing.lg,
   },
   pureFocusText: {
-    fontSize: 38,
-    fontWeight: '700',
+    fontSize: 48,
     color: theme.colors.text.primary,
-    lineHeight: 50,
-    fontFamily: 'Inter_700Bold',
+    lineHeight: 52,
+    letterSpacing: 1,
+    fontFamily: 'BebasNeue_400Regular',
+  },
+  pureFocusTextSmall: {
+    fontSize: 18,
+    lineHeight: 28,
+    letterSpacing: 0,
+    fontFamily: 'DMSans_400Regular',
   },
   typingDots: {
     color: theme.colors.text.tertiary,
@@ -489,7 +499,7 @@ const styles = StyleSheet.create({
     paddingVertical: 11,
     fontSize: 15,
     color: theme.colors.text.primary,
-    fontFamily: 'Inter_400Regular',
+    fontFamily: 'DMSans_400Regular',
     maxHeight: 120,
   },
   sendBtn: {
