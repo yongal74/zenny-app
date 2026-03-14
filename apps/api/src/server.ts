@@ -62,7 +62,7 @@ async function start() {
   app.use('/api/quests', authMiddleware, questRouter);
   app.use('/api/polar', polarRouter);
   app.use('/api/emotion', authMiddleware, emotionRouter);
-  app.use('/api/audio', authMiddleware, audioRouter);
+  app.use('/api/audio', audioRouter); // public — TTS scripts are not sensitive
 
   app.get('/health', (_, res) => res.json({ status: 'ok', ts: new Date().toISOString() }));
 
